@@ -1,0 +1,9 @@
+{
+  "db": {
+    "host": "localhost",
+    "database": "galaxyboard",
+    "user": "root",
+    "password": "devpassword",
+    "connectionLimit": 10
+  }
+}

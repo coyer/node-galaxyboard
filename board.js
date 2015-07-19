@@ -6,18 +6,15 @@ var nodemailer = require('nodemailer');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
+var config = require('config');
+
 
 var board   =   require("./galaxyboard")(
     {
         "board": {
             "pepper": "hItwrGnDOsiDtm02"    //  Passwords are salted & peppered. This is our pepper.
         },
-        "mysql": {
-            user:       "root",
-            database:   "galaxyboard",
-            host:       "localhost",
-            connectionLimit: 10             //  MySQLDB DataPool
-        }
+        "mysql": config.get('db')
     }
 );
 
