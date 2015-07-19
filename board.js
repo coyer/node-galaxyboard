@@ -3,6 +3,9 @@ var app     = express();
 var fs      = require("fs");
 var zlib    = require('zlib');
 var nodemailer = require('nodemailer');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var morgan = require('morgan');
 
 var board   =   require("./galaxyboard")(
     {
@@ -11,16 +14,16 @@ var board   =   require("./galaxyboard")(
         },
         "mysql": {
             user:       "root",
-            database:   "board",
+            database:   "galaxyboard",
             host:       "localhost",
             connectionLimit: 10             //  MySQLDB DataPool
         }
     }
 );
 
-app.use(express.bodyParser());      //  parsing POST
-app.use(express.cookieParser());    //  parse cookies
-app.use(express.logger());
+app.use(bodyParser());      //  parsing POST
+app.use(cookieParser());    //  parse cookies
+app.use(morgan('combined'));
 
 //  Fehler per Mail senden
 //  Generelle Fehler abfangen
