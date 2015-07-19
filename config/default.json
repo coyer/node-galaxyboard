@@ -5,5 +5,15 @@
     "user": "root",
     "password": "devpassword",
     "connectionLimit": 10
+  },
+  "error": {
+    "mail": {
+      "host": "localhost",
+      "message": {
+        "sender": "board@galaxytrek.com",
+        "to": "dbogatz@web.de",
+        "subject": "Board Exception"
+      }
+    }
   }
 }

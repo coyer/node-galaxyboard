@@ -28,16 +28,14 @@ process.on('uncaughtException', function(err) {
     console.log("uncaughtException");
     console.log(err.stack);
 
+    var errorConfig = config.get('error');
+
     nodemailer.SMTP = {
-      host: 'localhost'
-    }
-    var mailoptions = {
-        "sender": "board@galaxytrek.com",
-        "to":     "dbogatz@web.de",
-        "subject":"Board Exception",
-        "text": JSON.stringify(err.stack)
-    }
-    nodemailer.send_mail(mailoptions,
+      host: errorConfig.mail.host
+    };
+    var mailOptions = errorConfig.mail.message;
+    mailOptions.text = JSON.stringify(err.stack);
+    nodemailer.send_mail(mailOptions,
         function(error, success){
             console.log("sendmail::error",error);
             console.log("sendmail::success",success);
