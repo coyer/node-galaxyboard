@@ -1,0 +1,12 @@
+{
+  "name": "GalaxyBoard",
+  "version": "0.70.0",
+  "private": true,
+  "scripts": {
+    "start": "node board"
+  },
+  "dependencies": {
+    "async": "*",
+    "mysql": ">= 2.8.0"
+  }
+}

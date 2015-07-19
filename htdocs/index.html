@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta name="fragment" content="!"> <!-- a crawler should fetch "www.example.com?_escaped_fragment_=" for the index-page -->
+  <meta name="msvalidate.01" content="181D408DF9300DB6383E0B1877DB7577" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <title>TsunamiBoard</title>
+  <link rel="stylesheet" type="text/css" href="/static/style.css?rev4">
+  <script src="/static/CTemplate.js"           type="text/javascript"></script>
+  <script src="/static/Framework.js?rev4"      type="text/javascript"></script>
+  <script src="/static/lang-de.js?rev4"        type="text/javascript"></script>
+  <script type="text/javascript">
+    function initBoard() {
+        window.onload = null;
+        //  Template übersetzen; REMX: Das kann auf Android zu abstürzen führen (zugriff auf innerHTML)
+        var p = document.getElementsByTagName("body")[0]
+        p.innerHTML = system.translate(p.innerHTML);
+        //  Templates laden
+        system.call([{"cmd": "getTemplates"}, {"cmd": "getThreads"}, {"cmd": "getUser"}], function(){
+            //  Hashchange-Event initialisieren:
+            if ("onhashchange" in window)
+                window.onhashchange = system.loadFromHash;
+            else
+                setInterval(system.loadFromHash, 200);
+            //  Daten laden
+            system.loadFromHash();
+        })
+    }
+    function registerEvent(obj, event, handler)
+    {
+      if (obj) {
+        if (obj.attachEvent)
+          obj.attachEvent (event, handler);
+        else if (obj.addEventListener)
+          obj.addEventListener (event, handler, false);
+        else
+          obj["on" + event] = handler;
+      }
+    }
+    window.onload = initBoard;
+    registerEvent(document, "DOMContentLoaded", initBoard);
+  </script>
+</head>
+<body>
+  <div id="js_adminbox" class="outerframe innerwrapper"></div>
+  <div class="wrapper">
+    <div class="header">
+      <div class="content-width content-header" style="position:relative;">
+          <div style="float:right;font-size:1.5em;font-weight:bold;padding:2px 8px;" id="userinfo">XXX</div>
+        <!-- newsblock -->
+        <div class="newsblock">
+          <div id="newscontent">
+            <!--newscontent_start-->
+          loading...
+            <!--newscontent_ende-->
+          </div>
+        </div>
+        <!-- "home"-click-block -->
+        <div class="logo" onclick="location.hash='#'"></div>
+        <!-- buttons / options -->
+        <div class="options">
+          <div id="loginbtn"  onclick="system.vxLogin();"  class="small-button" style="display:none;">@@@LOGIN@@@</div>
+          <div id="logoutbtn" onclick="system.vxLogout();" class="small-button" style="display:none;">@@@LOGOUT@@@</div>
+
+          <!-- wenn angemeldet-->
+          <div id="profilebtn" onclick="system.vxProfile();" class="small-button" style="display:none;">@@@PROFILE@@@</div>
+          <div id="messagesbtn" onclick="system.oldHash=null;location.hash='#showMessages';system.loadFromHash();" class="small-button" style="display:none;">@@@MESSAGES@@@</div>
+          <input style="width:150px;" class="inset" id="searchbtn" onclick="this.select()" placeholder="@@@SEARCH@@@" onkeyup="if (event && event.keyCode==13) system.vxSearch(this.value);" />
+
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="content-width content-footer">&copy; 2012 Denys Bogatz - NodeBoard 0.70</div>
+    </div>
+    <div class="content">
+      <div class="content-width outerframe" id="js_content">
+      </div>
+    </div>
+  </div>
+  <!-- Overlay-Box -->
+  <div style="display:none;" id="overlay-box">
+    <div onclick="vxCloseOverlay();" class="close-overlay-box">x</div>
+    <div id="js_overlay-box-content" class="gradient1" style="overflow-x:hidden; overflow-y: auto;">
+    </div>
+  </div>
+  <div onclick="vxCloseOverlay(true);" style="display:none;" id="dark-bg"></div>
+</body>
+</html>

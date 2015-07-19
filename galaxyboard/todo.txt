@@ -1,0 +1,82 @@
+//  Currently 31 available API-Calls
+{"cmd": "addPost", "topicID": iTopic, "data": txt}
+{"cmd": "banUser", "postID": iPostID, "userID": X, "banreason1": X, "banreason2": X, "banduration": X}
+{"cmd": "closeTopicMod", "topicID": iTopicID}
+{"cmd": "closeTopicUser", "topicID": iTopicID}
+{"cmd": "createTopic", "threadID": iThreadID, "headline": X, "icon": X, "content": X, "pollchoosable": X, "pollruntime": X, "polloptions": X}
+{"cmd": "delBan", "id": id}
+{"cmd": "deleteMessages", "messageList": x}
+{"cmd": "deleteTopic", "topicID": iTopicID}
+{"cmd": "delPost", "postID": iPostID}
+{"cmd": "editPost", "postID": iPostID, "data": txt}
+{"cmd": "editTopic", "topicID": iTopicID, "headline": X, "icon": X, "flags": X}
+{"cmd": "getBans"}
+{"cmd": "getGroups"}
+{"cmd": "getMessage", "refID": x}
+{"cmd": "getMessageList"}
+{"cmd": "getPosts", "page": X, "topicID": X, "postID": X}
+{"cmd": "getSearch", "search": x}
+{"cmd": "getTemplates"}, 
+{"cmd": "getThreads"}, 
+{"cmd": "getTopics", "threadID": X}
+{"cmd": "getUser"}
+{"cmd": "loginUser", "login": param[1], "passwd": ""}
+{"cmd": "logoutUser"}
+{"cmd": "moveTopic", "topicID": iTopicID, "threadID": iThreadSelectedFromTree}
+{"cmd": "openTopicMod", "topicID": iTopicID}
+{"cmd": "reportPost", "postID": iPostID}
+{"cmd": "reportPostUndo", "postID": iPostID}
+{"cmd": "saveProfile", "userID": X, "signature": X, "flags": X, "nick": X, "titel": X, "email": X}
+{"cmd": "saveThread" XXX}
+{"cmd": "voteOption", "topicID": iTopicID, "options": opt}
+{"cmd": "writePM", "userID": x, "subject": x, "message": x, "refID":x}
+
+
+//  ToDo (x=erledigt)
+Forum Anzeige
+    x Threadbaum (Ordnerstruktur)
+    x Themenübersicht/Topics
+    x Posts
+    - Suchseite
+    - Wartungsmodus
+
+Editor:
+    - Thread erstellen  (admin)
+    x Thema erstellen   (rechte)
+    x Posts erstellen   (rechte)
+    x Thema schliessen  (rechte)
+    x Thema löschen     (rechte)
+    x Thema editieren   (rechte)
+    x Thema verschieben (rechte)
+
+User:
+    x Anmelden
+    - Registrieren
+    - Beiträge melden
+
+Admin / Moderatoren:
+    - Threads erstellen
+    - Threads verschieben
+    - Threads löschen
+    - Themen erstellen
+    x Themen verschieben
+    x Themen löschen
+    x gemeldete Beiträge bearbeiten
+    - Benutzerverwaltung
+        - Benutzer editieren
+        - Benutzer löschen
+        - Benutzer hinzufügen
+        - Benutzer sperren / entsperren
+    - Wortfilter
+    x Gruppen (Gäste, reg.User etc)
+    - Moderatoren
+        - Zum Moderator ernennen
+        - Moderator Thread zuweisen inkl. individueller Rechte
+
+Allgemein:
+    x BBCode
+    x Smilies
+    - Anhänge hochladen
+    - Umfragen
+    x AJAX Framework
+    - Eventbasiert

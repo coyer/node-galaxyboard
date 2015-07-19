@@ -1,0 +1,1433 @@
+<!-- Templates -->
+<!-- Template: Threadliste -->
+{macro szxBuildThreads(data, iThreadID)}
+    <div class="innerwrapper">
+      <div class="innerframe">
+        {if iThreadID>0}<div class="navigation">${system.szxGetNavigation(iThreadID)}</div>{/if}
+        <!-- Threadliste 1 -->
+        <!-- 2 durchläufe; festgepinnte topics zuerst anzeigen -->
+        {if iThreadID==0}
+        {for t in data}
+          {if t.id==iThreadID}
+            {for c in t.childs}
+            {var o = data[c]}
+            {if o}
+            <span class="thread-header"><a href="#!showThread~${o.id}">${o.headline|escape}</a></span>
+            <div class="thread">
+              <dl class="dark">
+                <dd class="board"><div class="headline">@@@FORUM@@@</div></dd>
+                <dd class="topic"><div class="headline">@@@THEMEN@@@</div></dd>
+                <dd class="posts"><div class="headline">@@@BEITRAEGE@@@</div></dd>
+                <dd class="lpost"><div class="headline">@@@LBEITRAG@@@</div></dd>
+              </dl>
+              {for c2 in o.childs}
+                {var o2 = data[c2]}
+                {if o2}
+                <dl class="light">
+                  <dd class="icon">
+                    {if o2.boardflags & dfbf_closed}
+                      <span class="bigfolder-close"></span>
+                    {else}
+                      <span class="bigfolder-open"></span>
+                    {/if}
+                  </dd>
+                  <dd class="board">
+                    <a href="#!showThread~${o2.id}">${o2.headline|escape}</a>
+                    <span>${o2.description|escape}</span>
+                    {if o2.modlist.length}
+                        <b>Moderatoren:</b>
+                        {var arrMods = []}
+                        {eval}
+                            for(var i=0;i<o2.modlist.length;i++) {
+                                var mod = o2.modlist[i];
+                                arrMods.push(mod.name.escape());
+                            }
+                        {/eval}
+                        ${arrMods.join(",")}
+                    {/if}
+                  </dd>
+                  <dd class="topic">${o2.topiccount|Integer}</dd>
+                  <dd class="posts">${o2.postcount|Integer}</dd>
+                  <dd class="lpost">
+                    {if o2.lastpostid}
+                      <a href="#!showTopic~${o2.lasttopicid}~${Math.ceil(o2.posts / system.iPostsPerPage)}~${o2.lastpostid}" title="${o2.topic|escape}">${o2.topic|escape}</a>
+                      ${szxToLocaleDate(o2.lastpostdate*1000, true)}, ${o2.username|escape}
+                    {else}
+                      &nbsp;
+                    {/if}
+                    </dd>
+                </dl>
+                {/if}
+              {/for}
+            </div>
+            {/if}
+            {/for}
+          {/if}
+        {/for}
+        {else}
+        <!-- Threadliste 2 -->
+        {for t in data}
+          {if t.id==iThreadID && t.childs.length}
+            <div class="thread">
+              <dl class="dark">
+                <dd class="board" colspan="2"><div class="headline">@@@FORUM@@@</div></dd>
+                <dd class="topic"><div class="headline">@@@THEMEN@@@</div></dd>
+                <dd class="posts"><div class="headline">@@@BEITRAEGE@@@</div></dd>
+                <dd class="lpost"><div class="headline">@@@LBEITRAG@@@</div></dd>
+              </dl>
+              {for c in t.childs}
+                {var o = data[c]}
+                {if o}
+                <dl class="light">
+                  <dd class="icon">
+                    {if o.boardflags & dfbf_closed}
+                      <span class="bigfolder-close"></span>
+                    {else}
+                      <span class="bigfolder-open"></span>
+                    {/if}
+                  </dd>
+                  <dd class="board">
+                    <a href="#!showThread~${o.id}">${o.headline|escape}</a>
+                    <span>${o.description|escape}</span>
+                    {if o.modlist.length}
+                        <b>Moderatoren:</b>
+                        {var arrMods = []}
+                        {eval}
+                            for(var i=0;i<o.modlist.length;i++) {
+                                var mod = o.modlist[i];
+                                arrMods.push(mod.name.escape());
+                            }
+                        {/eval}
+                        ${arrMods.join(",")}
+                    {/if}
+                  </dd>
+                  <dd class="topic">${o.topiccount|Integer}</dd>
+                  <dd class="posts">${o.postcount|Integer}</dd>
+                  <dd class="lpost">
+                  {if o.lastpostid}
+                  <a href="#!showTopic~${o.lasttopicid}~1" title="${o.topic|escape}">${o.topic|escape}</a>
+                  ${szxToLocaleDate(o.lastpostdate*1000,true)}, ${o.username|escape}
+                  {else}&nbsp;{/if}
+                  </dd>
+                </dl>
+                {/if}
+              {/for}
+            </div>
+          {/if}
+        {/for}
+        {/if}
+        <!-- Topic bauen -->
+        <!-- kann topic erstellt werden? -->
+        {if data[iThreadID].perms.boardflags & dfbp_createtopic||data[iThreadID].perms.modflags & dfmod_createtopic && system.amxGetTopics(iThreadID).length}
+        <div class="button" onclick="location.hash='!createTopic~${iThreadID}';" style="float:right;margin:14px 0 4px;">@@@CREATETOPIC@@@</div>
+        <div class="clear"></div>
+        {/if}
+        ${szxBuildTopics(iThreadID)}
+        <!-- kann topic erstellt werden? -->
+        {if data[iThreadID].perms.boardflags & dfbp_createtopic||data[iThreadID].perms.modflags & dfmod_createtopic}
+        <div class="button" onclick="location.hash='!createTopic~${iThreadID}';" style="float:right;margin:14px 0 4px;">@@@CREATETOPIC@@@</div>
+        <div class="clear"></div>
+        {/if}
+      <div>
+    </div>
+{/macro}
+
+<!-- Template: Topicliste -->
+{macro szxBuildTopics(iThreadID)}
+    {var data = system.amxGetTopics(iThreadID)}
+    {if data.length}
+        <!--Prüfe festgepinnte Beiträge-->
+        {var pinned=0}
+        {var unpinned=0}
+        {for t in data}{if t.flags&dft_pinned}{var pinned=pinned+1}{else}{var unpinned=unpinned+1}{/if}{/for}
+{eval}debug(["pinned",pinned,unpinned]){/eval}
+
+        <!-- Topics pinned -->
+        {if pinned>0}
+        <div class="topics" style="margin:8px 0 16px 0;">
+          <dl class="dark">
+            <dd class="topics" colspan="3"><div class="headline">@@@TOPICOVERVIEW@@@</div></dd>
+            <dd class="author"><div class="headline">@@@AUTHOR@@@</div></dd>
+            <dd class="answers"><div class="headline">@@@POSTS@@@</div></dd>
+            <dd class="accessed"><div class="headline">@@@HITS@@@</div></dd>
+            <dd class="lanswer"><div class="headline">@@@LBEITRAG@@@</div></dd>
+          </dl>
+          {for t in data}
+          {if t.flags&dft_pinned}
+            <dl class="light">
+              <dd class="icon1">
+                <!-- (un)gelesen + offen/geschlossen -->
+                <span class="folder{if system.bIsUnreadTopic(t.topicid,t.lastpostdate)}1{else}0{/if}{if t.flags&dft_closed}1{else}0{/if}" title="${t.lastpostdate}"></span>
+              </dd>
+              <dd class="icon2">{if t.icon}<img src="./static/icons/${t.icon}.gif" />{else}&nbsp;{/if}</dd>
+              <dd class="topic"><a href="#!showTopic~${t.topicid}~${Math.ceil(t.posts / system.iPostsPerPage)}~${t.lastpostid}">${t.headline|escape}</a></dd>
+              <dd class="author">${t.username|escape}</dd>
+              <dd class="answers">${t.posts|Integer}</dd>
+              <dd class="accessed">${t.hits|Integer}</dd>
+              <dd class="lanswer"><div class="author">${t.username|escape}</div><div class="date">${szxToLocaleDate(t.lastpostdate*1000,true)}</div></dd>
+            </dl>
+          {/if}
+          {/for}
+        </div>
+        {/if}
+        <!-- Topics unpinned -->
+        {if unpinned>0}
+        <div class="topics">
+          <dl class="dark">
+            <dd class="topics" colspan="3"><div class="headline">@@@TOPICOVERVIEW@@@</div></dd>
+            <dd class="author"><div class="headline">@@@AUTHOR@@@</div></dd>
+            <dd class="answers"><div class="headline">@@@POSTS@@@</div></dd>
+            <dd class="accessed"><div class="headline">@@@HITS@@@</div></dd>
+            <dd class="lanswer"><div class="headline">@@@LBEITRAG@@@</div></dd>
+          </dl>
+          {for t in data}
+          {if !(t.flags&dft_pinned)}
+            <dl class="light">
+              <dd class="icon1">
+                <!-- (un)gelesen + offen/geschlossen -->
+                <span class="folder{if system.bIsUnreadTopic(t.topicid,t.lastpostdate)}1{else}0{/if}{if t.flags&dft_closed}1{else}0{/if}" title="${t.lastpostdate}"></span>
+              </dd>
+              <dd class="icon2">{if t.icon}<img src="./static/icons/${t.icon}.gif" />{else}&nbsp;{/if}</dd>
+              <dd class="topic"><a href="#!showTopic~${t.topicid}~${Math.ceil(t.posts / system.iPostsPerPage)}~${t.lastpostid}">${t.headline|escape}</a></dd>
+              <dd class="author">${t.username|escape}</dd>
+              <dd class="answers">${t.posts|Integer}</dd>
+              <dd class="accessed">${t.hits|Integer}</dd>
+              <dd class="lanswer"><div class="author">${t.username|escape}</div><div class="date">${szxToLocaleDate(t.lastpostdate*1000,true)}</div></dd>
+            </dl>
+          {/if}
+          {/for}
+        </div>
+        {/if}
+
+
+    {/if}
+{/macro}
+
+<!-- Verbesserter Pager wie auf vbulletin -->
+{macro szxGetPager(iMaxRows,iPosts,iCurrentPage,iTopicID,bBoardLink)}
+    <!-- start ist aktuelle seite - 2 // ende aktuelle+2 -->
+    {var szPageRange =   ""}
+    {var iMaxPages   =   Math.ceil(iPosts/iMaxRows)}
+    {var aiRange     =   []}
+    {var szLink      =   "showThread"}
+    {eval}
+        iCurrentPage--;
+        for(var i=Math.max(1,iCurrentPage-4);i<Math.min(iCurrentPage+6,1+iMaxPages);i++) aiRange.push(i);
+    {/eval}
+
+    {if  iCurrentPage>=0}
+        @@@PAGE@@@ ${iCurrentPage+1} @@@OUTOF@@@ ${iMaxPages}&nbsp;
+    {/if}
+
+    <!--  Ein Topiclink oder ein Boardlink? -->
+    {if !bBoardLink}
+        {var szLink      =   "showTopic"}
+    {/if}
+
+    {if  iMaxPages>1}
+        |&nbsp;
+        <!--  Pos 1 ist nicht erste Seite? -->
+        {if  aiRange && aiRange[0]>2}
+            <a class="page" href="#!${szLink}~${iTopicID}~1">&nbsp;&laquo;&nbsp;</a>
+        {/if}
+        {if  aiRange && aiRange[0]>1}
+            <a class="page" href="#!${szLink}~${iTopicID}~${aiRange[0]-1}">&nbsp;&lt;&nbsp;</a>
+        {/if}
+        {for i in aiRange}
+            {if i!=iCurrentPage+1}
+                <a class="page" href="#!${szLink}~${iTopicID}~${i}">&nbsp;${i}&nbsp;</a>
+            {else}
+                <span class="active">&nbsp;${i}&nbsp;</span>
+            {/if}
+        {/for}
+        <!--  kommt noch eine Seite? -->
+        {if  aiRange && aiRange[aiRange.length-1]<iMaxPages && iCurrentPage>=0}
+            <a class="page" href="#!${szLink}~${iTopicID}~${aiRange[aiRange.length-1]+1}">&nbsp;&gt;&nbsp;</a>
+        {/if}
+        {if  aiRange && aiRange[aiRange.length-1]<iMaxPages-1}
+            <a class="page" href="#!${szLink}~${iTopicID}~${iMaxPages}">&nbsp;&raquo;&nbsp;</a>
+        {/if}
+    {/if}
+{/macro}
+
+<!-- Template: Postings -->
+{macro szxBuildPosts(mPosts)}
+    <div class="innerwrapper">
+      <div class="innerframe">
+        {var data = mPosts["posts"]}
+        {var page = mPosts["page"]}
+        {var iTopicID = mPosts["topicID"]}
+        {var iPostCount = mPosts["postcount"]}
+        {if data}
+            {var t = system.mxGetTopic(iTopicID)}
+            {var mUser = system.mxGetUser()}
+
+            <!-- Rechte prüfen -->
+            {var bCanPost = false}
+            {var bCanEdit = false}
+            {var bCanReport = false}
+            {var bCanDelete = false}
+            {if (t.perms.topicflags & (dft_closed|dft_mod_closed)) == 0}
+              {if (t.perms.boardflags&dfbp_reply)}
+                {var bCanPost = true}
+              {/if}
+              <!--  Darf Editieren (nur wenn für board erlaubt, es ein eigener beitrag ist sowie nicht gemeldet wurde.): -->
+              {if (t.perms.extendflags&dfbp_editownpost)}
+                {var bCanEdit = true}
+              {/if}
+              <!--  Beiträge melden? -->
+              {if (t.perms.extendflags&dfbp_reportpost)}
+                {var bCanReport = true}
+              {/if}
+              <!--  Eigenen Beitrag löschen -->
+              {if (t.perms.extendflags&dfbp_deleteownpost)}
+                {var bCanDelete = true}
+              {/if}
+            {/if}
+            <!-- Antworten btn -->
+            <h1 class="topic-headline">${t.headline|escape}</h1>
+            <div class="button-container">
+                {if bCanPost||(t.perms.modflags&dfmod_replypost)}<div class="button" onclick="system.vxReply();">@@@REPLY@@@</div>{/if}
+                {if bCanEdit && t.userid==system.mxGetUser()["id"]}<div class="button" onclick="system.vxEditTopic(${iTopicID});">@@@EDITTOPIC@@@</div>{/if}
+                {if (t.perms.extendflags&dfbp_closeowntopic) && t.userid==system.mxGetUser()["id"] && !(t.flags&(dft_closed|dft_mod_closed))}<div class="button" onclick="system.vxCloseTopicUser(${iTopicID},0);">@@@CLOSETOPIC@@@</div>{/if}
+            </div>
+            <div class="clear"></div>
+            <!-- Forumsnavigation -->
+            {if t.boardid>0}<div class="navigation">${system.szxGetNavigation(t.boardid)}<div class="pager">${szxGetPager(system.iPostsPerPage,iPostCount,page,iTopicID,false)}</div></div>{/if}
+
+            <!-- Umfragen vorhanden? -->
+            {if mPosts.poll}
+              <div class="pollcontainer">
+              <form id="js_poll_form">
+                {for poll in mPosts.poll.options}
+                  {if mPosts.poll.pollend > new Date().getTime()/1000}
+                    {if mPosts.poll.maxoptions>1}
+                      <label><input name="vote" type="checkbox" value="${poll.value}">${poll.poption|escape}</label>
+                    {else}
+                      <label><input name="vote" type="radio" value="${poll.value}">${poll.poption|escape}</label>
+                    {/if}
+                  {else}
+                    <label>${poll.poption|escape}</label>
+                  {/if}
+                  <!-- Stimme + Balken -->
+                  <div style="width:50%;float:right;position:relative;">
+                    <span title="= ${poll.votes|Integer} @@@VOTES@@@">{if poll.votes}${(poll.votes*100/mPosts.poll.votes).toFixed(2)}%{/if}</span>
+                    <div style="position:absolute;left:48px;top:2px;height:12px;right:0;">
+                      <div class="pollbar" style="width:{if poll.votes}${(poll.votes*100/mPosts.poll.votes).toFixed(2)}{else}0{/if}%;"></div>
+                    </div>
+                  </div>
+                  <div class="clear"></div>
+                {/for}
+                <!-- Optionen / Statistik anzeigen -->
+                <hr>
+                <table cellpadding="0" cellspacing="0">
+                  <tr>
+                    <th>@@@MAXVOTES@@@</th>
+                    <td>${mPosts.poll.maxoptions|Integer}</td>
+                  </tr>
+                  <tr>
+                    <th>@@@GIVENVOTES@@@</th>
+                    <td>${mPosts.poll.votes|Integer}</td>
+                  </tr>
+                  <tr>
+                    <th>@@@VOTESTART@@@</th>
+                    <td>${szxToLocaleDate(1000*mPosts.poll.pollstart)}</td>
+                  </tr>
+                  <tr>
+                    <th>@@@VOTEEND@@@</th>
+                    <td>${szxToLocaleDate(1000*mPosts.poll.pollend)}</td>
+                  </tr>
+                </table>
+                {if mPosts.poll.pollend > new Date().getTime()/1000}
+                <div class="small-button" onclick="system.vxVote($('js_poll_form'),${mPosts.topicID})">@@@VOTE@@@</div>
+                <div class="clear"></div>
+                {/if}
+              </form>
+              </div>
+            {/if}
+
+            <!-- Topics -->
+            <table class="posts" cellpadding="0" cellspacing="0">
+              <tr class="dark">
+                <td class="row1"><div class="headline">@@@AUTHOR@@@</div></td>
+                <td class="row2"><div class="headline">@@@MESSAGE@@@</div></td>
+              </tr>
+              {for p in data}
+                <tr class="light">
+                  <td class="row0">
+                    <h1>${p.username|escape}</h1>
+                    <p>${p.titel|escape}</p>
+                    {if p.userid<1000}
+                      {var szUserID = String(p.userid).pad("0000000000")}
+                      <img src="./static/avatare/${szUserID.substr(7)}/${szUserID.substr(0,3)}/${szUserID.substr(3,4)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                    {else}
+                      {var szServer = "uni1"}
+                      {if (p.userid % 1000)==2}{var szServer = "speed"}{/if}
+                      <img src="http://${szServer}.galaxytrek.com/avatar/${Math.floor(p.userid/1000)%1000}/${Math.floor(p.userid/1000)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                    {/if}
+                    <dl>
+                      <dt>@@@BEITRAEGE@@@</dt>
+                      <dd>${p.posts|Integer}</dd>
+                    </dl>
+                    <dl>
+                      <dt>@@@REGISTRATION@@@</dt>
+                      <dd>${szxToLocaleDate(1000*p.created)}</dd>
+                    </dl>
+                  </td>
+                  {if p.postflags&dfpost_hide && !(t.perms.modflags&dfmod_closereports)}
+                    <td class="row1" id="postID${p.postid}">
+                      <div class="posting" style="border:2px solid red;padding:8px;text-align:center;">@@@MESSAGEBLOCKED@@@</div>
+                    </td>
+                  {else}
+                    <td class="row1" id="postID${p.postid}">
+                      <div class="posting" {if (p.postflags&dfpost_hide)} style="opacity:0.5;border:2px solid red;padding:4px;"{/if}>${p.content|escape|BB|EMOT}</div>
+                      {if t.perms.boardflags&dfbp_signatures && (mUser.flags&dfu_no_sigs)==0}
+                        {if p.signature.trim()}
+                          <div class="signature">${p.signature|escape|BB|EMOT}</div>
+                        {/if}
+                      {/if}
+                    </td>
+                  {/if}
+                </tr>
+                <tr class="dark">
+                  <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(1000*p.postdate, true)}</div></td>
+                  <td class="row2">
+                    <div class="headline" id="postID${p.postid}_buttons">
+                      {if bCanPost||(t.perms.modflags&dfmod_replypost)}
+                        <div class="small-button" onclick="system.vxReply();">@@@REPLY@@@</div>
+                        <div class="small-button" onclick="system.vxReply(${p.postid});">@@@CITE@@@</div>
+                      {/if}
+                      {if (bCanEdit   && p.userid==mUser.id) || (t.perms.modflags&dfmod_editpost)}<div class="small-button" onclick="system.vxEditPost(${p.postid});">@@@EDIT@@@</div>{/if}
+                      {if (bCanDelete && p.userid==mUser.id) || (t.perms.modflags&dfmod_deletepost)}<div class="small-button" onclick="system.vxDeletePost(${p.postid});">@@@DELETE@@@</div>{/if}
+                      {if (p.postflags&dfpost_reported) && (t.perms.modflags&dfmod_closereports || mUser.flags&dfu_superadmin)}
+                        <div class="small-button" onclick="system.vxReportUndo(${iTopicID}, ${p.postid});">@@@UNREPORT@@@</div>
+                      {else}
+                        {if (bCanReport && p.userid!=mUser.id)}<div class="small-button" onclick="system.vxReport(${iTopicID}, ${p.postid});">@@@REPORT@@@</div>{/if}
+                      {/if}
+
+{if !(p.flags&dfu_no_pn)}
+          <div onclick="vxOpenOverlay(system.szxWritePM(${p.userid},'${p.username|escape}'));" class="small-button">@@@PM@@@</div>
+{/if}
+                      {if t.perms.modflags&dfmod_createbans}
+                      <div class="small-button mod" onclick="system.vxBanUser(${p.postid});">@@@BANUSER@@@</div>
+                      {/if}
+                      <div class="clear"></div>
+                    </div>
+                    <div class="headline" id="postID${p.postid}_buttons_edit" style="display:none;">
+                        <div class="small-button" onclick="system.vxPostEdit(${p.postid}, $('obj_bb_content${p.postid}').value);">@@@SEND@@@</div>
+                        <div class="small-button" onclick="system.vxShowTopic(${iTopicID});">@@@ABORT@@@</div>
+                        <div class="clear"></div>
+                    </div>
+                  </td>
+                </tr>
+              {/for}
+              <!-- Reply-Container-->
+                <tr class="light" style="display:none;" id="js_postreply1">
+                  <td class="row0">
+                    <h1>${mUser.nick|escape}</h1>
+                    <p>${mUser.titel|escape}</p>
+                    {if mUser.id<1000}
+                      {var szUserID = String(mUser.id).pad("0000000000")}
+                      <img src="./static/avatare/${szUserID.substr(7)}/${szUserID.substr(0,3)}/${szUserID.substr(3,4)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                    {else}
+                      {var szServer = "uni1"}
+                      {if (mUser.id % 1000)==2}{var szServer = "speed"}{/if}
+                      <img src="http://${szServer}.galaxytrek.com/avatar/${Math.floor(mUser.id/1000)%1000}/${Math.floor(mUser.id/1000)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                    {/if}
+                    <dl>
+                      <dt>@@@BEITRAEGE@@@</dt>
+                      <dd>${mUser.posts|Integer}</dd>
+                    </dl>
+                    <dl>
+                      <dt>@@@REGISTRATION@@@</dt>
+                      <dd>${szxToLocaleDate(1000*mUser.created)}</dd>
+                    </dl>
+                  </td>
+                  <td class="row1">
+                    ${system.szxBBEditor("0")}
+                  </td>
+                </tr>
+                <tr class="dark" style="display:none;" id="js_postreply2">
+                  <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(new Date(), true)}</div></td>
+                  <td class="row2"><div class="headline">
+                        <div class="small-button" onclick="system.vxPostReply(${iTopicID}, $('obj_bb_content0').value);">@@@SEND@@@</div>
+                        <div class="small-button" onclick="$('js_postreply1').style.display='none';$('js_postreply2').style.display='none';">@@@ABORT@@@</div>
+                        <div class="clear"></div>
+                  </div></td>
+                </tr>
+            </table>
+            <!-- Forumsnavigation -->
+            {if t.boardid>0}<div class="navigation">${system.szxGetNavigation(t.boardid)}<div class="pager">${szxGetPager(system.iPostsPerPage,iPostCount,page,iTopicID,false)}</div></div>{/if}
+            <!-- Antworten btn -->
+            <h1 class="topic-headline">${t.headline|escape}</h1>
+            <div class="button-container">
+                {if bCanPost||(t.perms.modflags&dfmod_replypost)}<div class="button" onclick="system.vxReply();">@@@REPLY@@@</div>{/if}
+            </div>
+            <div class="clear"></div>
+        {/if}
+      </div>
+    </div>
+{/macro}
+
+<!-- BBCode-Editor -->
+{macro szxBBEditor(postID)}
+    <div class="bbeditor">
+      {var InpBtn = ''}
+      {var LabBtn = ''}
+      {var DivBtn = ''}
+      <!--  hotbuttons -->
+      {var NamBtn = new Array('[b],[/b]','[u],[/u]','[i],[/i]','[s],[/s]','[align=left],[/align]','[align=center],[/align]','[align=right],[/align]','[align=justify],[/align]','[quote],[/quote]','[code],[/code]','[list=circle]\r\n[*],\r\n[/list]','[list=1]\r\n[*],\r\n[/list]','[list=a]\r\n[*],\r\n[/list]','[img],[/img]','[url],[/url]','[mail],[/mail]')}
+      {var ImgBtn = new Array('bold','underline','italic','strike','alignleft','aligncenter','alignright','alignjustify','quote','code','bullist','numlist','alphalist','image','link','mail')}
+      <!--  farben -->
+      {var HtmCol = new Array('','darkred', 'red', 'orange', 'brown', 'yellow', 'green', 'olive', 'cyan', 'blue', 'darkblue', 'indigo', 'violet', 'white','black')}
+      <!--  groesse -->
+      {var HtmSize = new Array('','x-small','small','medium','large','x-large')}
+      <!--  art -->
+      {var OptFont = new Array('','Arial','Verdana','Century Gothic','Comic Sans MS','Courier New','Jokerman','Kristen ITC','Lucida Console')}
+
+      {var Selection = ""}
+      {eval}
+        // GlobaleFunktion definieren
+        if(window) {
+          window.bbOnClick = function(event, src, id) {
+            var input = $("obj_bb_content"+id);
+            var aTag  = src.name.split(",")[0];
+            var eTag  = src.name.split(",")[1];
+
+            //  Ist SELECT?
+            if (src.nodeName=="SELECT") {
+              aTag += src.options[src.selectedIndex].value+']';
+              src.selectedIndex = 0;
+            }
+
+            //  Selektion ermitteln:
+            input.focus();
+            // für Internet Explorer
+            if(typeof document.selection != 'undefined') {
+              // Einfügen des Formatierungscodes
+              var range = document.selection.createRange();
+              var insText = range.text;
+              range.text = aTag + insText + eTag;
+              // Anpassen der Cursorposition
+              range = document.selection.createRange();
+              if (insText.length == 0) {
+                range.move('character', -eTag.length);
+              } else {
+                range.moveStart('character', aTag.length + insText.length + eTag.length);
+              }
+              range.select();
+            }
+            // für neuere auf Gecko basierende Browser
+            else if(typeof input.selectionStart != 'undefined')
+            {
+              // Einfügen des Formatierungscodes
+              var start = input.selectionStart;
+              var end = input.selectionEnd;
+              // Patch: Falls letztes zeichen Leerzeichen ist, Selektion verringern
+              if(input.value.substring(end-1, end)==" ") end--;
+
+              var insText = input.value.substring(start, end);
+              input.value = input.value.substr(0, start) + aTag + insText + eTag + input.value.substr(end);
+              // Anpassen der Cursorposition
+              var pos;
+              if (insText.length == 0) {
+                pos = start + aTag.length;
+              } else {
+                pos = start + aTag.length + insText.length + eTag.length;
+              }
+              input.selectionStart = pos;
+              input.selectionEnd = pos;
+            }
+            // für die übrigen Browser
+            else
+            {
+              alert("not supported");
+            }
+            return eatEvent(event);
+          }
+        }
+      {/eval}
+      <!-- Aufbau Color -->
+      <div class="bb-select">
+      <select name="[color=,[/color]" onchange="bbOnClick(event, this, ${postID});" style="width:100px;float:right;">
+        {for b in HtmCol}
+          <option value="${HtmCol[b_index]}" style="color:${HtmCol[b_index]};">${HtmCol[b_index]}</option>
+        {/for}
+      </select>
+      COLOR
+      </div>
+      <div class="bb-select">
+      <select name="[bgcolor=,[/bgcolor]" onchange="bbOnClick(event, this, ${postID});" style="width:100px;float:right;padding:0 0 0 8px;">
+        {for b in HtmCol}
+          <option value="${HtmCol[b_index]}" style="background-color:${HtmCol[b_index]};">${HtmCol[b_index]}</option>
+        {/for}
+      </select>
+      BGCOLOR
+      </div>
+      <div class="bb-select">
+      <select name="[size=,[/size]" onchange="bbOnClick(event, this, ${postID});" style="width:100px;float:right;padding:0 0 0 8px;">
+        {for b in HtmSize}
+          <option value="${HtmSize[b_index]}" style="background-color:${HtmSize[b_index]};">${HtmSize[b_index]}</option>
+        {/for}
+      </select>
+      SIZE
+      </div>
+      <div class="bb-select">
+      <select name="[font=,[/font]" onchange="bbOnClick(event, this, ${postID});" style="width:100px;float:right;padding:0 0 0 8px;">
+        {for b in OptFont}
+          <option value="${OptFont[b_index]}" style="background-color:${OptFont[b_index]};">${OptFont[b_index]}</option>
+        {/for}
+      </select>
+      FAMILY
+      </div>
+      <div class="clear"></div>
+      <!-- Aufbau HotButtons -->
+      <div>{for b in NamBtn}
+        <img align="middle" src='./static/editor/${ImgBtn[b_index]}.gif' name="${NamBtn[b_index]}" onclick="bbOnClick(event, this, ${postID});" />
+      {/for}</div>
+    </div>
+    <textarea id="obj_bb_content${postID}" rows="8" cols="115"  style="width:100%;height:200px;"></textarea>
+{/macro}
+
+<!-- LoginBox -->
+{macro szxLoginBox()}
+  <div class="loginbox">
+    <h3>@@@BOX_LOGIN@@@</h3>
+    <form onsubmit="system.vxProcessLogin(this);return false;">
+    <dl>
+        <dt>@@@NICK@@@</dt>
+        <dd><input class="inset" type="text" name="login" id="js_tmp_login" /></dd>
+    </dl>
+    <dl>
+        <dt>@@@PASSWORD@@@</dt>
+        <dd><input class="inset" type="password" name="passwd" /></dd>
+    </dl>
+    <div class="clear"></div>
+    <input type="submit" class="small-button" style="float:right;margin:8px 0 0;" value="@@@SEND@@@" />
+    <div class="clear"></div>
+    </form>
+  </div>
+{/macro}
+
+<!-- PostLöschBox -->
+{macro szxConfirmDeletePostBox(id)}
+  <div class="delete-post">
+    <h3>@@@BOX_DELETEPOST@@@</h3>
+    <p>@@@BOX_DELETEPOST_QUESTION@@@</p>
+    <div onclick="vxCloseOverlay();" class="button">@@@ABORT@@@</div>
+    <div onclick="system.vxDeletePost(${id}, true);" class="button">@@@DELETE@@@</div>
+    <div class="clear"></div>
+  </div>
+{/macro}
+
+<!-- MoveTopicBox -->
+{macro szxMoveTopicBox(mThreads, mTopic)}
+  <div class="move-topic">
+    <h3>@@@BOX_MOVETOPIC@@@</h3>
+    <p>@@@BOX_MOVETOPIC_QUESTION@@@</p>
+    <!-- Rekursiver Baum -->
+    <ul class="thread-tree" style="width:100%;height:200px;overflow:auto;overflow-x:hidden;margin:0 0 12px 0;">${system.szxGetThreadAsTree(0)}</ul>
+    <div onclick="vxCloseOverlay();" class="button">@@@ABORT@@@</div>
+    <div onclick="system.vxMoveTopic(${mTopic.topicid}, true);" class="button">@@@MOVE@@@</div>
+    <div class="clear"></div>
+  </div>
+{/macro}
+
+<!-- ManageThreadsBox -->
+{macro szxManageThreadsBox(mThreads, mGroups, iSelected)}
+  <div class="edit-threads">
+    <h3>@@@BOX_EDITTHREADS@@@</h3>
+    <!-- Auswahl des Threads -->
+    <select style="width:100%;" onchange="system.vxManageThreads(this.value);">
+    <option value="">/root</option>
+    {var szThreadList=""}
+    {var tree=null}
+    {eval}
+    tree = function(id,sid,ebene) {
+        var m = mThreads[id];
+        for(var i=0;i<m.childs.length;i++) {
+            var c = m.childs[i];
+            szThreadList += '<option value="'+mThreads[c].id+'" style="padding:0 0 0 '+(ebene*16)+'px" '+((sid==mThreads[c].id)?"selected":"")+'>'+mThreads[c].headline.escape()+'</option>';
+            tree(mThreads[c].id,sid,ebene+1);
+        }
+    }
+    tree(0,iSelected,1);
+    {/eval}
+    ${szThreadList}
+    </select>
+    {if iSelected}
+        <!-- Reiter darstellen -->
+        <a name="threadconfig" href="javascript:void(1)" onclick="system.vxShowDiv(this,'threadconfig','js_threads_config',['js_threads_config','js_threads_mods','js_threads_access','js_threads_rules','js_threads_prefix'])" class="active">Einstellungen</a>
+        <a name="threadconfig" href="javascript:void(1)" onclick="system.vxShowDiv(this,'threadconfig','js_threads_mods',  ['js_threads_config','js_threads_mods','js_threads_access','js_threads_rules','js_threads_prefix'])">Moderatoren</a>
+        <a name="threadconfig" href="javascript:void(1)" onclick="system.vxShowDiv(this,'threadconfig','js_threads_access',['js_threads_config','js_threads_mods','js_threads_access','js_threads_rules','js_threads_prefix'])">Zugriffe</a>
+        <a name="threadconfig" href="javascript:void(1)" onclick="system.vxShowDiv(this,'threadconfig','js_threads_rules', ['js_threads_config','js_threads_mods','js_threads_access','js_threads_rules','js_threads_prefix'])">Regeln</a>
+        <a name="threadconfig" href="javascript:void(1)" onclick="system.vxShowDiv(this,'threadconfig','js_threads_prefix',['js_threads_config','js_threads_mods','js_threads_access','js_threads_rules','js_threads_prefix'])">Prefixe</a>
+        <!-- Boxen -->
+        <form id="js_editthreads_form" onsubmit="return false">
+        <input type="hidden" name="id" value="${iSelected}">
+        <div id="js_threads_config" style="display:none;" class="editbox">
+            <dl>
+                <dt>Elternelement</dt>
+                <dd><select name="pid">
+                <option value="0">/root</option>
+                {var szThreadList=""}
+                {eval}tree(0,mThreads[iSelected].pid,1){/eval}
+                ${szThreadList}
+                </select></dd>
+            </dl>
+            <dl>
+                <dt>Forumsname</dt>
+                <dd><input type="text" name="name" value="${mThreads[iSelected].headline|escape}"></dd>
+            </dl>
+            <dl>
+                <dt>Forumsbeschreibung</dt>
+                <dd>
+                    <textarea rows="3" name="description">${mThreads[iSelected].description|escape}</textarea>
+                </dd>
+            </dl>
+            <dl>
+                <dt>Einstellungen</dt>
+                <dd>
+                <label><input type="checkbox" name="dfbf_showsubboards" value="1" {if mThreads[iSelected].boardflags&dfbf_showsubboards} checked{/if}>Untergeordnete Foren anzeigen</label><br>
+                <label><input type="checkbox" name="dfbf_hideboard"     value="1" {if mThreads[iSelected].boardflags&dfbf_hideboard} checked{/if}>Forum verstecken</label><br>
+                <label><input type="checkbox" name="dfbf_closed"        value="1" {if mThreads[iSelected].boardflags&dfbf_closed} checked{/if}>Forum geschlossen</label>
+                </dd>
+            </dl>
+        </div>
+        <div id="js_threads_mods" style="display:block;" class="editbox">
+          <table width=100% cellpadding=0 cellspacing=0>
+            <tr valign="top">
+              <td width="50%" style="padding:0 8px 0 0;">
+                <h4>Moderatorenliste</h4>
+                <select style="width:100%;height:144px;" size="12" name="modlist" onchange="system.vxShowModOptions(this.value)">
+                  {for m in mThreads[iSelected].modlist}
+                    <option value="${m.id}~${m.flags}">${m.name|escape}</option>
+                  {/for}
+                </select>
+                <div class="small-button inactive" id="js_bt_deletemod">@@@DELETE@@@</div>
+                <div class="small-button" onclick="$('js_searchmod').style.display='block';">@@@ADD@@@</div>
+              </td>
+              <td width="50%"><div style="display:none;" id="js_modcontainer">
+                <h4>Rechteliste</h4>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_approvepost">&nbsp;Kann Beiträge freigeben</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_setauthor">&nbsp;Kann neuen Autor festlegen</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_deletepost">&nbsp;Kann Beiträge löschen</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_editpost">&nbsp;Kann Beiträge editieren</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_closereports">&nbsp;Kann gemeldete Beiträge bearbeiten</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_hidepost">&nbsp;Kann Beiträge verstecken</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_replypost">&nbsp;Kann auf geschlossene Themen antworten</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_managebans">&nbsp;Kann Verwarnungen bearbeiten</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_postdetails">&nbsp;Kann Beitragsdetails sehen</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_createbans">&nbsp;Kann Verwarnungen austeilen</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_closethread">&nbsp;Kann Thema schliessen</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_movethread">&nbsp;Kann Themen verschieben</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_deletethread">&nbsp;Kann Themen löschen</label>
+                <label class="sm"><input type="checkbox" checked="" value="1" name="dfmod_editthread">&nbsp;Kann Thema editieren</label>
+              </div></td>
+            </tr>
+          </table>
+          <div class="searchmod" id="js_searchmod" style="display:none;">
+            <div class="fader"></div>
+            <div class="search gradient1">
+              <!-- Sucheingabe -->
+              <dl>
+                <dt>Benutzername:</dt>
+                <dd><input type="text"></dd>
+                <dt>Gruppenname:</dt>
+                <dd><select onchange="system.vxShowGroupResult(this.value)" id="js_selectgroup">
+                  <option></option>
+                  {for g in mGroups}
+                    <option value="${g.id}">${system.translate(g.name)|escape} {if g.members.length}(${g.members.length|escape} Mitglieder){/if}</option>
+                  {/for}
+                </select></dd>
+              </dl>
+              <div class="clear"></div>
+              <div id="js_searchresult"></div>
+              <div id="js_btaddgroup" class="small-button" style="display:none;" onclick="system.vxAddGroup($('js_selectgroup').value)">Gruppe hinzufügen</div>
+              <div class="small-button" onclick="$('js_searchmod').style.display='none';">@@@ABORT@@@</div>
+              <div class="clear"></div>
+            </div>
+          </div>
+        </div>
+        <div id="js_threads_access" style="display:none;" class="editbox">
+        3
+        noch nicht drin
+        </div>
+        <div id="js_threads_rules" style="display:none;" class="editbox">
+        4
+        noch nicht drin
+        </div>
+        <div id="js_threads_prefix" style="display:none;" class="editbox">
+        5
+        noch nicht drin
+        </div>
+        <!-- Buttons zum Abschicken -->
+        <div onclick="system.vxSaveNewThread($('js_editthreads_form'))" class="button" style="float:right;">@@@SAVE@@@</div>
+        <div onclick="vxCloseOverlay();" class="button" style="float:right;">@@@ABORT@@@</div>
+        <div class="clear"></div>
+        </form>
+    {/if}
+  </div>
+{/macro}
+
+<!-- List a set of names -->
+{macro szxListNames(aNames)}
+  {if aNames.length}
+  <table class="general" cellpadding="0" cellspacing="0" width="100%">
+    <tr class="dark">
+      <td><div class="headline">UserID</div></td>
+      <td><div class="headline">Benutzername</div></td>
+      <td><div class="headline">Titel</div></td>
+      <td><div class="headline">Beiträge</div></td>
+      <td><div class="headline">Registrierung</div></td>
+    </tr>
+    {for o in aNames}
+    <tr class="light">
+      <td align="right">${o.id}&nbsp;</td>
+      <td>${o.nick|escape}</td>
+      <td>${o.titel|escape}</td>
+      <td>${o.posts|escape}</td>
+      <td>${szxToLocaleDate(1000*o.created)}</td>
+    </tr>
+    {/for}
+  </table>
+  {/if}
+{/macro}
+
+<!-- DeleteTopicBox -->
+{macro szxConfirmDeleteTopicBox(id)}
+  <div class="delete-post">
+    <h3>@@@BOX_DELETETOPIC@@@</h3>
+    <p>@@@BOX_DELETETOPIC_QUESTION@@@</p>
+    <div onclick="vxCloseOverlay();" class="button">@@@ABORT@@@</div>
+    <div onclick="system.vxDeleteTopic(${id}, true);" class="button">@@@DELETE@@@</div>
+    <div class="clear"></div>
+  </div>
+{/macro}
+
+<!-- DeleteTopicBox -->
+{macro szxEditTopicBox(id)}
+  <div class="edit-topic">
+    <h3>@@@BOX_EDITTOPIC@@@</h3>
+
+    <form id="js_tmp_form" method="POST" onsubmit="try{system.vxEditTopic(${id}, true,this.headline.value, this.icon)} catch(e){debug(e)};return false;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <th width="30%">@@@TOPICHEADLINE@@@:</th>
+        <td width="70%"><input style="width:100%" id="js_tmp_subject" name="headline" value="" /></td>
+      </tr>
+      <tr>
+        <th>@@@TOPICSYMBOL@@@:</th>
+        <td>
+        {for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,0]}
+          {if i%10==0}<br>{/if}
+          {if i==0}
+            <label><input type="radio" name="icon" id="js_tmp_icon0" value="0">@@@NOSYMBOL@@@</label>
+          {else}
+            <label><input type="radio" name="icon" id="js_tmp_icon${i}" value="${i}"><img src="/static/icons/${i}.gif"></label>
+          {/if}
+        {/for}
+        </td>
+      </tr>
+      <tr>
+        <th>@@@PINNED@@@:</th>
+        <td>
+            <label><input type="checkbox" name="pinned" id="js_tmp_pinned" value="0">@@@PINNEDDESC@@@</label>
+        </td>
+      </tr>
+    </table>
+    </form>
+    <div onclick="vxCloseOverlay();" class="button">@@@ABORT@@@</div>
+    <div onclick="system.vxEditTopic(${id}, true, $('js_tmp_form').headline.value, $('js_tmp_form').icon);" class="button">@@@SAVE@@@</div>
+    <div class="clear"></div>
+  </div>
+{/macro}
+
+<!-- create Topic -->
+{macro szxCreateTopic(iThreadID, mTopic)}
+    {var mUser = system.mxGetUser()}
+    {eval}debug(mTopic){/eval}
+    <div class="innerwrapper">
+      <div class="innerframe">
+      <form onsubmit="return false;" method="POST" id="js_createtopic_form">
+
+        <table class="create-thread" cellpadding="0" cellspacing="0">
+          <tr class="dark">
+            <td class="row1" colspan="2"><div class="headline">@@@NEWTOPIC@@@</div></td>
+          </tr>
+
+
+          <tr class="light">
+            <td>@@@TOPICHEADLINE@@@:</td>
+            <td>
+            <input type="text" style="width:100%;" value="" name="topic">
+            </td>
+          </tr>
+          <tr class="light">
+            <td style="border-bottom:1px solid #888;">@@@TOPICSYMBOL@@@:</td>
+            <td style="border-bottom:1px solid #888;">
+            {for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,0]}
+              {if i==0}
+                <br><label><input onclick="system.vxShowPollEditor(0);" type="radio" name="icon" id="js_tmp_icon0" value="0" checked="checked">@@@NOSYMBOL@@@</label>
+              {else}
+                <label><input onclick="system.vxShowPollEditor(0);" type="radio" name="icon" id="js_tmp_icon${i}" value="${i}"><img src="/static/icons/${i}.gif"></label>
+              {/if}
+            {/for}
+            {if mTopic.perms.extendflags & dfbp_createpolls}
+              <label><input type="radio" value="100" class="radio" name="icon" onclick="system.vxShowPollEditor(1);"><img src="/static/icons/100.gif"> @@@POLL_HEADLINE@@@</label>
+            {/if}
+          </tr>
+
+<!-- Umfrage Start -->
+          {if mTopic.perms.extendflags & dfbp_createpolls}
+          <tr class="light" id="js_polleditor" style="display:none;">
+            <td style="border-bottom:1px solid #888;">@@@POLL_EDITOR@@@</td>
+            <td><table width=100% cellpadding=0 cellspacing=0 border=0>
+                <tr>
+                  <td width="50%"><input type="text" maxlength="100" name="uoption" style="width:100%;border:1px solid black;"></td>
+                  <td width="50%"><div class="small-button" onclick="system.vxPollAddOption()">@@@POLL_ADDOPTION@@@</div></td>
+                </tr>
+                <tr valign="bottom">
+                  <td width="50%">
+                    <select name=uoptions style="width:100%;border:1px solid black;" size="3" multiple>###uoptions###</select>
+                  </td>
+                  <td width="50%">
+                    <div class="small-button" onclick="system.vxPollDelOption()">@@@POLL_DELOPTION@@@</div>
+                  </td>
+                </tr>
+                <tr><td colspan=2>
+                    <input type=text maxlength=4 name=auswahl  value="1"  style="width:100px">&nbsp;@@@POLL_OPTIONS@@@<br>
+                    <input type=text maxlength=4 name=laufzeit value="30" style="width:100px">&nbsp;@@@POLL_RUNTIME@@@<br>
+                </td>
+                </tr>
+            </table></td>
+         </tr>
+        {/if}
+<!-- Umfrage Ende -->
+
+          <tr>
+            <td colspan="2">
+              <table class="posts" cellpadding="0" cellspacing="0">
+                <tr class="light" id="js_postreply1">
+                  <td class="row0">
+                    <h1>${mUser.nick|escape}</h1>
+                    <p>${mUser.titel|escape}</p>
+                    {if mUser.id<1000}
+                      {var szUserID = String(mUser.id).pad("0000000000")}
+                      <img src="./static/avatare/${szUserID.substr(7)}/${szUserID.substr(0,3)}/${szUserID.substr(3,4)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                    {else}
+                      {var szServer = "uni1"}
+                      {if (mUser.id % 1000)==2}{var szServer = "speed"}{/if}
+                      <img src="http://${szServer}.galaxytrek.com/avatar/${Math.floor(mUser.id/1000)%1000}/${Math.floor(mUser.id/1000)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                    {/if}
+                    <dl>
+                      <dt>@@@BEITRAEGE@@@</dt>
+                      <dd>${mUser.posts|Integer}</dd>
+                    </dl>
+                    <dl>
+                      <dt>@@@REGISTRATION@@@</dt>
+                      <dd>${szxToLocaleDate(1000*mUser.created)}</dd>
+                    </dl>
+                  </td>
+                  <td class="row1">
+                    ${system.szxBBEditor("0")}
+                  </td>
+                </tr>
+                <tr class="dark" id="js_postreply2">
+                  <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(new Date(), true)}</div></td>
+                  <td class="row2"><div class="headline">
+                        <div class="small-button" onclick="system.vxCreateTopic(${iThreadID}, $('js_createtopic_form'));">@@@CREATE@@@</div>
+                        <div class="small-button" onclick="history.back();">@@@ABORT@@@</div>
+                        <div class="clear"></div>
+                  </div></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </form>
+      </div>
+    </div>
+{/macro}
+
+<!-- Adminpanel erstellen -->
+{macro szxBuildAdminBox(mThreads, mTopic)}
+  {var mUser = system.mxGetUser()}
+{eval}debug([mUser, mTopic]){/eval}
+  {if mUser.flags&dfu_superadmin}
+  <div class="innerframe" style="margin:0 0 8px 0;">
+  <h1>AdminOptions</h1>
+  <div class="button" onclick="system.vxManageThreads(0);">Edit Threads</div>
+<!--
+  <div class="button" onclick="system.vxManageThreads();">Add Thread</div>
+  <div class="button" onclick="alert('noch nicht drin');">Gruppen</div>
+  <div class="button" onclick="alert('noch nicht drin');">Benutzer</div>
+-->
+  </div>
+  {/if}
+
+  <div class="innerframe">
+  {var modflags = mTopic?mTopic.perms.modflags:0}
+  <h1>ModOptions</h1>
+  {if mTopic && (modflags&dfmod_movethread||mUser.flags&dfu_superadmin)}
+    <div class="button" onclick="system.vxMoveTopic(${mTopic.topicid},0);">@@@MOVETOPIC@@@</div>
+  {else}
+    <div class="button inactive">@@@MOVETOPIC@@@</div>
+  {/if}
+  {if mTopic && (modflags&dfmod_deletethread||mUser.flags&dfu_superadmin)}
+    <div class="button" onclick="system.vxDeleteTopic(${mTopic.topicid},0);">@@@DELETETOPIC@@@</div>
+  {else}
+    <div class="button inactive">@@@DELETETOPIC@@@</div>
+  {/if}
+  {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) && !(mTopic.flags&(dft_closed|dft_mod_closed))}
+    <div class="button" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);">@@@CLOSETOPIC@@@</div>
+  {else}
+    <div class="button inactive">@@@CLOSETOPIC@@@</div>
+  {/if}
+  {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) &&  (mTopic.flags&(dft_closed|dft_mod_closed))}
+    <div class="button" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);">@@@OPENTOPIC@@@</div>
+  {else}
+    <div class="button inactive">@@@OPENTOPIC@@@</div>
+  {/if}
+  {if mTopic && (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
+    <div class="button" onclick="system.vxEditTopic(${mTopic.topicid});">@@@EDITTOPIC@@@</div>
+  {else}
+    <div class="button inactive">@@@EDITTOPIC@@@</div>
+  {/if}
+  <!-- Kann ich Meldungen bearbeiten? -->
+  {if mThreads && mThreads[0].reports.length}
+    <div class="button" onclick="system.vxShowReports();">@@@SHOWREPORTS@@@ (${mThreads[0].reports.length})</div>
+  {else}
+    <div class="button inactive">@@@SHOWREPORTS@@@</div>
+  {/if}
+  <!-- Bans bearbeiten? -->
+  {if mThreads && mThreads[0].bManageBans}
+    <div class="button" onclick="system.vxEditBans();">@@@BANLIST@@@</div>
+  {else}
+    <div class="button inactive">@@@BANLIST@@@</div>
+  {/if}
+  </div>
+{/macro}
+
+<!-- Template: Postings -->
+{macro szxBuildReports(mThreads, amReports)}
+    <div class="innerwrapper">
+      <div class="innerframe">
+        {var mUser = system.mxGetUser()}
+        <!-- Topics -->
+        <table class="posts" cellpadding="0" cellspacing="0">
+          <tr class="dark">
+            <td class="row1"><div class="headline">@@@AUTHOR@@@</div></td>
+            <td class="row2"><div class="headline">@@@MESSAGE@@@</div></td>
+          </tr>
+          {for p in amReports}
+            {var perms = mThreads[p.boardid].perms}
+            <tr class="light">
+              <td class="row0">
+                <h1>${p.username|escape}</h1>
+                <p>${p.titel|escape}</p>
+                {if p.userid<1000}
+                  {var szUserID = String(p.userid).pad("0000000000")}
+                  <img src="./static/avatare/${szUserID.substr(7)}/${szUserID.substr(0,3)}/${szUserID.substr(3,4)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                {else}
+                  {var szServer = "uni1"}
+                  {if (p.userid % 1000)==2}{var szServer = "speed"}{/if}
+                  <img src="http://${szServer}.galaxytrek.com/avatar/${Math.floor(p.userid/1000)%1000}/${Math.floor(p.userid/1000)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+                {/if}
+                <dl>
+                  <dt>@@@BEITRAEGE@@@</dt>
+                  <dd>${p.posts|Integer}</dd>
+                </dl>
+                <dl>
+                  <dt>@@@REGISTRATION@@@</dt>
+                  <dd>${szxToLocaleDate(1000*p.created)}</dd>
+                </dl>
+              </td>
+              <td class="row1" id="postID${p.postid}">
+                <div class="navigation">${system.szxGetNavigation(p.boardid)} &raquo; <a href="#!showTopic~${p.topicid}~1~${p.postid}">${p.headline}</a></div>
+                <div class="posting">${p.content|escape|BB}</div>
+                {if p.signature && p.signature.trim()}
+                  <div class="signature">${p.signature|escape|BB}</div>
+                {/if}
+              </td>
+            </tr>
+            <tr class="dark">
+              <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(1000*p.postdate, true)}</div></td>
+              <td class="row2">
+                <div class="headline" id="postID${p.postid}_buttons">
+                  {if (p.postflags&dfpost_reported) && (perms.modflags&dfmod_closereports || mUser.flags&dfu_superadmin)}<div class="small-button" onclick="system.vxReportUndo(${p.topicid}, ${p.postid},system.vxShowReports);">@@@UNREPORT@@@</div>{/if}
+                  <div class="clear"></div>
+                </div>
+              </td>
+            </tr>
+          {/for}
+        </table>
+        <div class="clear"></div>
+      </div>
+    </div>
+{/macro}
+
+<!-- Benutzer sperren -->
+{macro szxBanUser(mPost)}
+  <div style="width:500px;">
+    {var mUser = system.mxGetUser()}
+    <!-- Topics -->
+    <table class="posts" cellpadding="0" cellspacing="0" width="500">
+      <tr class="dark">
+        <td class="row1"><div class="headline">@@@USER@@@</div></td>
+        <td class="row2"><div class="headline">@@@BANOPTIONS@@@</div></td>
+      </tr>
+
+      <tr class="light">
+        <td class="row0">
+          <h1>${mPost.username|escape}</h1>
+          <p>${mPost.titel|escape}</p>
+          {if mPost.userid<1000}
+            {var szUserID = String(mPost.userid).pad("0000000000")}
+            <img src="./static/avatare/${szUserID.substr(7)}/${szUserID.substr(0,3)}/${szUserID.substr(3,4)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+          {else}
+            {var szServer = "uni1"}
+            {if (mPost.userid % 1000)==2}{var szServer = "speed"}{/if}
+            <img src="http://${szServer}.galaxytrek.com/avatar/${Math.floor(mPost.userid/1000)%1000}/${Math.floor(mPost.userid/1000)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+          {/if}
+          <dl>
+            <dt>@@@BEITRAEGE@@@</dt>
+            <dd>${mPost.posts|Integer}</dd>
+          </dl>
+          <dl>
+            <dt>@@@REGISTRATION@@@</dt>
+            <dd>${szxToLocaleDate(1000*mPost.created)}</dd>
+          </dl>
+        </td>
+        <td class="row1">
+            <form id="js_tmp_form">
+            <input type="hidden" name="userid" value="${mPost.userid}">
+            <b>@@@BANREASON@@@ @@@USER@@@</b><br>
+            <textarea name="banreason1" style="width:100%;height:48px;"></textarea><br>
+            <b>@@@BANREASON@@@ (Intern)</b><br>
+            <textarea name="banreason2" style="width:100%;height:48px;"></textarea><br>
+            <b>@@@BANDURATION@@@</b><br>
+            <select  name="banduration" style="width:100%";><br>
+                <option></option>
+                <option value="24">@@@ban1day@@@</option>
+                <option value="48">@@@ban2days@@@</option>
+                <option value="72">@@@ban3days@@@</option>
+                <option value="168">@@@ban1week@@@</option>
+                <option value="336">@@@ban2weeks@@@</option>
+                <option value="720">@@@ban1month@@@</option>
+                <option value="1440">@@@ban2months@@@</option>
+                <option value="2160">@@@ban3months@@@</option>
+                <option value="4320">@@@ban6months@@@</option>
+                <option value="8640">@@@ban1year@@@</option>
+            </select>
+            </form>
+        </td>
+      </tr>
+      <tr class="dark">
+        <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(1000*mPost.postdate, true)}</div></td>
+        <td class="row2">
+          <div class="headline">
+            <div class="small-button" onclick="system.vxBanUser(${mPost.postid}, $('js_tmp_form'))">@@@BANUSER@@@</div>
+            <div class="clear"></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <div class="clear"></div>
+  </div>
+{/macro}
+
+<!-- Template zum Editieren von Bans -->
+{macro szxEditBans(aBanList)}
+  {if aBanList.length}
+  <div style="width:800px;max-height:500px;overflow:auto;">
+    <table class="general" cellpadding="0" cellspacing="0" width="500">
+      <tr class="dark">
+        <td width="5%"><div class="headline">#</div></td>
+        <td width="20%"><div class="headline">@@@USER@@@</div></td>
+        <td width="15%"><div class="headline">@@@BANNEDUNTIL@@@</div></td>
+        <td width="50%"><div class="headline">@@@BANREASON@@@</div></td>
+        <td width="10%"><div class="headline">@@@OPTIONS@@@</div></td>
+      </tr>
+      {for ban in aBanList}
+      <tr class="light">
+        <td>${ban.ban_id}</td>
+        <td>${ban.nick|escape}<br><i>banned by ${ban.admin|escape}</i></td>
+        <td>${szxToLocaleDate(1000*ban.ban_end, true)}</td>
+        <td style="white-space:normal;">${ban.ban_reason|escape}</td>
+        <td><div class="small-button" onclick="system.vxDeleteBan(${ban.ban_id})">@@@DELETE@@@</div></td>
+      </tr>
+      {/for}
+    </table>
+  </div>
+  {else}
+    @@@NOBANS@@@
+  {/if}
+{/macro}
+
+<!-- Template für PM schreiben -->
+{macro szxWritePM(uid,nick)}
+  <div class="messagebox">
+    <h3>@@@PM@@@</h3>
+    <form onsubmit="system.vxSendMessage(this, function(){vxCloseOverlay()});return false;">
+    <input type="hidden" name="userid" value="${uid}">
+    <dl>
+        <dt>@@@NICK@@@</dt>
+        <dd>${nick|escape}</dd>
+    </dl>
+    <dl>
+        <dt>@@@SUBJECT@@@</dt>
+        <dd><input type="text" name="subject"></dd>
+    </dl>
+    <dl>
+        <dt>@@@MESSAGE@@@</dt>
+        <dd><textarea name="message"></textarea></dd>
+    </dl>
+    <div class="clear"></div>
+    <input type="submit" class="small-button" style="float:right;margin:8px 0 0;" value="@@@SEND@@@" />
+    <div class="clear"></div>
+    </form>
+  </div>
+{/macro}
+
+<!-- Template: Nachricht/Verlauf -->
+{macro szxShowMessage(iRefID, aRefData)}
+<div style="height:100%;position:relative;">
+  <div style="position:absolute;top:0;width:100%;bottom:24px;overflow:auto;" id="js_msg_content_${iRefID}">
+    <table class="posts" cellpadding="0" cellspacing="0" style="margin: 4px 0;" id="js_msg_table_${iRefID}">
+      {for p in aRefData}
+        <tr class="light">
+          <td class="row0">
+            <h1>${p.username|escape}</h1>
+            <p>${p.titel|escape}</p>
+            {if p.userid<1000}
+              {var szUserID = String(p.userid).pad("0000000000")}
+              <img src="./static/avatare/${szUserID.substr(7)}/${szUserID.substr(0,3)}/${szUserID.substr(3,4)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+            {else}
+              {var szServer = "uni1"}
+              {if (p.userid % 1000)==2}{var szServer = "speed"}{/if}
+              <img src="http://${szServer}.galaxytrek.com/avatar/${Math.floor(p.userid/1000)%1000}/${Math.floor(p.userid/1000)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+            {/if}
+            <dl>
+              <dt>@@@BEITRAEGE@@@</dt>
+              <dd>${p.posts|Integer}</dd>
+            </dl>
+            <dl>
+              <dt>@@@REGISTRATION@@@</dt>
+              <dd>${szxToLocaleDate(1000*p.created)}</dd>
+            </dl>
+          </td>
+          <td class="row1">
+            <div class="posting">${p.content|escape|BB}</div>
+          </td>
+        </tr>
+      {/for}
+    <!-- antorten/löschen -->
+    </table>
+  </div>
+  <div class="headline" id="js_msg_${iRefID}_buttons" style="position:absolute;left:0;width:100%;bottom:0;">
+    <div class="small-button" onclick="$('js_msg_textarea_${iRefID}').style.display='block';$('js_msg_${iRefID}_buttons').style.display='none';$('js_msg_content_${iRefID}').style.bottom='100px';">@@@REPLY@@@</div>
+    <div class="small-button" onclick="system.vxDeleteMessages([${iRefID}])">@@@DELETE@@@</div>
+    <div class="clear"></div>
+  </div>
+  <div style="height:100px;display:none;" id="js_msg_textarea_${iRefID}">
+    <form id="js_msg_form_${iRefID}">
+      <input type="hidden" name="refid"   value="${iRefID}">
+      <input type="hidden" name="subject" value="Re: ${aRefData[0].subject|escape}">
+      <input type="hidden" name="userid"  value="${aRefData[0].userid}">
+      <textarea name="message" style="width:100%;height:80px;bottom:20px;position:absolute;"></textarea>
+    </form>
+    <div style="position:absolute;bottom:0;right:0;">
+      <div class="small-button" onclick="system.vxSendMessage($('js_msg_form_${iRefID}'),function(){system.oldHash=null;location.hash='!showMessages';system.loadFromHash()})">@@@SEND@@@</div>
+      <div class="small-button" onclick="$('js_msg_textarea_${iRefID}').style.display='none';$('js_msg_${iRefID}_buttons').style.display='block';$('js_msg_content_${iRefID}').style.bottom='20px';">@@@ABORT@@@</div>
+    </div>
+  </div>
+</div>
+{/macro}
+
+<!-- Template: Nachrichtenmenü -->
+{macro szxBuildMessagelist(amMessageList)}
+    <div class="innerwrapper">
+      <div class="innerframe">
+        <div class="messages">
+          <dl class="dark">
+            <dd class="received"><div class="headline">@@@DATUM@@@</div></dd>
+            <dd class="author"><div class="headline">@@@AUTHOR@@@</div></dd>
+            <dd class="subject"><div class="headline">@@@SUBJECT@@@</div></dd>
+          </dl>
+          {for msg in amMessageList}
+            <dl class="light">
+              <dd class="icon"><span class="folder{if (msg.flag&1)==0}1{else}0{/if}0"></span></dd>
+              <dd class="delete"><input type="checkbox" name="js_msg_checkbox" value="${msg.id}"></dd>
+              <dd class="received">${szxToLocaleDate(1000*msg.received, true)}</dd>
+              <dd class="author">${msg.sender|escape}</dd>
+              <dd class="subject" onclick="system.vxShowMessage(${msg.id})">{if msg.flag&2}<i>&laquo;{/if}${msg.subject|escape}{if msg.flag&2}&raquo;</i>{/if}</dd>
+            </dl>
+            <!-- messagebox -->
+            <dl id="js_msg_${msg.id}" style="height:0;overflow:hidden;padding:0px 20px;" class="transition"></dl>
+          {/for}
+        </div>
+        <div class="clear" style="padding:8px 0 0 0;"></div>
+        <div class="button" onclick="var a=document.getElementsByName('js_msg_checkbox');for(var i=0;i<a.length;i++)a[i].checked=true;">@@@SELECTALL@@@</div>
+        <div class="button" onclick="var a=document.getElementsByName('js_msg_checkbox');var b=[];for(var i=0;i<a.length;i++)if(a[i].checked)b.push(a[i].value);system.vxDeleteMessages(b);">@@@DELETE@@@</div>
+        <div class="clear"></div>
+      <div>
+    </div>
+{/macro}
+
+<!-- Template: Suchergebnisse -->
+{macro szxShowSearch(amResults)}
+    <div class="innerwrapper">
+      <div class="innerframe">
+        <div class="messages">
+          <dl class="dark">
+            <dd class="received"><div class="headline">@@@DATUM@@@</div></dd>
+            <dd class="author"><div class="headline">@@@AUTHOR@@@</div></dd>
+            <dd class="subject"><div class="headline">@@@TOPICHEADLINE@@@</div></dd>
+          </dl>
+          {for search in amResults}
+            <dl class="light">
+              <dd class="icon"><span class="folder00"></span></dd>
+              <dd class="received">${szxToLocaleDate(1000*search.postdate, true)}</dd>
+              <dd class="author">${search.username|escape}</dd>
+              <dd class="subject" onclick="location.hash='!showTopic~${search.topicid}~0~${search.postid}'">${search.headline|escape}</dd>
+              <!-- content
+                ${search.content}
+              -->
+            </dl>
+          {forelse}
+          @@@NOSEARCHRESULT@@@
+          {/for}
+        </div>
+      <div>
+    </div>
+{/macro}
+
+<!-- LoginBox -->
+{macro szxProfileBox(mUser)}
+<!--
+dfu_unapproved  =   1<<27L      ##  User muss noch freigegeben werden.
+dfu_invalid     =   1<<28L      ##  EMail-Adresse des Users noch nicht geprüft!
+dfu_ownavatar   =   1<<29L      ##  eigener avatar hochgeladen
+-->
+  <div class="profilebox">
+    <h3>@@@BOX_PROFILE@@@</h3>
+    <form onsubmit="system.vxSaveProfile(this);return false;">
+    <input type="hidden" name="uid" value="${mUser.id}">
+    <table cellpadding="4" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td width="100">
+          <dl><dt>@@@AVATAR@@@</dt></dl>
+          <div class="clear"></div>
+
+          {if mUser.id<1000}
+              {var szUserID = String(mUser.id).pad("0000000000")}
+              <img src="./static/avatare/${szUserID.substr(7)}/${szUserID.substr(0,3)}/${szUserID.substr(3,4)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+          {else}
+              {var szServer = "uni1"}
+              {if (mUser.id % 1000)==2}{var szServer = "speed"}{/if}
+              <img src="http://${szServer}.galaxytrek.com/avatar/${Math.floor(mUser.id/1000)%1000}/${Math.floor(mUser.id/1000)}" onerror="if(this.src!='http://img.sternenpakt.de/spsk/noavatar.jpg')this.src='http://img.sternenpakt.de/spsk/noavatar.jpg';" />
+          {/if}
+        </td>
+        <td>
+          <!-- Flags -->
+          <dl><dt>@@@CONFIG@@@</dt></dl>
+          <div class="clear"></div>
+          <label><input type="checkbox" value="1" name="dfu_no_pn"      {if mUser.flags&dfu_no_pn}checked="checked"{/if}>@@@U_NOPM@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_no_sigs"    {if mUser.flags&dfu_no_sigs}checked="checked"{/if}>@@@U_NOSIGS@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_membermail" {if mUser.flags&dfu_membermail}checked="checked"{/if}>@@@U_GETMAIL@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_openpm"     {if mUser.flags&dfu_openpm}checked="checked"{/if}>@@@U_OPENPM@@@</label>
+          {if mUser.flags&dfu_superadmin}
+          <font color="red">
+          <label><input type="checkbox" value="1" name="dfu_superadmin" {if mUser.flags&dfu_superadmin}checked="checked"{/if}>@@@U_SUPERADMIN@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_ownavatar"  {if mUser.flags&dfu_ownavatar}checked="checked"{/if}>@@@U_OWNAVATAR@@@</label>
+          </font>
+          {/if}
+        </td>
+      </tr>
+
+      <tr valign="top">
+        <td colspan="2">
+          <dl>
+            <dt>@@@NICK@@@</dt>
+            <dd>{if mUser.flags&dfu_superadmin}<input type="text" name="nick" value="${mUser.nick|escape}">{else}${mUser.nick|escape}{/if}</dd>
+          </dl>
+          <dl>
+            <dt>@@@TITEL@@@</dt>
+            <dd>{if mUser.flags&dfu_superadmin}<input type="text" name="titel" value="${mUser.titel|escape}">{else}${mUser.titel|escape}{/if}</dd>
+          </dl>
+          <dl>
+            <dt>@@@EMAIL@@@</dt>
+            <dd>{if mUser.flags&dfu_superadmin}<input type="text" name="email" value="${mUser.email|escape}">{else}${mUser.email|escape}{/if}</dd>
+          </dl>
+          <dl>
+            <dt>@@@REGISTRATION@@@</dt>
+            <dd>${szxToLocaleDate(1000*mUser.created)}</dd>
+          </dl>
+          <dl>
+            <dt>@@@BEITRAEGE@@@</dt>
+            <dd>${mUser.posts|Integer}</dd>
+          </dl>
+          <div class="clear"></div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+        <dl><dt>@@@SIGNATURE@@@</dt></dl>
+        <div class="clear"></div>
+        <textarea name="signature">{if mUser.signature}${mUser.signature|escape}{/if}</textarea>
+      </tr>
+    </table>
+    <input type="submit" class="small-button" style="float:right;margin:8px 0 0;" value="@@@SAVE@@@" />
+    <div class="clear"></div>
+    </form>
+  </div>
+{/macro}
+
+<!-- NewMailPopup -->
+{macro szxNewMails(cnt)}
+<html>
+  <head>
+    <title>${cnt} @@@NEWMESSAGES@@@</title>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+  </head>
+  <body style="background:white;color:black;padding:5px;">
+    <div class="newmail"></div>
+    <div style="float:left;width:200px;">
+      <h1 style="padding:8px 0 20px 4px;">${cnt} @@@NEWMESSAGES@@@</h1>
+      <div style="text-align:center">
+        <div class="button" onclick="opener.system.oldHash=null;opener.location.hash='!showMessages';opener.system.loadFromHash();top.close();">@@@SHOWMESSAGES@@@</div>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </body>
+</html>
+{/macro}
+
+<!-- Funktionen im Framework registrieren -->
+{eval}
+system.szxBuildThreads  = szxBuildThreads;
+system.szxBuildTopics   = szxBuildTopics;
+system.szxBuildPosts    = szxBuildPosts;
+system.szxBBEditor      = szxBBEditor;
+system.szxLoginBox      = szxLoginBox;
+system.szxCreateTopic   = szxCreateTopic;
+system.szxEditTopicBox  = szxEditTopicBox;
+system.szxBanUser       = szxBanUser;
+system.szxEditBans      = szxEditBans;
+system.szxWritePM       = szxWritePM;
+system.szxShowMessage   = szxShowMessage;
+system.szxShowSearch    = szxShowSearch;
+system.szxProfileBox    = szxProfileBox;
+system.szxNewMails      = szxNewMails;
+system.szxListNames     = szxListNames;
+
+system.szxConfirmDeletePostBox      = szxConfirmDeletePostBox;
+system.szxMoveTopicBox              = szxMoveTopicBox;
+system.szxConfirmDeleteTopicBox     = szxConfirmDeleteTopicBox;
+system.szxBuildAdminBox             = szxBuildAdminBox;
+system.szxBuildReports              = szxBuildReports;
+system.szxBuildMessagelist          = szxBuildMessagelist;
+system.szxManageThreadsBox          = szxManageThreadsBox;
+system.bTemplates = true; // Templates geladen
+{/eval}
