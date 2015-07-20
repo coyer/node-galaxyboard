@@ -1,11 +1,5 @@
 {
-  "db": {
-    "host": "localhost",
-    "database": "galaxyboard",
-    "user": "root",
-    "password": "devpassword",
-    "connectionLimit": 10
-  },
+  "dbConnectionLimit": 10,
   "error": {
     "mail": {
       "host": "localhost",

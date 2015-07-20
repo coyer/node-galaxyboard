@@ -1,0 +1,18 @@
+{
+  "dev": {
+    "host": "localhost",
+    "user": "root",
+    "password": "devpassword",
+    "database": "galaxyboard",
+    "driver": "mysql",
+    "multipleStatements": true
+  },
+  "other": {
+    "host": {"ENV": "GB_DB_HOST"},
+    "user": {"ENV": "GB_DB_USER"},
+    "password": {"ENV": "GB_DB_PASS"},
+    "database": {"ENV": "GB_DB_DATABASE"},
+    "driver": "mysql",
+    "multipleStatements": true
+  }
+}
