@@ -247,7 +247,7 @@ module.exports = function GalaxyBoard(config) {
         }
 
         function initBoard(next) {
-            //"""Liefert alle Threads zurück; ggf gefiltert anhand Zugriffsrechten"""
+            //"""Liefert alle Threads zurueck; ggf gefiltert anhand Zugriffsrechten"""
             //#+---------+---------------+--------+------------+-----------+-------------+---------+-----------+------------+-----------+----------+-------------+---------+
             //#| boardid | parentboardid | sortid | topiccount | postcount | lasttopicid | boardid | prunedays | boardflags | boardrule | headline | description | prefixe |
             //#+---------+---------------+--------+------------+-----------+-------------+---------+-----------+------------+-----------+----------+-------------+---------+
@@ -274,7 +274,7 @@ module.exports = function GalaxyBoard(config) {
                                         mModlist[subset["boardid"]]    =   {};
                                     mModlist[subset["boardid"]][subset["userid"]]  =   subset;
                                 });
-                                //  Es gibt auch Gruppen welche als Moderatoren gehen würden:
+                                //  Es gibt auch Gruppen welche als Moderatoren gehen wuerden:
                                 mysqlPool.query(
                                     "select sql_cache a.boardid, a.userid,a.flags&0xffffffff as flags,b.description as name from mods a left join groups b on b.groupid=-a.userid where a.userid<0",
                                     function(err, results, fields) {
@@ -315,7 +315,7 @@ module.exports = function GalaxyBoard(config) {
                                     mGrouplist[subset["boardid"]][subset["accessid"]]  =   subset;
                                 });
                             }
-                            //  Es gibt auch Gruppen welche als Moderatoren gehen würden:
+                            //  Es gibt auch Gruppen welche als Moderatoren gehen wuerden:
                             mysqlPool.query(
                                 "select sql_cache a.boardid, a.accessid, a.bflags, a.eflags,b.description as name from board_acl a left join groups b on b.groupid = -a.accessid where a.accessid<0",
                                 function(err, results, fields) {
@@ -395,7 +395,7 @@ module.exports = function GalaxyBoard(config) {
                             }
 
                             //  Jetzt kann es noch vorkommen das Unterforen vorhanden sind ohne Parent welche rausgefiltert werden
-                            //  Gleichzeitig eine Liste anlegen mit Foren in denen wir als Mod ggf Meldungen bearbeiten dürfen
+                            //  Gleichzeitig eine Liste anlegen mit Foren in denen wir als Mod ggf Meldungen bearbeiten duerfen
                             var aiUnreportPosts = [];
                             for (var key in mBoard) {
                                 if (key != 0 && !mBoard[mBoard[key]["pid"]]) {
@@ -455,7 +455,7 @@ module.exports = function GalaxyBoard(config) {
 
         //  getTopics
         self.getTopics = function(params, next) {
-            //"""Liefert alle Topics anhand eines Threads zurück; gefiltert anhand Zugriffsrechten."""
+            //"""Liefert alle Topics anhand eines Threads zurueck; gefiltert anhand Zugriffsrechten."""
             //#+---------+---------+------+-------+--------+------+---------+----------+----------+-------+------------+--------------+
             //#| topicid | boardid | hits | posts | voting | icon | userid  | username | headline | flags | lastpostid | lastpostdate |
             //#+---------+---------+------+-------+--------+------+---------+----------+----------+-------+------------+--------------+
@@ -467,7 +467,7 @@ module.exports = function GalaxyBoard(config) {
                         console.log(["getTopics",err]);
                     } else {
                         var amTopics = [];
-                        var iModFlags   = ixGetModFlags(iBoardID);         //  Fürs gesamte Board identisch
+                        var iModFlags   = ixGetModFlags(iBoardID);         //  Fuers gesamte Board identisch
                         results.forEach(function(mTopic) {
                             //  Rechte patchen:
                             var flags = ixCheckBoardAccess(iBoardID);      
@@ -483,7 +483,7 @@ module.exports = function GalaxyBoard(config) {
 
         //  getPosts
         self.getPosts = function(params, next) {
-            //"""Liefert alle Posts eines Topics zurück; gefiltert anhand Zugriffsrechten. Kann Umfragen enthalten!"""
+            //"""Liefert alle Posts eines Topics zurueck; gefiltert anhand Zugriffsrechten. Kann Umfragen enthalten!"""
             //#+--------+---------+--------+-----------+------------+----------------+----------------+--------+----------+---------+
             //#| postid | topicid | userid | postflags | postdate   | username       | userip         | postid | lastedit | content |
             //#+--------+---------+--------+-----------+------------+----------------+----------------+--------+----------+---------+
@@ -491,7 +491,7 @@ module.exports = function GalaxyBoard(config) {
             var iTopicID    =   params.topicID;
             var iPage       =   params.page     ||  1;
             var iPostID     =   params.postID   ||  0;
-            //  Rechte prüfen:
+            //  Rechte pruefen:
             mxGetTopic(iTopicID, function(mTopic) {
                 if (!mTopic) {
                     amJSON.push({"event": "showError", "data": "Topic not found!"});
@@ -500,7 +500,7 @@ module.exports = function GalaxyBoard(config) {
                 }
 
                 if( (!(mTopic["perms"]["boardflags"] & GBFlags.dfbp_show) || !(mTopic["perms"]["boardflags"] & GBFlags.dfbp_readboard)) && // nicht anzeigbar und nicht lesbar
-                    !(mModlist[mTopic["boardid"]] && mModlist[mTopic["boardid"]][mUser["id"]])) {   // und wir sind auch kein mod (für den die einschränkung nicht zählt)
+                    !(mModlist[mTopic["boardid"]] && mModlist[mTopic["boardid"]][mUser["id"]])) {   // und wir sind auch kein mod (fuer den die einschränkung nicht zählt)
                     amJSON.push({"event": "showError", "data": "Missing permissions"});
                     amJSON.push({"event": "action", "action": "showLogin"});
                     return next();
@@ -577,7 +577,7 @@ module.exports = function GalaxyBoard(config) {
                                 }
                             )
                         }
-                        //  Falls bestimmter Post erwünscht ist die Seitenzahl ermitteln:
+                        //  Falls bestimmter Post erwuenscht ist die Seitenzahl ermitteln:
                         if (iPostID) {
                             mysqlPool.query(
                                 "select count(*) as anzahl from posts where topicid=? and postid<=?", [iTopicID, iPostID],
@@ -598,16 +598,16 @@ module.exports = function GalaxyBoard(config) {
 
         //  Umfrage
         self.voteOption = function(params, next) {
-            //"""Stimmabgabe bei Umfrage. Zu prüfen ob Stimme abgegeben werden darf."""
+            //"""Stimmabgabe bei Umfrage. Zu pruefen ob Stimme abgegeben werden darf."""
             var iTopicID = params.topicID;
             var aOptions = params.options;
             if(!aOptions.length) return next();
 
-            //  Alte Stimme löschen
+            //  Alte Stimme loeschen
             mysqlPool.query(
                 "delete from poll_votes where pid=? and userid=?", [iTopicID, mUser["id"]],
                 function(err, results) {
-                    //  Neue Stimme(n) hinzufügen
+                    //  Neue Stimme(n) hinzufuegen
                     function insertPoll() {
                         var opt = aOptions.shift();
                         mysqlPool.query(
@@ -636,7 +636,7 @@ module.exports = function GalaxyBoard(config) {
             var iTopicID = params.topicID;
             var iThreadID = params.threadID;
             mxGetTopic(iTopicID, function(mTopic) {
-                //  Prüfe Rechte
+                //  Pruefe Rechte
                 if (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_movethread)) {
                     amJSON.push( {"event": "showError", "data": "Move Topic not allowed!"} );
                     return next();
@@ -649,7 +649,7 @@ module.exports = function GalaxyBoard(config) {
                 mysqlPool.query(
                     "update topics set boardid=? where topicid=?", [iThreadID,iTopicID],
                     function() {
-                        //  Nach dem Verschieben könnte Topic in einem gesperrten Bereich liegen!
+                        //  Nach dem Verschieben koennte Topic in einem gesperrten Bereich liegen!
                         initBoard(function() {
                             amJSON.push( {"event": "newThreads", "data": mBoard} )
                             amJSON.push( {"event": "showInfo", "data": "Topic was moved!"})
@@ -663,16 +663,16 @@ module.exports = function GalaxyBoard(config) {
         self.deleteTopic = function(params, next) {
             var iTopicID = params.topicID;
             mxGetTopic(iTopicID, function(mTopic) {
-                //  Prüfe Rechte
+                //  Pruefe Rechte
                 if (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_deletethread)) {
                     amJSON-push( {"event": "showError", "data": "Delete Topic not allowed!"} );
                     return next();
                 }
-                //  Umfragen löschen
+                //  Umfragen loeschen
                 mysqlPool.query("delete from poll_options where pid=?",[iTopicID]);
                 mysqlPool.query("delete from polls where pid=?",[iTopicID]);
                 mysqlPool.query("delete from poll_votes where pid=?",[iTopicID]);
-                //  Topic löschen
+                //  Topic loeschen
                 mysqlPool.query(
                     "delete from topics where topicid=?", [iTopicID],
                     function(){
@@ -689,7 +689,7 @@ module.exports = function GalaxyBoard(config) {
         self.closeTopicMod = function(params, next) {
             var iTopicID = params.topicID;
             mxGetTopic(iTopicID, function(mTopic) {
-                //  Prüfe Rechte
+                //  Pruefe Rechte
                 if ( (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_closethread)) &&
                      !(mTopic["perms"]["extendflags"]&GBFlags.dfbp_closeowntopic && mTopic["userid"]==mUser["id"])) {
                     amJSON.push( {"event": "showError", "data": "Closing Topic not allowed!"} );
@@ -712,7 +712,7 @@ module.exports = function GalaxyBoard(config) {
         self.closeTopicUser = function(params, next) {
             var iTopicID = params.topicID;
             mxGetTopic(iTopicID, function(mTopic) {
-                //  Prüfe Rechte
+                //  Pruefe Rechte
                 if ( (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_closethread)) &&
                      !(mTopic["perms"]["extendflags"]&GBFlags.dfbp_closeowntopic && mTopic["userid"]==mUser["id"])) {
                     amJSON-push( {"event": "showError", "data": "Closing Topic not allowed!"} );
@@ -735,13 +735,13 @@ module.exports = function GalaxyBoard(config) {
         self.openTopicMod = function(params, next) {
             var iTopicID = params.topicID;
             mxGetTopic(iTopicID, function(mTopic) {
-                //  Prüfe Rechte
+                //  Pruefe Rechte
                 if (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_closethread)) {
                     amJSON.push( {"event": "showError", "data": "Opening Topic not allowed!"} );
                     return next();
                 }
 
-                //  Topic öffnen
+                //  Topic oeffnen
                 mysqlPool.query(
                     "update topics set flags=flags&~? where topicid=?", [(GBFlags.dft_mod_closed|GBFlags.dft_closed), iTopicID],
                     function() {
@@ -771,7 +771,7 @@ module.exports = function GalaxyBoard(config) {
                 return next();
             }
 
-            //  Recht im Board prüfen: 
+            //  Recht im Board pruefen:
             var flags       = ixCheckBoardAccess(iThreadID);      
             var iModFlags   = ixGetModFlags(iThreadID);
             var iBoardFlags = flags.board;
@@ -781,13 +781,13 @@ module.exports = function GalaxyBoard(config) {
                 iBoardFlags & GBFlags.dfbp_readboard &&
                 (iBoardFlags & GBFlags.dfbp_createtopic || iModFlags&GBFlags.dfmod_createtopic)) {
 
-                //  Topic einfügen
+                //  Topic einfuegen
                 mysqlPool.query(
                     "insert into topics (topicid,boardid,hits,posts,voting,icon,userid,username,headline,flags,lastpostid,lastpostdate) values (0,?,0,0,0,?,?,?,?,0,0,0)",
                     [iThreadID, iIcon, mUser["id"], mUser["nick"], szHeadline],
                     function(err,info) {
                         var iTopicID =   info.insertId;
-                        //  Post einfügen:
+                        //  Post einfuegen:
                         mysqlPool.query(
                             "insert into posts (postid,topicid,userid,postflags,postdate,username) values (0,?,?,0,unix_timestamp(now()),?)",
                             [iTopicID,mUser["id"],mUser["nick"]],
@@ -815,9 +815,9 @@ module.exports = function GalaxyBoard(config) {
                                                             //  Umfragen dabei?
                                                             if (!iIcon==100 || aszPollOptions.length < 2)
                                                                 return self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
-                                                            //  Umfragen noch hinzufügen:
+                                                            //  Umfragen noch hinzufuegen:
                                                             mysqlPool.query("insert into polls (id, pid, laufzeit, maxoptions, startdate) values (0,?,?,?,now())",[iTopicID,iPollRuntime,iPollChoosable], function(err,info) {
-                                                                //  Optionen einfügen:
+                                                                //  Optionen einfuegen:
                                                                 var iOptCount = 1;
                                                                 async.forEach(aszPollOptions, function(item, next) {
                                                                         mysqlPool.query("insert into poll_options (pid, `value`, poption) values (?,?,?)",[iTopicID,iOptCount++,item], function(err,info) {
@@ -854,7 +854,7 @@ module.exports = function GalaxyBoard(config) {
             var iFlags      = params.flags      || 0;
 
             mxGetTopic(iTopicID, function(mTopic) {
-                //  Prüfe Rechte
+                //  Pruefe Rechte
                 if (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_editthread) &&
                    (!mTopic["perms"]["extendflags"] & GBFlags.dfbp_editownpost || mTopic["userid"] != mUser["id"])) {
                     amJSON.push( {"event": "showError", "data": "Edit not allowed!"} );
@@ -876,7 +876,7 @@ module.exports = function GalaxyBoard(config) {
         }
 
         self.addPost = function(params, next) {
-            //  Rechte prüfen:
+            //  Rechte pruefen:
             var iTopicID    = params.topicID;
             var szContent   = params.data;
             mxGetTopic(iTopicID, function(mTopic) {
@@ -917,7 +917,7 @@ module.exports = function GalaxyBoard(config) {
                                         mysqlPool.query(
                                             "update boards set lasttopicid=? where boardid=?", [iTopicID,mTopic["boardid"]],   //  REMX: darf nur geupdated werden wenn beitrag wirklich neuer ist
                                             function(err,info) {
-                                                //  Postcounter erhöhen
+                                                //  Postcounter erhoehen
                                                 if (mTopic["perms"]["extendflags"] & GBFlags.dfbp_incpostcounter) {
                                                     mysqlPool.query("update users set posts=posts+1 where id=?", [mUser["id"]]);
                                                 }
@@ -962,7 +962,7 @@ module.exports = function GalaxyBoard(config) {
                     var mPost = results.shift();
                     var iTopicID = mPost["topicid"];
 
-                    //  Rechte prüfen:
+                    //  Rechte pruefen:
                     mxGetTopic(iTopicID, function(mTopic) {
                         //  thema wurde geschlossen und/oder ausgeblendet:
                         if (!(mTopic["perms"]["topicflags"] & (GBFlags.dft_closed|GBFlags.dft_mod_closed) == 0) &&
@@ -971,7 +971,7 @@ module.exports = function GalaxyBoard(config) {
                             return next();
                         }
 
-                        //  Prüfe Rechte
+                        //  Pruefe Rechte
                         if (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_editpost) &&
                            (!mTopic["perms"]["extendflags"] & GBFlags.dfbp_editownpost || mPost["userid"] != mUser["id"] || mPost["postflags"] & dfpost_reported)) {
                             amJSON.push( {"event": "showError", "data": "Edit not allowed!"} );
@@ -1014,7 +1014,7 @@ module.exports = function GalaxyBoard(config) {
                     var mPost   = results.shift();
                     var iTopicID= mPost["topicid"];
 
-                    //  Rechte prüfen:
+                    //  Rechte pruefen:
                     mxGetTopic(iTopicID, function(mTopic) {
                         //  thema wurde geschlossen und/oder ausgeblendet:
                         if (!(mTopic["perms"]["topicflags"] & (GBFlags.dft_closed|GBFlags.dft_mod_closed) == 0) &&
@@ -1023,7 +1023,7 @@ module.exports = function GalaxyBoard(config) {
                             return next();
                         }
 
-                        //  Prüfe Rechte - REMX: Modertorenrechte beachten!
+                        //  Pruefe Rechte - REMX: Modertorenrechte beachten!
                         if (!mTopic["perms"]["modflags"] & (GBFlags.dfmod_editpost) &&
                            (!mTopic["perms"]["extendflags"] & GBFlags.dfbp_deleteownpost || mPost["userid"] != mUser["id"] || mPost["postflags"] & dfpost_reported)) {
                             amJSON.push( {"event": "showError", "data": "Delete not allowed!"} );
@@ -1036,14 +1036,14 @@ module.exports = function GalaxyBoard(config) {
                             function(err,results) {
                                 var iPostCount = results.shift()["anzahl"];
 
-                                //  Post löschen
+                                //  Post loeschen
                                 mysqlPool.query("delete from postbodies where postid=?", [iPostID]);
                                 mysqlPool.query("delete from posts      where postid=?", [iPostID],
                                     function(err,info) {
                                         //  Wieviele Posts sind noch vorhanden?
                                         mysqlPool.query("select count(*) as anzahl from posts where topicid=?",[iTopicID], function(err,results) {
 
-                                            //  Keine Posts mehr vorhanden? Dann Topic löschen!
+                                            //  Keine Posts mehr vorhanden? Dann Topic loeschen!
                                             if (!results || results[0].anzahl==0) {
                                                 console.log("No Posts. Deleting Topic",iTopicID);
                                                 mysqlPool.query(
@@ -1087,7 +1087,7 @@ module.exports = function GalaxyBoard(config) {
                     var mPost = results.shift();
                     var iTopicID = mPost["topicid"];
 
-                    //  Rechte prüfen:
+                    //  Rechte pruefen:
                     mxGetTopic(iTopicID, function(mTopic) {
                         if (!mTopic["perms"]["boardflags"] & GBFlags.dfbp_reportpost) {
                             amJSON.push( {"event": "showError", "data": "No permissions to do that!"} );
@@ -1095,7 +1095,7 @@ module.exports = function GalaxyBoard(config) {
                         }
 
                         var iReportFlags =  dfpost_reported;
-                        if (!mTopic["perms"]["modflags"] & GBFlags.dfmod_hidepost) {   //  Mods können ggf durch meldung sofort beitrag verstecken
+                        if (!mTopic["perms"]["modflags"] & GBFlags.dfmod_hidepost) {   //  Mods koennen ggf durch meldung sofort beitrag verstecken
                             iReportFlags = iReportFlags|dfpost_hide;
                         }
 
@@ -1157,7 +1157,7 @@ module.exports = function GalaxyBoard(config) {
                     var mPost = results.shift();
                     var iTopicID = mPost["topicid"];
 
-                    //  Rechte prüfen:
+                    //  Rechte pruefen:
                     mxGetTopic(iTopicID, function(mTopic) {
                         if (!mTopic["perms"]["modflags"] & GBFlags.dfmod_closereports) {
                             amJSON.push( {"event": "showError", "data": "No permissions to do that!"} );
@@ -1236,7 +1236,7 @@ module.exports = function GalaxyBoard(config) {
         }
 
         self.logoutUser = function(params, next) {
-            //  Cookie löschen
+            //  Cookie loeschen
             res.clearCookie(__COOKIENAME__);
             amJSON.push( {"event": "showInfo", "data": "USER LOGGED OUT"} );
 
@@ -1519,7 +1519,7 @@ module.exports = function GalaxyBoard(config) {
             if (bTopicStarter)
                 szNameSearch += " and c.userid=b.userid";
 
-            //  Datum einschränken?
+            //  Datum einschraenken?
             if (iLastHours)
                 szNameSearch += " and b.postdate>" + parseInt(new Date().getTime()/1000 - (iLastHours*60*60));
 
@@ -1555,7 +1555,7 @@ module.exports = function GalaxyBoard(config) {
             mysqlPool.query(szSQL,
                 function(err,results) {
                     if(err) console.log(err);
-                    //  Ergebnisse müssen gefiltert werden da die Suche ggf auch versteckte Beiträge liefert!
+                    //  Ergebnisse muessen gefiltert werden da die Suche ggf auch versteckte Beitraege liefert!
                     if (results) {
                         var amResults   =   [];
                         results.forEach(function(subset) {
@@ -1575,7 +1575,7 @@ module.exports = function GalaxyBoard(config) {
         self.saveThread = function(params, next) {
             if (!mUser.flags & GBFlags.dfu_superadmin) return next();
             var szDescription   =   params.description[0];
-            //  ToDo: die Flags sind als Parameterin params. Besser wäre es diese als Flags direkt zu übergeben und hier mit einer Maske zu arbeiten!
+            //  ToDo: die Flags sind als Parameterin params. Besser waere es diese als Flags direkt zu uebergeben und hier mit einer Maske zu arbeiten!
             var iBoardFlags     =   (params["dfbf_closed"] ? GBFlags.dfbf_closed : 0) | (params["dfbf_hideboard"] ? GBFlags.dfbf_hideboard : 0) | (params["dfbf_showsubboards"] ? GBFlags.dfbf_showsubboards : 0);
             var iBoardID        =   params.id[0];
             var szName          =   params.name[0];
@@ -1597,12 +1597,12 @@ module.exports = function GalaxyBoard(config) {
                     //+---------+---------------+--------+------------+-----------+-------------+
                     //| boardid | parentboardid | sortid | topiccount | postcount | lasttopicid |
                     //+---------+---------------+--------+------------+-----------+-------------+
-                    //  Boardparent neu setzen und darauf achten das die neue Verschachtelung keine verwaisten oder falsch geschachtelten Einträge hinterlassen!
+                    //  Boardparent neu setzen und darauf achten das die neue Verschachtelung keine verwaisten oder falsch geschachtelten Eintraege hinterlassen!
                     if (iParentID==iBoardID) {
                         amJSON.push({"event": "showError", "data": "Nested Error - Board and parent cannot be the same."});
                         return initBoard( function() {self.getThreads(null, next)} );
                     }
-                    //  Prüfen ob neuer Parent ein Kindelement darstellt
+                    //  Pruefen ob neuer Parent ein Kindelement darstellt
                     var iTest = iParentID;
                     var bNested = false;
                     var iMaxLoop = 100;
@@ -1626,7 +1626,7 @@ module.exports = function GalaxyBoard(config) {
                             }
                             amJSON.push( {"event": "action", "action": "OK"} );
 
-                            //  Modliste updaten bis keine Einträge mehr; Zuerst alle vorhandenen Mods löschen
+                            //  Modliste updaten bis keine Eintraege mehr; Zuerst alle vorhandenen Mods loeschen
                             mysqlPool.query("delete from mods where boardid=?", [iBoardID],
                                 function(err,info) {
                                     function saveMod() {
