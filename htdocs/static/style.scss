@@ -21,6 +21,7 @@ ul, li {
     padding:0;
     list-style:none;
 }
+
 ol {
     margin:0;
     padding:0 0 0 15px;
@@ -843,8 +844,19 @@ table.posts tr.light td div.posting {
 }
 
 /*  BBCode */
-ul.bblist  li {margin: 0 0 0 24px;list-style:square;}
-ul.bblist1 li {margin: 0 0 0 24px;list-style:decimal;}
+
+ul.bblist {
+  padding-left: 30px;
+  &.bblistcircle li {
+      list-style: circle;
+  }
+  &.bblista li {
+    list-style: lower-latin;
+  }
+  &.bblist1 li {
+    list-style: decimal;
+  }
+}
 
 div.bb_code,
 div.bb_quote {

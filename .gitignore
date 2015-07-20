@@ -1,5 +1,7 @@
 
 /.idea
+/**/*.css
+/**/*.css.map
 
 
 ### gitignore from https://github.com/github/gitignore/blob/master/Node.gitignore
@@ -7,7 +9,7 @@
 # Logs
 logs
 *.log
-
+style
 # Runtime data
 pids
 *.pid

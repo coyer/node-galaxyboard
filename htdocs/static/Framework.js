@@ -6,7 +6,7 @@
  * Javscript/Ajax-Framework for games.
  */
 
-//  Boardflags (für das Board selbst)
+//  Boardflags (fï¿½r das Board selbst)
 //  PAB-Konfiguration
 var dfpab_boardclosed   =   1<<0    //  Gesamte Board ist geschlossen
 var dfpab_noregistration=   1<<1    //  Keine Registrierung erlauben
@@ -15,7 +15,7 @@ var dfpab_usr_avatar    =   1<<30   //  darf eigenen avatar hochladen
 
 //  Topicflags:
 var dft_closed          =   1<<0    //  REMX    Topic geschlossen
-var dft_mod_closed      =   1<<1    //  [done]  Topic geschlossen durch admin (kann dann auch nur durch admin geöffnet werden)
+var dft_mod_closed      =   1<<1    //  [done]  Topic geschlossen durch admin (kann dann auch nur durch admin geï¿½ffnet werden)
 var dft_unapproved      =   1<<2    //  REMX    Topic nicht freigegeben
 var dft_pinned          =   1<<3    //  REMX    Topic festgepinnt
 
@@ -24,32 +24,32 @@ var dfu_no_pn           =   1<<0    //  REMX    will keine PN empfangen
 var dfu_no_sigs         =   1<<1    //  [done]  will keine signaturen sehen
 var dfu_membermail      =   1<<2    //  REMX    Jeder kann mir emails schicken
 //var dfu_adminmail       =   1<<3    //  -obs-
-var dfu_openpm          =   1<<4    //  REMX    Popup öffnen wenn neue Nachrichten
+var dfu_openpm          =   1<<4    //  REMX    Popup ï¿½ffnen wenn neue Nachrichten
 //var dfu_summertime      =   1<<5    //  -obs-   Sommerzeit aktiviert +0100 ?
 //var dfu_bbcode_sig      =   1<<6    //  -obs-   bbcodes in signatur ABSCHALTEN
 //var dfu_smilies_sig     =   1<<7    //  -obs-   ABSCHALTEN
 //var dfu_links_sig       =   1<<8    //  -obs-   ABSCHALTEN
 
 var dfu_unapproved      =   1<<27   //  REMX    User muss noch freigegeben werden.
-var dfu_invalid         =   1<<28   //  REMX    EMail-Adresse des Users noch nicht geprüft!
+var dfu_invalid         =   1<<28   //  REMX    EMail-Adresse des Users noch nicht geprï¿½ft!
 var dfu_ownavatar       =   1<<29   //  REMX    eigener avatar hochgeladen
 var dfu_premium         =   1<<30   //  REMX    premiumuser
 var dfu_superadmin      =   1<<31   //  REMX    ist ein superadmin
 
-//  Boardflags (für das Board selbst)
+//  Boardflags (fï¿½r das Board selbst)
 var dfbf_bbcode_board   =   1<<0    //  -obs-   BBCode default aktivieren (todo in headline)
 var dfbf_smilies_board  =   1<<1    //  -obs-   Smilies immer erlauben
 var dfbf_links_board    =   1<<2    //  -obs-
-var dfbf_bbcode_rule    =   1<<3    //  -obs-   Ob die Regeln bbcode enthalten dürfen
+var dfbf_bbcode_rule    =   1<<3    //  -obs-   Ob die Regeln bbcode enthalten dï¿½rfen
 var dfbf_smilies_rule   =   1<<4    //  -obs-
 var dfbf_links_rule     =   1<<5    //  -obs-
 
-var dfbf_showsubboards  =   1<<6    //          Ob untergeordnete Boards angezeigt werden dürfen
+var dfbf_showsubboards  =   1<<6    //          Ob untergeordnete Boards angezeigt werden dï¿½rfen
 var dfbf_hideboard      =   1<<7    //          Versteckt das Forum
 var dfbf_closed         =   1<<8    //          Bereich abgeschlossen (nicht editierbar)
 var dfbf_chooseprefix   =   1<<9    //  REMX    Sofern Prefixe vorhanden *muss* eine Auswahl getroffen werden
-var dfbf_nonews         =   1<<10   //          Beiträge nicht in News erwähnen
-var dfbf_dynmenu        =   1<<11   //  -obs-   dynamische menüs!
+var dfbf_nonews         =   1<<10   //          Beitrï¿½ge nicht in News erwï¿½hnen
+var dfbf_dynmenu        =   1<<11   //  -obs-   dynamische menï¿½s!
 
 //  Benutzerrechte - Board: [boardflags]
 //  Post
@@ -81,7 +81,7 @@ var dfbp_closeowntopic  =   1<<(39-32)   //  -obs-  Can lock own topics (absperr
 //  Misc
 var dfbp_ignoreflood    =   1<<(48-32)   //         Can ignore flood limit
 var dfbp_noapproval     =   1<<(49-32)   //         Can post without approval
-var dfbp_incpostcounter =   1<<(50-32)   //         Falls abgeschaltet wird Postcounter nicht erhöht
+var dfbp_incpostcounter =   1<<(50-32)   //         Falls abgeschaltet wird Postcounter nicht erhï¿½ht
 var dfbp_search         =   1<<(51-32)   //         Can search the forum
 //  Polls
 var dfbp_createpolls    =   1<<(56-32)   //         Can create polls
@@ -90,12 +90,12 @@ var dfbp_changevote     =   1<<(58-32)   //         Can change existing vote
 var dfbp_votetopic      =   1<<(59-32)   //         Topic bewerten
 
 //  Moderatoren-Flags:      [modflags]
-//  Beiträge
-var dfmod_approvepost   =   1<<0    //  -obs-   Kann Beiträge freigeben
-var dfmod_setauthor     =   1<<1    //  -obs-   Kann Autor eines Beitrags ändern
-var dfmod_deletepost    =   1<<2    //  [done]  Kann Beiträge löschen
-var dfmod_editpost      =   1<<3    //  [done]  Kann Beiträge ändern
-var dfmod_closereports  =   1<<4    //  [done]  Kann Meldungen schließen und löschen
+//  Beitrï¿½ge
+var dfmod_approvepost   =   1<<0    //  -obs-   Kann Beitrï¿½ge freigeben
+var dfmod_setauthor     =   1<<1    //  -obs-   Kann Autor eines Beitrags ï¿½ndern
+var dfmod_deletepost    =   1<<2    //  [done]  Kann Beitrï¿½ge lï¿½schen
+var dfmod_editpost      =   1<<3    //  [done]  Kann Beitrï¿½ge ï¿½ndern
+var dfmod_closereports  =   1<<4    //  [done]  Kann Meldungen schlieï¿½en und lï¿½schen
 var dfmod_hidepost      =   1<<5    //  [done]  Kann einen Beitrag "verstecken" REMX: Ein durch Mod gemeldeter Beitrag wird sofort versteckt
 var dfmod_replypost     =   1<<6    //  [done]  Kann auf Beitrag antworten auch wenn thema geschlossen wurde.
 //  Diverses
@@ -104,17 +104,17 @@ var dfmod_postdetails   =   1<<9    //          Kann Beitrags-Details ansehen
 var dfmod_createbans    =   1<<10   //  [done]  Kann Verwarnungen aussprechen
 //  Themen
 var dfmod_closethread   =   1<<16   //  [done]  Kann Themen sperren
-var dfmod_jointhreads   =   1<<17   //  -obs-   Kann Themen zusammenführen
+var dfmod_jointhreads   =   1<<17   //  -obs-   Kann Themen zusammenfï¿½hren
 var dfmod_movethread    =   1<<18   //  [done]  Kann Themen verschieben
 var dfmod_splitthread   =   1<<19   //  -obs-   Kann Themen teilen
-var dfmod_deletethread  =   1<<20   //  [done]  Kann Themen löschen
+var dfmod_deletethread  =   1<<20   //  [done]  Kann Themen lï¿½schen
 var dfmod_editthread    =   1<<21   //  [done]  Kann Themen editieren
 var dfmod_createtopic   =   1<<22   //  [done]  Kann Themen erstellen im geschlossenen Forum
 
 //  Beitragsflags           [postflags]
-var dfpost_needapproval =   1<<0    //          Beitrag benötigt Freigabe (ggf. auch Topic mit freigeben falls themenstarter?)
+var dfpost_needapproval =   1<<0    //          Beitrag benï¿½tigt Freigabe (ggf. auch Topic mit freigeben falls themenstarter?)
 var dfpost_hide         =   1<<1    //  [done]  Beitrag wurde versteckt
-var dfpost_reported     =   1<<2    //  [done]  Beitrag wurde gemeldet (darf nicht mehr geändert werden)
+var dfpost_reported     =   1<<2    //  [done]  Beitrag wurde gemeldet (darf nicht mehr geï¿½ndert werden)
 
 
 //  ---------------------------------------------------
@@ -317,7 +317,7 @@ function vxResizeOverlay(template,onReady) {
                 template();
             }
 
-            //  Vergrössern
+            //  Vergrï¿½ssern
             var oO = pC.style.overflow;
             var oV = pC.style.visibility;
             pC.style.overflow   = "visible";
@@ -331,7 +331,7 @@ function vxResizeOverlay(template,onReady) {
             pC.style.overflow  = oO;
             pC.style.visibility= oV;
 
-            //  max. höhe overlay festlegen:
+            //  max. hï¿½he overlay festlegen:
             if (iHeight > (b.offsetHeight*0.9)) {
                 iHeight = (b.offsetHeight*0.9);
                 pC.style.overflow  = "auto";
@@ -367,10 +367,10 @@ function  CGalaxyboard()
     var self = this;
     var mThreads        =   {};
     var mTopics         =   {};
-    var mPosts          =   {"topicID": 0, "posts": []};    //  Int.Speicher für aktuelle Postings *eines* Topics
+    var mPosts          =   {"topicID": 0, "posts": []};    //  Int.Speicher fï¿½r aktuelle Postings *eines* Topics
     var mUser           =   {id:-1};
     var mGroups         =   {};
-    var aNews           =   [];     //  enthält sortierte neuste themen
+    var aNews           =   [];     //  enthï¿½lt sortierte neuste themen
     var iCurrentThread  =   0;
     var iCurrentTopic   =   0;
     var iCurrentPage    =   0;
@@ -383,7 +383,7 @@ function  CGalaxyboard()
     self.mModifiers =   {};
     self.bTemplates =   false;
     self.iPostsPerPage   =  20;
-    self.iCurrentMessage =  0;  //  aktuell geöffnete PM
+    self.iCurrentMessage =  0;  //  aktuell geï¿½ffnete PM
     self.ltd = 0;   //  Timestamp neuster Beitrag
 
     self.vxShowDiv = function(pNode, szNames,szActive, aInactives) {
@@ -513,7 +513,7 @@ function  CGalaxyboard()
             });
         }
     };
-    //  Einen Post löschen (letzter Post löscht auch Topic)
+    //  Einen Post lï¿½schen (letzter Post lï¿½scht auch Topic)
     self.vxDeletePost   =   function(iPostID, bConfirmed) {
         if (bConfirmed) {
             vxCloseOverlay();
@@ -635,7 +635,7 @@ function  CGalaxyboard()
         self.vxCheckMod();
     };
     self.vxCheckMod = function() {
-        //  Rechte für den Thread:
+        //  Rechte fï¿½r den Thread:
         if (mThreads[0].bIsMod) {
             try {
                 $("js_adminbox").innerHTML = self.szxBuildAdminBox(mThreads, (mPosts&&mPosts.topicID==iCurrentTopic)?mPosts.topic:null);
@@ -791,14 +791,14 @@ function  CGalaxyboard()
     //  Neuen Topic erstellen:
     self.vxCreateTopic =   function(iThreadID, pForm) {
         debug("vxCreateTopic::"+iThreadID);
-        //  Formular prüfen:
+        //  Formular prï¿½fen:
         if (!pForm.topic.value.trim()) return feedback("@@@NEEDTOPICHEADLINE@@@","feedback-error");
-        //  Icon prüfen
+        //  Icon prï¿½fen
         var iIcon = 0;
         for(var i=0;i<pForm.icon.length;i++) if(pForm.icon[i].checked) iIcon=pForm.icon[i].value;
-        //  Topic selbst prüfen
+        //  Topic selbst prï¿½fen
         if (!pForm.obj_bb_content0.value.trim()) return feedback("@@@NEEDMESSAGE@@@","feedback-error");
-        //  Falls icon==100 dann Umfrage prüfen:
+        //  Falls icon==100 dann Umfrage prï¿½fen:
         if (iIcon==100) {
             if ($("js_createtopic_form").uoptions.length<2) return feedback("@@@NEEDPOLLOPTIONS@@@","feedback-error");
             var iPollOptions = ~~$("js_createtopic_form").auswahl.value;
@@ -875,7 +875,7 @@ function  CGalaxyboard()
                     case "newMessageCount":
                         mUser["messages"] = data||0;
                         $("messagesbtn").innerHTML=self.translate("@@@MESSAGES@@@ ("+mUser["messages"]+")");
-                        //  Falls User ein Popup möchte, dieses nun Öffnen.
+                        //  Falls User ein Popup mï¿½chte, dieses nun ï¿½ffnen.
                         if (mUser["flags"]&dfu_openpm && mUser["messages"]>iLastMessages)
                             self.vxAlertNewMessages();
                         iLastMessages = mUser["messages"];
@@ -903,7 +903,7 @@ function  CGalaxyboard()
                         }
                         if (mUser["flags"]&dfu_openpm && mUser["messages"]>0)
                             self.vxAlertNewMessages();
-                        //  Falls User verändert, Seite neu laden:
+                        //  Falls User verï¿½ndert, Seite neu laden:
                         if (iCurrentUser != mUser.id) {
                             vxCloseOverlay(); // egal was offen ist - schlissen!
                             //  Page Reload
@@ -960,7 +960,7 @@ function  CGalaxyboard()
     }
     self.mModifiers.Integer = self.Integer;
 
-    //  Navigation funktioniert ausschliesslich über hash
+    //  Navigation funktioniert ausschliesslich ï¿½ber hash
     self.loadFromHash   =   function (event) {
         if (self["oldHash"] != location.hash) {
             self["oldHash"] = location.hash;
@@ -974,7 +974,7 @@ window.scrollTo(0,0);
             var param= hash.split("~");
 
 if(param[0]!="showTopic")
-    mPosts=null; // gecachte posts löschen
+    mPosts=null; // gecachte posts lï¿½schen
 
             switch(param[0]) {
                 case "showThread":
@@ -1019,7 +1019,7 @@ if(param[0]!="showTopic")
                     self.call([{"cmd": "getMessageList"}]);
                     break;
                 case "sid":
-                    //  Hash löschen:
+                    //  Hash lï¿½schen:
                     self["oldHash"] = ""
                     location.hash   = "";
                     self.call([{"cmd": "loginUser", "login": param[1], "passwd": ""}]);
@@ -1046,7 +1046,7 @@ if(param[0]!="showTopic")
         tags["quote"]   =   ['<div style="display:block;" class="bb_quote"><div class="headline">$1</div><code>','</code></div>'];
         tags["img"]     =   ['<img align="top" src="','" />'];
         tags["url"]     =   ['<a href="$1" target="_blank" class="ext-link">', '</a>'];
-        tags["list"]    =   ['<ul class="bblist$1">', '</ul>'];
+        tags["list"]    =   ['<ul class="bblist$1 bblist">', '</ul>'];
         tags["*"]       =   ['<li>', '</li>'];
         //  Listen patchen:
         txt = txt.replace(/\[\*\]([^\[\*\]]*)/g,'[*]$1[/*]')
@@ -1058,7 +1058,7 @@ if(param[0]!="showTopic")
                 tag=tag.toLowerCase();
                 if (b.substr(0,1)=="/") {   //  closetag. wird etwas geschlossen das nicht offen war?
                     if (stack[stack.length-1] != b.substr(1))
-                        return "["+b+"]";   //  Tag zurückliefern
+                        return "["+b+"]";   //  Tag zurï¿½ckliefern
                     else {
                         stack.pop();
                         return tags[b.substr(1)][1];
@@ -1068,11 +1068,11 @@ if(param[0]!="showTopic")
                         stack.push(b);
                         return tags[b][0].replace(/\$1/g,c.escape());
                     } else {
-                        return "["+b+"]";   //  Tag zurückliefern
+                        return "["+b+"]";   //  Tag zurï¿½ckliefern
                     }
                 }
             });
-            //  Geöffnete TAGs schliessen
+            //  Geï¿½ffnete TAGs schliessen
             var b=null;
             while(b=stack.pop()) txt += tags[b][1];
             return txt;
@@ -1198,7 +1198,7 @@ if(param[0]!="showTopic")
             $("js_bt_deletemod").className = "small-button";
             $("js_bt_deletemod").onclick = function() {
               try {
-                //  Über Moderatoren iterieren und Eintrag löschen
+                //  ï¿½ber Moderatoren iterieren und Eintrag lï¿½schen
                 for(var i=0;i<f.modlist.length;i++) {
                     if(f.modlist[i].value.split("~")[0]==iUserID) {
                         f.modlist[i] = null;
@@ -1207,7 +1207,7 @@ if(param[0]!="showTopic")
                 }
               } catch(e) {debug(e)}
             }
-            //  Änderungen an Flags erfassen:
+            //  ï¿½nderungen an Flags erfassen:
             $("js_modcontainer").style.display = "block";
             $("js_modcontainer").onclick = function() {
               try {
@@ -1216,7 +1216,7 @@ if(param[0]!="showTopic")
                 for(var i=0;i<o.length;i++) {
                     iFlags |= (f.elements[o[i]].checked)?window[o[i]]:0;
                 }
-                //  Über Moderatoren iterieren und Eintrag löschen
+                //  ï¿½ber Moderatoren iterieren und Eintrag lï¿½schen
                 for(var i=0;i<f.modlist.length;i++) {
                     if(f.modlist[i].value.split("~")[0]==iUserID) {
                         f.modlist[i].value = iUserID+"~"+iFlags;
