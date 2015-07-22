@@ -43,18 +43,18 @@ process.on('uncaughtException', function(err) {
 
     var errorConfig = config.get('error');
 
-    nodemailer.SMTP = {
-      host: errorConfig.mail.host
-    };
-    var mailOptions = errorConfig.mail.message;
-    mailOptions.text = JSON.stringify(err.stack);
-    nodemailer.send_mail(mailOptions,
-        function(error, success){
-            console.log("sendmail::error",error);
-            console.log("sendmail::success",success);
-            console.log('Message ' + (success ? 'sent' : 'failed'));
-        }
-    );
+    //nodemailer.SMTP = {
+    //  host: errorConfig.mail.host
+    //};
+    //var mailOptions = errorConfig.mail.message;
+    //mailOptions.text = JSON.stringify(err.stack);
+    //nodemailer.send_mail(mailOptions,
+    //    function(error, success){
+    //        console.log("sendmail::error",error);
+    //        console.log("sendmail::success",success);
+    //        console.log('Message ' + (success ? 'sent' : 'failed'));
+    //    }
+    //);
 });
 
 //  Serve "index.html" and process AJAX-Crawls for index-page
