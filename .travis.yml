@@ -1,3 +1,11 @@
 language: node_js
 node_js:
-  - "stable"
+- stable
+deploy:
+  provider: cloudcontrol
+  email: mschopdev@gmail.com
+  deployment: galaxyboard/default
+  password:
+    secure: Mh9zFTJP5cz9aMsXpEKg3nLYVvIF4+bXdwPC+8oSuypTpO8i0j87ODs/ubR+oGoheE3sBCHLdWvKnAz7UlxrATKBS6nfpQuKm1eSxfHDUpuoydsvjgFT3KuqHsabykBAsOSHOCjCTUh86QPYaLWGt+ax95QBDjFs8bJycHYj6fwqA7MqSJTowzg+UGCu1hPrJf/HzB6rC9JOKOaEAR2lWijeFJ1rzpN0N8c8az0aczmlDg7SHsZ1WJCm/rei2ndbfXGz8SEw+aQVmgzJHTtk6Bqr0RyPsbE13ZMM1SP0XS9FZTAE/XUG9QTYQ4ma6VBTRfWLWLbYrJvv9vvHMBcl1kTlDXs6ItijfNvKg6ZWkL6TXK3WrQxNMlY5YV8hL0aEAwjBZK5f9ZT7Z8pgcW+bFYs1tFWrM1aTCNbPU/i52e3H/HSjz2BRvS41z0C1FD2tpUOQwY+kWXV5NtlNeEGmMKvuG8GJeGy82W6lh55lMUonDXqXaw/JmTmFtEzXyy1lASNsKtSCe6HENBglySaIGesY596l5QA3XEdCRMyXyLyjycYYUUr4evCuVIwzSYes9DVniAWK0rQu6uUcn3THjn5Q90Mf2bUP1ViHRMpxWJhfsxE98KpcOE16mU/RHoaJ+WjvVKGZFDeet4SKBgYzu98bE3sbKvNQl6+HEHukSJs=
+  on:
+    branch: master
