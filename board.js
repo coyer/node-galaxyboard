@@ -97,4 +97,4 @@ app.post('/api', function(req, res){
     });
 });
 
-app.listen(8002, "0.0.0.0");
+app.listen(80, "0.0.0.0");
