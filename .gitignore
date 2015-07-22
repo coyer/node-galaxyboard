@@ -2,6 +2,8 @@
 /.idea
 /**/*.css
 /**/*.css.map
+/credentials.json
+/database.json
 
 
 ### gitignore from https://github.com/github/gitignore/blob/master/Node.gitignore

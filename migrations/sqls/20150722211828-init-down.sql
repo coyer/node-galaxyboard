@@ -1,0 +1,17 @@
+DROP TABLE IF EXISTS `banlist`;
+DROP TABLE IF EXISTS `board_acl`;
+DROP TABLE IF EXISTS `board_config`;
+DROP TABLE IF EXISTS `boards`;
+DROP TABLE IF EXISTS `group_members`;
+DROP TABLE IF EXISTS `groups`;
+DROP TABLE IF EXISTS `messages`;
+DROP TABLE IF EXISTS `mods`;
+DROP TABLE IF EXISTS `poll_options`;
+DROP TABLE IF EXISTS `poll_votes`;
+DROP TABLE IF EXISTS `polls`;
+DROP TABLE IF EXISTS `post_reports`;
+DROP TABLE IF EXISTS `postbodies`;
+DROP TABLE IF EXISTS `posts`;
+DROP TABLE IF EXISTS `topic_votes`;
+DROP TABLE IF EXISTS `topics`;
+DROP TABLE IF EXISTS `users`;

@@ -1,5 +1,4 @@
 {
-  "dbConnectionLimit": 10,
   "error": {
     "mail": {
       "host": "localhost",

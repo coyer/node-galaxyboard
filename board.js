@@ -8,31 +8,26 @@ var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
 var config = require('config');
 
-var dbConnInfo;
-if(typeof process.env.GB_DB_HOST === 'undefined') {
-    dbConnInfo = {
-        host: "localhost",
-        database: "galaxyboard",
-        user: "root",
-        password: "devpassword",
-        connectionLimit: config.get('dbConnectionLimit')
-    };
-} else {
-    dbConnInfo = {
-        host: process.env.GB_DB_HOST,
-        database: process.env.GB_DB_DATABASE,
-        user: process.env.GB_DB_USER,
-        password: process.env.GB_DB_PASS,
-        connectionLimit: config.get('dbConnectionLimit')
-    };
-}
+var credentials = require(
+    typeof process.env.CRED_FILE === 'undefined'
+        ? __dirname + '/credentials.json'
+        : process.env.CRED_FILE
+);
+
+var dbType = typeof credentials.MYSQLS !== 'undefined' ? 'MYSQLS' : 'MYSQLD';
 
 var board = require("./galaxyboard")(
     {
         "board": {
             "pepper": "hItwrGnDOsiDtm02"    //  Passwords are salted & peppered. This is our pepper.
         },
-        "mysql": dbConnInfo
+        "mysql": {
+            host: credentials[dbType][dbType + '_HOSTNAME'],
+            database: credentials[dbType][dbType + '_DATABASE'],
+            user: credentials[dbType][dbType + '_USERNAME'],
+            password: credentials[dbType][dbType + '_PASSWORD'],
+            connectionLimit: typeof process.env.CONN_LIMIT === 'undefined' ? 10 : parseInt(process.env.CONN_LIMIT)
+        }
     }
 );
 
