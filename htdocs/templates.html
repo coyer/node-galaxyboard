@@ -968,6 +968,13 @@
 
   <div class="innerframe">
   {var modflags = mTopic?mTopic.perms.modflags:0}
+  {if dfu_superadmin}
+    <h1>@@@ADMIN_OPTIONS@@@</h1>
+    <div class="button" onclick="system.openPopupCreateBoard">@@@CREATE_BOARD@@@</div>
+    <div class="button" onclick="system.openPopupEditBoard">@@@EDIT_BOARD@@@</div>
+    <div class="button" onclick="system.openPopupMoveBoard">@@@MOVE_BOARD@@@</div>
+    <div class="button" onclick="system.openPopupDeleteBoard">@@@DELETE_BOARD@@@</div>
+  {/if}
   <h1>ModOptions</h1>
   {if mTopic && (modflags&dfmod_movethread||mUser.flags&dfu_superadmin)}
     <div class="button" onclick="system.vxMoveTopic(${mTopic.topicid},0);">@@@MOVETOPIC@@@</div>
@@ -1403,6 +1410,7 @@ dfu_ownavatar   =   1<<29L      ##  eigener avatar hochgeladen
   </body>
 </html>
 {/macro}
+
 
 <!-- Funktionen im Framework registrieren -->
 {eval}
