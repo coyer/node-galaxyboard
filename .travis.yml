@@ -10,7 +10,7 @@ deploy:
   on:
     branch: master
   before_deploy:
-    - node install/pre_deploy.js
+    - node install/before_deploy.js
   after_deploy:
-    - node install/post_deploy.js
+    - node install/after_deploy.js
     - node_modules/.bin/db-migrate up
