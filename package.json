@@ -24,10 +24,5 @@
   },
   "scripts": {
     "test": "node test/all.js"
-  },
-  "engines": {
-    "node": "0.10.25",
-    "npm": "~1.3.10"
   }
-
 }

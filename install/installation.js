@@ -26,10 +26,3 @@ exports.createDatabaseJson = function() {
     var result = { dev: obj, other: obj };
     fs.writeFileSync(__dirname + '/../database.json', JSON.stringify(result));
 };
-
-exports.compileSCSS = function(){
-    var sass = require('node-sass');
-    sass.renderSync({
-        file: __dirname + '/../htdocs/static/style.scss'
-    })
-};
