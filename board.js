@@ -26,7 +26,7 @@ var board = require("./galaxyboard")(
             database: credentials[dbType][dbType + '_DATABASE'],
             user: credentials[dbType][dbType + '_USERNAME'],
             password: credentials[dbType][dbType + '_PASSWORD'],
-            connectionLimit: typeof process.env.CONN_LIMIT === 'undefined' ? 10 : parseInt(process.env.CONN_LIMIT)
+            connectionLimit: typeof process.env.CONN_LIMIT === 'undefined' ? 2 : parseInt(process.env.CONN_LIMIT)
         }
     }
 );
