@@ -65,7 +65,9 @@ app.get('/', function(req, res){
 
 //  Server css/gfx
 app.get('/static/*', function(req, res){
-    res.sendfile(__dirname + '/htdocs/static/' + req.params[0]);
+    var filePath = __dirname + '/htdocs/static/' + req.params[0];
+    console.log('loading asset: ' + filePath);
+    res.sendfile(filePath);
 });
 
 //  Manage API-Calls
