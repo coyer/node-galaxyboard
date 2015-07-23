@@ -9,8 +9,7 @@ deploy:
     secure: deK3R9WRqzO763E6AEgZ38Ton12VnzCWgT/WyLN6c4qWqraDZlOZu0tOdrBJYtvm4SsAePEi+lczs6Irowlgmo88kPCvhO1qz/hrh83uU6PfnIcr25LyAXbMR2mqelUvVY/5XP3AQxGKmysvqCnaho68C0I1/tFIfTrxMFQ5S7wMqA21FsOWClCPRKwsR66mL3NdQu7jbqL13A1N1UugIaXaJetk1cU+pPNs5A6tSPXi1CEqTzQQ8b/bSINtpcpdsEUzQcw+tTbUhIEhiGLCf5xbOg6E+vHnlhkHcLNAPORa9pVycwbJee4qc0VJFMPSASBJWCnw7ChOM84tan1zyoWGaMegkYu8kaJElAeGx5531kvTSewAMKArOhCFkebwqyk3mUKHIcSeYPIZBG/4yX1CSHS5TIttaXQFD4xPnaA0lD+Vi7K/9WJ1cfmVMSaGSHnFNKxykJvCcun22TUt/v8qmMsGtVLD5+5jyAtr648/aI/FrmDPQpdQL+ajXcX0XTpgHnge71rbganvddk+82riDEptuBg05D9IxHNWnyNHVMnrxD59EaJEGMkKPzRYWDEbMJBW192axgQu+NVeQ6nF2FSJS0OgBy2vOfsSa9EGYFdK6U954DjKEcu5fp8ZuPhOM5H93qvjrvd99l29T1M53VE4Hx8Nhsh+6ECf5O8=
   on:
     branch: master
-  deploy:
-    - node install/before_deploy.js
   after_deploy:
-    - node install/after_deploy.js
-    - node_modules/.bin/db-migrate up
+    - cctrlapp galaxyboard/default run node install/before_deploy.js
+    - cctrlapp galaxyboard/default run node install/after_deploy.js
+    - cctrlapp galaxyboard/default run node_modules/.bin/db-migrate up
