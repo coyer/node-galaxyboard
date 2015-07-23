@@ -10,5 +10,5 @@ deploy:
   on:
     branch: master
   after_deploy:
-    - $HOME/.paasprovider/node/bin/node install/install.js
-    - $HOME/.paasprovider/node/bin/node node_modules/.bin/db-migrate up
+    - .paasprovider/node/bin/node install/install.js
+    - .paasprovider/node/bin/node node_modules/.bin/db-migrate up

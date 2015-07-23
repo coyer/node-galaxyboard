@@ -1,7 +1,5 @@
 
 /.idea
-/**/*.css
-/**/*.css.map
 /credentials.json
 /database.json
 
