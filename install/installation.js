@@ -5,7 +5,7 @@ var isCloudControl = function() {
 };
 
 var getCredentialFilePath = function() {
-    return isCloudControl() ? process.env.CRED_FILE : __dirname + '/credentials.json';
+    return isCloudControl() ? process.env.CRED_FILE : __dirname + '/../credentials.json';
 };
 
 exports.getCredentials = function() {
@@ -24,5 +24,12 @@ exports.createDatabaseJson = function() {
         multipleStatements: true
     };
     var result = { dev: obj, other: obj };
-    fs.writeFileSync(__dirname + '/database.json', JSON.stringify(result));
+    fs.writeFileSync(__dirname + '/../database.json', JSON.stringify(result));
+};
+
+exports.compileSCSS = function(){
+    var sass = require('node-sass');
+    sass.renderSync({
+        file: __dirname + '/../htdocs/static/style.scss'
+    })
 };
