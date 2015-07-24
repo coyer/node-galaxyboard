@@ -13,5 +13,4 @@ deploy:
     branch: master
 after_deploy:
 - cctrlapp galaxyboard/default run ".paasprovider/node/bin/node install/install.js"
-- cctrlapp galaxyboard/default run ".paasprovider/node/bin/node node_modules/.bin/db-migrate
-  up"
+- cctrlapp galaxyboard/default run ".paasprovider/node/bin/node node_modules/.bin/db-migrate up"
