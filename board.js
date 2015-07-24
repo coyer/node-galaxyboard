@@ -26,7 +26,7 @@ var board = require("./galaxyboard")(
             database: credentials[dbType][dbType + '_DATABASE'],
             user: credentials[dbType][dbType + '_USERNAME'],
             password: credentials[dbType][dbType + '_PASSWORD'],
-            connectionLimit: 2
+            connectionLimit: 1
         }
     }
 );
