@@ -14,6 +14,7 @@ deploy:
   on:
     branch: master
 after_deploy:
+- start ssh-agent
 - ssh-add ./id_rsa
 - cctrlapp galaxyboard/default run ".paasprovider/node/bin/node install/install.js"
 - cctrlapp galaxyboard/default run ".paasprovider/node/bin/node node_modules/.bin/db-migrate
