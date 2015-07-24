@@ -2,7 +2,9 @@ language: node_js
 node_js:
 - stable
 before_install:
-  - sudo pip install cctrl
+- openssl aes-256-cbc -K $encrypted_8fb4cefaf9ce_key -iv $encrypted_8fb4cefaf9ce_iv
+  -in id_rsa.enc -out ~\/.ssh/id_rsa -d
+- sudo pip install cctrl
 deploy:
   provider: cloudcontrol
   email: mschopdev@gmail.com
@@ -12,5 +14,6 @@ deploy:
   on:
     branch: master
 after_deploy:
-  - cctrlapp galaxyboard/default run ".paasprovider/node/bin/node install/install.js"
-  - cctrlapp galaxyboard/default run ".paasprovider/node/bin/node node_modules/.bin/db-migrate up"
+- cctrlapp galaxyboard/default run ".paasprovider/node/bin/node install/install.js"
+- cctrlapp galaxyboard/default run ".paasprovider/node/bin/node node_modules/.bin/db-migrate
+  up"
