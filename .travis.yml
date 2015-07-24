@@ -9,6 +9,6 @@ deploy:
     secure: gF1RNqJtqeewjt1I5fA819BzjtQygFV+3hmI1u75bR3b2wlE6LR0MlvbiTDndLjSdGPzvHKjLi/b6liEu4c7/ED0F/3UVEbQAtyBisXCLYP+hWqoGjdh6JxmRr9Qo7AQItVN6vPGK+Us3WzzI7Sqcv++JY9qEk9A161a4Hb50d2WTtY/+ZKlBtTWQYD0F30byht1fr9J0bm3XLRfgCCudIZ4TqylTbBU1eV/GL0QpU3G1SfOPePzwDzrhtLFfGElQYrcLI61e+5/a+MZpc7V/WNQEeRdlITn29qx6zZFOuawwhJtKxQmK1SdazGFyO+CGCeUL02WVGp1hqEaHOGv0crtAZZiliQXOWlHJSmZV6g6PpGrj44Bdmxy1K1j2QE6JE3zJwkiK3GkQDKrwE1hJTr80Xtivjdlr+gi11MjQS45kSNwxKRr3X3xuzUFlKkebnv783KWiy1QhasJ1ym28Bj+hUqujyb6KSnCq3RV2dDNIZfdsn22lSzGIVjpEcaKqW+dMDJp7Cai5e/MXc3XpBBKWge0Tvj+PoQb6c94nyYCe+C0H0HHqzQVcM9xm2DEO2fSOvEU0xNFmV/+d1quZQA205k1a4r2Bhrj21khpUjylWQl1tDtvoQGCQiL1NDJd8q3AdKlMIDMOFu1mvVnwRu8Yvo1lOoa+XpCfXOVzZU=
   on:
     branch: master
-  run:
-    - ".paasprovider/node/bin/node install/install.js"
-    - ".paasprovider/node/bin/node node_modules/.bin/db-migrate up"
+run:
+  - ".paasprovider/node/bin/node install/install.js"
+  - ".paasprovider/node/bin/node node_modules/.bin/db-migrate up"
