@@ -3,6 +3,7 @@ node_js:
 - stable
 before_install:
 - sudo pip install cctrl
+- ssh-keyscan -H -t rsa,dsa sshforwarder.cloudcontrolled.com >> ~/.ssh/known_hosts
 deploy:
   provider: cloudcontrol
   email: mschopdev@gmail.com
@@ -14,6 +15,3 @@ deploy:
 after_deploy:
 - cctrlapp galaxyboard/default run ".paasprovider/node/bin/node install/install.js"
 - cctrlapp galaxyboard/default run ".paasprovider/node/bin/node node_modules/.bin/db-migrate up"
-addons:
-  ssh_known_hosts:
-  - sshforwarder.cloudcontrolled.com
