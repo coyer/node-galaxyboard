@@ -1,6 +1,8 @@
 language: node_js
 node_js:
 - stable
+before_install:
+  - pip install cctrl
 deploy:
   provider: cloudcontrol
   email: mschopdev@gmail.com
@@ -10,5 +12,5 @@ deploy:
   on:
     branch: master
 after_deploy:
-  - ".paasprovider/node/bin/node install/install.js"
-  - ".paasprovider/node/bin/node node_modules/.bin/db-migrate up"
+  - cctrlapp galaxyboard/default run .paasprovider/node/bin/node install/install.js
+  - cctrlapp galaxyboard/default run .paasprovider/node/bin/node node_modules/.bin/db-migrate up
