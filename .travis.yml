@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - stable
 before_install:
-  - pip install cctrl
+  - sudo pip install cctrl
 deploy:
   provider: cloudcontrol
   email: mschopdev@gmail.com
