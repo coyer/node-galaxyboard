@@ -3,6 +3,7 @@ node_js:
 - stable
 before_deploy:
 - chmod 774 scripts/deploy.sh
+- ls -la scripts
 deploy:
   provider: script
   script: scripts/deploy.sh
