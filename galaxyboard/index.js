@@ -430,7 +430,13 @@ module.exports = function GalaxyBoard(config) {
                 },
             ],
             next);
-        }
+        };
+
+        self.createBoard = function(params, next) {
+            console.log('createBoard', params);
+            // Check access rights
+
+        };
 
         //  Returns current Threads
         self.getThreads = function(params, next) {
@@ -1396,7 +1402,7 @@ module.exports = function GalaxyBoard(config) {
                     )
                 }
             )
-        }
+        };
 
         self.getMessageList = function(params, next) {
             mysqlPool.query(
@@ -1406,7 +1412,7 @@ module.exports = function GalaxyBoard(config) {
                     next();
                 }
             )
-        }
+        };
 
         //  Profil eines Users updaten (nick, email und titel nur durch superuser zu setzen)
         self.saveProfile = function(params, next) {
@@ -1462,7 +1468,7 @@ module.exports = function GalaxyBoard(config) {
                     }
                 );
             }
-        }
+        };
     
         //  Other
         self.getBans = function(params, next) {
@@ -1476,7 +1482,7 @@ module.exports = function GalaxyBoard(config) {
                     next();
                 })
             })
-        }
+        };
 
         self.delBan = function(params, next) {
             var iBanID = params.id;
@@ -1484,14 +1490,14 @@ module.exports = function GalaxyBoard(config) {
             if (!mBoard[0]["bManageBans"])
                 return next();
             mysqlPool.query("delete from banlist where ban_id=?", [parseInt(iBanID,10)], self.getBans);
-        }
+        };
 
         self.deleteMessages = function(params, next) {
             if (!params.messageList || params.messageList.length==0) return next();
             mysqlPool.query("delete from messages where id in (?) and userid=?", [params.messageList, mUser.id], function(err,info) {
                 return self.getMessageList(null, next);
             });
-        }
+        };
 
         self.getSearch = function(params, next) {
             var szSearch        =   params.search;
@@ -1569,7 +1575,7 @@ module.exports = function GalaxyBoard(config) {
                     next();
                 }
             )
-        }
+        };
 
         //  ------------------------------------------------------------
         self.saveThread = function(params, next) {
@@ -1651,7 +1657,7 @@ module.exports = function GalaxyBoard(config) {
                     );
                 }
             );
-        }
+        };
 
         self.getGroups = function(params, next) {
             mysqlPool.query("select a.*,c.id,c.nick,unix_timestamp(c.created) as created,c.titel,c.posts from groups a left join group_members b on b.groupid=a.groupid left join users c on c.id=b.userid",
@@ -1668,7 +1674,11 @@ module.exports = function GalaxyBoard(config) {
                     next();
                 }
             )
-        }
+        };
+        //
+        //self.createBoard = function(params, next) {
+        //    mysqlPool.query("insert into board")
+        //};
     }
 }
  
