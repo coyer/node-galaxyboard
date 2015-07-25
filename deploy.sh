@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 cat ./known_hosts > ~/.ssh/known_hosts
 cat ~/.ssh/known_hosts
 eval `ssh-agent -s`
