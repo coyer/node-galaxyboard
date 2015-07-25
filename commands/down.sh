@@ -1,4 +1,4 @@
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
-cat $SCRIPTPATH/pid | kill
+kill $(cat $SCRIPTPATH/pid)
 rm $SCRIPTPATH/pid
