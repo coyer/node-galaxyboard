@@ -3,7 +3,7 @@ node_js:
 - stable
 deploy:
   provider: script
-  script: deploy.sh
+  script: ./deploy.sh
   on:
     branch: master
 before_install:
