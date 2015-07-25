@@ -1,7 +1,7 @@
 
 /.idea
-/credentials.json
 /database.json
+/commands/pid
 
 
 ### gitignore from https://github.com/github/gitignore/blob/master/Node.gitignore

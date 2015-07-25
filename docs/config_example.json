@@ -1,4 +1,13 @@
 {
+  "port": 8080,
+  "host": "0.0.0.0",
+  "db": {
+    "host": "localhost",
+    "database": "galaxyboard",
+    "user": "root",
+    "password": "devpassword",
+    "connectionLimit": 10
+  },
   "error": {
     "mail": {
       "host": "localhost",

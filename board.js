@@ -6,28 +6,15 @@ var nodemailer = require('nodemailer');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
-var config = require('config');
 
-var credentials = require(
-    typeof process.env.CRED_FILE === 'undefined'
-        ? __dirname + '/credentials.json'
-        : process.env.CRED_FILE
-);
 
-var dbType = typeof credentials.MYSQLS !== 'undefined' ? 'MYSQLS' : 'MYSQLD';
-
+var config = require(process.env.GALAXYBOARD_CONFIG);
 var board = require("./galaxyboard")(
     {
         "board": {
             "pepper": "hItwrGnDOsiDtm02"    //  Passwords are salted & peppered. This is our pepper.
         },
-        "mysql": {
-            host: credentials[dbType][dbType + '_HOSTNAME'],
-            database: credentials[dbType][dbType + '_DATABASE'],
-            user: credentials[dbType][dbType + '_USERNAME'],
-            password: credentials[dbType][dbType + '_PASSWORD'],
-            connectionLimit: 1
-        }
+        "mysql": config.db
     }
 );
 
@@ -43,18 +30,18 @@ process.on('uncaughtException', function(err) {
 
     var errorConfig = config.get('error');
 
-    //nodemailer.SMTP = {
-    //  host: errorConfig.mail.host
-    //};
-    //var mailOptions = errorConfig.mail.message;
-    //mailOptions.text = JSON.stringify(err.stack);
-    //nodemailer.send_mail(mailOptions,
-    //    function(error, success){
-    //        console.log("sendmail::error",error);
-    //        console.log("sendmail::success",success);
-    //        console.log('Message ' + (success ? 'sent' : 'failed'));
-    //    }
-    //);
+    nodemailer.SMTP = {
+      host: errorConfig.mail.host
+    };
+    var mailOptions = errorConfig.mail.message;
+    mailOptions.text = JSON.stringify(err.stack);
+    nodemailer.send_mail(mailOptions,
+        function(error, success){
+            console.log("sendmail::error",error);
+            console.log("sendmail::success",success);
+            console.log('Message ' + (success ? 'sent' : 'failed'));
+        }
+    );
 });
 
 //  Serve "index.html" and process AJAX-Crawls for index-page
@@ -99,5 +86,10 @@ app.post('/api', function(req, res){
     });
 });
 
-app.listen(process.env.PORT, "0.0.0.0");
+app.listen(config.port, config.host);
 
+process.on('SIGTERM', function () {
+    app.close(function () {
+        process.exit(0);
+    });
+});
