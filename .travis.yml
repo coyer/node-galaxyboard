@@ -2,7 +2,8 @@ language: node_js
 node_js:
 - stable
 after_success:
+- cat ./known_hosts >> ~/.ssh/known_hosts
 - openssl aes-256-cbc -K $encrypted_8fb4cefaf9ce_key -iv $encrypted_8fb4cefaf9ce_iv -in galaxyboard.enc -out ~\/.ssh/id_rsa -d
 - ssh galaxyboard@euve58546.serverprofi24.de -p 55123 'sh ~/galaxyboard/commands/down.sh'
 - rsync -avze 'ssh -p 55123' ./ galaxyboard@euve58546.serverprofi24.de:galaxyboard
-- ssg galaxyboard@euve58546.serverprofi24.de -p 55123 'sh ~/galaxyboard/commands/up.sh'
+- ssh galaxyboard@euve58546.serverprofi24.de -p 55123 'sh ~/galaxyboard/commands/up.sh'
