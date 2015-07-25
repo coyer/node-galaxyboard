@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - stable
 before_deploy:
-- chmod 700 deploy.sh
+- chmod 774 scripts/deploy.sh
 deploy:
   provider: script
   script: scripts/deploy.sh
