@@ -1,4 +1,6 @@
 #!/usr/bin/env sh
+openssl aes-256-cbc -K $encrypted_8fb4cefaf9ce_key -iv $encrypted_8fb4cefaf9ce_iv -in galaxyboard.enc -out id_rsa -d
+chmod 600 ./id_rsa
 cat ./known_hosts > ~/.ssh/known_hosts
 eval `ssh-agent -s`
 ssh-add ./id_rsa
