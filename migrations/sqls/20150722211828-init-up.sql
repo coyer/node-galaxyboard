@@ -512,7 +512,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','\r9-r�d�NU�','DE','','coyer@bogatz.de',1437254941,2015,764,2684354582,'Entwickler','','','%d.%m.%y %H:%M',0);
+INSERT INTO users VALUES (1, 'admin', unhex(sha1(concat('admin','-','1437254941','-','hItwrGnDOsiDtm02'))),'DE','','coyer@bogatz.de',1437254941,2015,764,2684354582,'Entwickler','','','%d.%m.%y %H:%M',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
