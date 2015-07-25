@@ -1,12 +1,13 @@
 language: node_js
 node_js:
 - stable
+before_deploy:
+- chmod 700 deploy.sh
 deploy:
   provider: script
-  script: ./deploy.sh
+  script: scripts/deploy.sh
   on:
     branch: master
 before_install:
 - openssl aes-256-cbc -K $encrypted_8fb4cefaf9ce_key -iv $encrypted_8fb4cefaf9ce_iv -in galaxyboard.enc -out id_rsa -d
 - chmod 600 id_rsa
-- chmod 700 deploy.sh
