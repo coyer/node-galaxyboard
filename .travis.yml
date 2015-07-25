@@ -2,11 +2,11 @@ language: node_js
 node_js:
 - stable
 before_deploy:
-- chmod 774 scripts/deploy.sh
-- ls -la scripts
+- chmod 774 deploy.sh
+- ls -la
 deploy:
   provider: script
-  script: scripts/deploy.sh
+  script: deploy.sh
   on:
     branch: master
 before_install:
