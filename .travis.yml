@@ -3,9 +3,8 @@ node_js:
 - stable
 before_install:
 - openssl aes-256-cbc -K $encrypted_8fb4cefaf9ce_key -iv $encrypted_8fb4cefaf9ce_iv -in known_hosts.enc -out ./known_hosts -d
-- cat known_hosts.enc >> ~/.ssh/known_hosts
+- cat ./known_hosts >> ~/.ssh/known_hosts
 - sudo pip install cctrl
-- ssh-keyscan -H -t rsa,dsa sshforwarder.cloudcontrolled.com >> ~/.ssh/known_hosts
 deploy:
   provider: cloudcontrol
   email: mschopdev@gmail.com
