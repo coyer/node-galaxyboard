@@ -829,7 +829,7 @@ function CGalaxyboard() {
         xhr.onreadystatechange = function () {
             if (this.readyState == 4) {
                 try {
-                    var mAction = self.vxDispatchData(JSON.parse(this.responseText));
+                    var mAction = self.vxDispatchData(JSON.isValid(this.responseText));
                     if (cb) cb(mAction);
                 } catch (e) {
                     debug(e);

@@ -6,6 +6,9 @@ var mysql   =   require("mysql");
 var crypto  =   require("crypto");
 var async   =   require("async");
 var fs      =   require("fs");
+var queryBuilder = require('squiggle');
+var entities = require('./entities');
+var injectPromise = require('./InjectPromise.js');
 
 module.exports = function GalaxyBoard(config) {
     
@@ -26,17 +29,17 @@ module.exports = function GalaxyBoard(config) {
     //  Board API
     //
     self.processCommands = function(req, res, onFinish) {
-        var aCmd        =   JSON.parse(req.body.cmd);
+        var aCmd        =   JSON.isValid(req.body.cmd);
         var amJSON      =   [];
         var self        =   this;
         var mUser       =   null;   //  current User
         var mBoard      =   null;   //  current Boardstructure (suitable for current User)
         var iLTDate     =   0;      //  newest postdate; if this is higher than that a user knows a new boardstruct will be send
-        var mModlist    =   null;   //  Gecachte Moderatorenliste. Kann später global werden damit man sich SQLs spart.
+        var mModlist    =   null;   //  Gecachte Moderatorenliste. Kann spï¿½ter global werden damit man sich SQLs spart.
         var mGrouplist  =   null;   //  Forenzugriffe
 
-        //  Zunächst muss das Userobjekt und Boardobjekt initialisiert werden.
-        //  Danach werden die einzelnen API-Befehle ausgeführt.
+        //  Zunï¿½chst muss das Userobjekt und Boardobjekt initialisiert werden.
+        //  Danach werden die einzelnen API-Befehle ausgefï¿½hrt.
         async.series([
             //  Initialize mUser (if userId==0 then try to use Id from Cookie)
             function(next) {
@@ -66,7 +69,7 @@ module.exports = function GalaxyBoard(config) {
 
         //  Bestimmt die Zugriffsrechte auf ein bestimmtes Board
         function ixCheckBoardAccess(iThreadID) {
-            //  Prüft den Zugriff auf das Board. 
+            //  Prï¿½ft den Zugriff auf das Board. 
             var iBoardFlags  =  0;   //  default keine Rechte
             var iExtendFlags =  0;
 
@@ -83,9 +86,9 @@ module.exports = function GalaxyBoard(config) {
             return  {"board": iBoardFlags, "extended": iExtendFlags}; //[iBoardFlags,iExtendFlags];
         }
 
-        //  Bestimmt Zugriffsrechte für Moderatoren
+        //  Bestimmt Zugriffsrechte fï¿½r Moderatoren
         function ixGetModFlags(iThreadID,mCachedBoard) {
-            //  Prüft den Zugriff auf das Board. 
+            //  Prï¿½ft den Zugriff auf das Board. 
             var iFlags  =   0;   //  default keine Rechte
             if (!mCachedBoard)
                 mCachedBoard = mBoard;
@@ -108,7 +111,7 @@ module.exports = function GalaxyBoard(config) {
                 if (!iMaxDepth)
                     break;
             }
-            //  aBoardPath ist in aufsteigender Reihenfolge und ist auch gut so... ggf. wollen wir ein "Recht" einer Gruppe in einer Untergruppe beschränken
+            //  aBoardPath ist in aufsteigender Reihenfolge und ist auch gut so... ggf. wollen wir ein "Recht" einer Gruppe in einer Untergruppe beschrï¿½nken
             aBoardPath.forEach(function(mBoard){
                 //  Existiert eine Gruppe?
                 if (mModlist[mBoard["id"]]) {
@@ -143,8 +146,8 @@ module.exports = function GalaxyBoard(config) {
                     mPerms["boardflags"]    =   flags.board;
                     mPerms["extendflags"]   =   flags.extended;
                     mPerms["modflags"]      =   ixGetModFlags( iThreadID);
-                    mPerms["topicflags"]    =   mTopic["flags"]
-                    mTopic["perms"]         =   mPerms
+                    mPerms["topicflags"]    =   mTopic["flags"];
+                    mTopic["perms"]         =   mPerms;
                     cb(mTopic);
                 }
             )
@@ -158,7 +161,7 @@ module.exports = function GalaxyBoard(config) {
             if (!iUserID) {
                 if (!req.cookies[__COOKIENAME__]) {
                     //  no cookie, no user
-                    amJSON.push( {"event": "newUser", "data": mUser} )
+                    amJSON.push( {"event": "newUser", "data": mUser} );
                     return next();
                 }
 
@@ -186,7 +189,7 @@ module.exports = function GalaxyBoard(config) {
                     }
                     if (results && results.length) {
                         mysqlPool.end();
-                        amJSON.push( {"event": "showError", "data": results[0]["ban_give_reason"]} )
+                        amJSON.push( {"event": "showError", "data": results[0]["ban_give_reason"]} );
                         //  Delete cookie
                         res.clearCookie(__COOKIENAME__);
                         amJSON.push( {"event": "newUser", "data": mUser} );
@@ -198,7 +201,7 @@ module.exports = function GalaxyBoard(config) {
                         function(err, results, fields) {
                             if (err) {
                                 console.log(err);
-                                amJSON.push( {"event": "newUser", "data": mUser} )
+                                amJSON.push( {"event": "newUser", "data": mUser} );
                                 return next()
                             }
                             //console.log(results);
@@ -227,7 +230,7 @@ module.exports = function GalaxyBoard(config) {
                                                             mUser["messages"]   =   results[0]["messages"];
                                                             amJSON.push( {"event": "newMessageCount", "data": mUser["messages"]} )
                                                         }
-                                                        amJSON.push( {"event": "newUser", "data": mUser} )
+                                                        amJSON.push( {"event": "newUser", "data": mUser} );
                                                         return next();
                                                     }
                                                 );
@@ -237,7 +240,7 @@ module.exports = function GalaxyBoard(config) {
                                 );
                             } else {
                                 //  no data stored; keep user as guest.
-                                amJSON.push( {"event": "newUser", "data": mUser} )
+                                amJSON.push( {"event": "newUser", "data": mUser} );
                                 return next();
                             }
                         }
@@ -432,17 +435,11 @@ module.exports = function GalaxyBoard(config) {
             next);
         };
 
-        self.createBoard = function(params, next) {
-            console.log('createBoard', params);
-            // Check access rights
-
-        };
-
         //  Returns current Threads
         self.getThreads = function(params, next) {
             amJSON.push( {"event": "newThreads", "data": mBoard} );
             return next();
-        }
+        };
 
         //  Serve main template
         self.getTemplates = function(params, next) {
@@ -451,13 +448,13 @@ module.exports = function GalaxyBoard(config) {
                 amJSON.push( {"event": "newTemplates", "data": data} );
                 next();
             });
-        }
+        };
 
         //  getUser
         self.getUser = function(params, next) {
             amJSON.push( {"event": "newUser", "data": mUser} );
             return next();
-        }
+        };
 
         //  getTopics
         self.getTopics = function(params, next) {
@@ -485,7 +482,7 @@ module.exports = function GalaxyBoard(config) {
                     return next();
                 }
             )
-        }
+        };
 
         //  getPosts
         self.getPosts = function(params, next) {
@@ -506,13 +503,13 @@ module.exports = function GalaxyBoard(config) {
                 }
 
                 if( (!(mTopic["perms"]["boardflags"] & GBFlags.dfbp_show) || !(mTopic["perms"]["boardflags"] & GBFlags.dfbp_readboard)) && // nicht anzeigbar und nicht lesbar
-                    !(mModlist[mTopic["boardid"]] && mModlist[mTopic["boardid"]][mUser["id"]])) {   // und wir sind auch kein mod (fuer den die einschränkung nicht zählt)
+                    !(mModlist[mTopic["boardid"]] && mModlist[mTopic["boardid"]][mUser["id"]])) {   // und wir sind auch kein mod (fuer den die einschrï¿½nkung nicht zï¿½hlt)
                     amJSON.push({"event": "showError", "data": "Missing permissions"});
                     amJSON.push({"event": "action", "action": "showLogin"});
                     return next();
                 }
 
-                //  Anzahl Beiträge ermitteln:
+                //  Anzahl Beitrï¿½ge ermitteln:
                 mysqlPool.query(
                     "select count(*) as anzahl from posts where topicid=?", [iTopicID],
                     function(err, results, fields) {
@@ -521,7 +518,7 @@ module.exports = function GalaxyBoard(config) {
                         //  Page ggf korrigieren:
                         iPage      = Math.max(0, Math.min(iPage-1, Math.ceil(iPostCount/(1.0*iPostsPerPage))));
 
-                        //  Beiträge auslesen:
+                        //  Beitrï¿½ge auslesen:
                         function readPosts() {
                             mysqlPool.query(
                                 "select"+
@@ -566,7 +563,7 @@ module.exports = function GalaxyBoard(config) {
                                                                         subset["votes"] = 0;
                                                                     }
                                                                     mPoll["options"].push(subset);
-                                                                })
+                                                                });
                                                                 mPoll["votes"] = iVotes;
                                                                 amJSON.push( {"event": "newPosts", "data": {"topicID": iTopicID, "topic": mTopic, "posts": amPosts, "postcount": iPostCount, "page": iPage+1, "poll": mPoll}} )
                                                                 return next();
@@ -600,7 +597,7 @@ module.exports = function GalaxyBoard(config) {
                     }
                 )
             })
-        }
+        };
 
         //  Umfrage
         self.voteOption = function(params, next) {
@@ -622,7 +619,7 @@ module.exports = function GalaxyBoard(config) {
                                 if(aOptions.length) {
                                     insertPoll();
                                 } else {
-                                    //  Feedback das Stimme gezählt
+                                    //  Feedback das Stimme gezï¿½hlt
                                     amJSON.push( {"event": "showInfo", "data": "@@@VOTECOUNTED@@@"} );
                                     //  Nochmal alle Posts ausgeben
                                     self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
@@ -633,7 +630,7 @@ module.exports = function GalaxyBoard(config) {
                     insertPoll();
                 }
             )
-        }
+        };
 
         //
         //  Topics
@@ -657,14 +654,14 @@ module.exports = function GalaxyBoard(config) {
                     function() {
                         //  Nach dem Verschieben koennte Topic in einem gesperrten Bereich liegen!
                         initBoard(function() {
-                            amJSON.push( {"event": "newThreads", "data": mBoard} )
-                            amJSON.push( {"event": "showInfo", "data": "Topic was moved!"})
+                            amJSON.push( {"event": "newThreads", "data": mBoard} );
+                            amJSON.push( {"event": "showInfo", "data": "Topic was moved!"});
                             self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                         });
                     }
                 )
             });
-        }
+        };
 
         self.deleteTopic = function(params, next) {
             var iTopicID = params.topicID;
@@ -683,14 +680,14 @@ module.exports = function GalaxyBoard(config) {
                     "delete from topics where topicid=?", [iTopicID],
                     function(){
                         initBoard(function() {
-                            amJSON.push( {"event": "newThreads", "data": mBoard} )
-                            amJSON.push( {"event": "showInfo", "data": "Topic was deleted!"})
+                            amJSON.push( {"event": "newThreads", "data": mBoard} );
+                            amJSON.push( {"event": "showInfo", "data": "Topic was deleted!"});
                             self.getTopics({threadID: mTopic["boardid"]}, next); //  this will then call "next()"
                         });
                     }
                 )
             })
-        }
+        };
 
         self.closeTopicMod = function(params, next) {
             var iTopicID = params.topicID;
@@ -706,14 +703,14 @@ module.exports = function GalaxyBoard(config) {
                     "update topics set flags=flags|? where topicid=?",[(GBFlags.dft_mod_closed|GBFlags.dft_closed), iTopicID],
                     function() {
                         initBoard(function() {
-                            amJSON.push( {"event": "newThreads", "data": mBoard} )
-                            amJSON.push( {"event": "showInfo", "data": "Topic was closed!"})
+                            amJSON.push( {"event": "newThreads", "data": mBoard} );
+                            amJSON.push( {"event": "showInfo", "data": "Topic was closed!"});
                             self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                         });
                     }
                 )
             })
-        }
+        };
 
         self.closeTopicUser = function(params, next) {
             var iTopicID = params.topicID;
@@ -729,14 +726,14 @@ module.exports = function GalaxyBoard(config) {
                     "update topics set flags=flags|? where topicid=?", [(GBFlags.dft_closed), iTopicID],
                     function() {
                         initBoard(function() {
-                            amJSON.push( {"event": "newThreads", "data": mBoard} )
-                            amJSON.push( {"event": "showInfo", "data": "Topic was closed!"})
+                            amJSON.push( {"event": "newThreads", "data": mBoard} );
+                            amJSON.push( {"event": "showInfo", "data": "Topic was closed!"});
                             self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                         });
                     }
                 )
             })
-        }
+        };
 
         self.openTopicMod = function(params, next) {
             var iTopicID = params.topicID;
@@ -752,14 +749,14 @@ module.exports = function GalaxyBoard(config) {
                     "update topics set flags=flags&~? where topicid=?", [(GBFlags.dft_mod_closed|GBFlags.dft_closed), iTopicID],
                     function() {
                         initBoard(function() {
-                            amJSON.push( {"event": "newThreads", "data": mBoard} )
-                            amJSON.push( {"event": "showInfo", "data": "Topic was opened!"})
+                            amJSON.push( {"event": "newThreads", "data": mBoard} );
+                            amJSON.push( {"event": "showInfo", "data": "Topic was opened!"});
                             self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                         });
                     }
                 )
             })
-        }
+        };
 
         self.createTopic = function(params, next) {
             console.log("createTopic", params);
@@ -851,7 +848,7 @@ module.exports = function GalaxyBoard(config) {
                 amJSON.push( {"event": "showError", "data": "Board not available!"} );
                 next();
             }
-        }
+        };
 
         self.editTopic = function(params, next) {
             var iTopicID    = params.topicID;
@@ -872,14 +869,14 @@ module.exports = function GalaxyBoard(config) {
                     "update topics set headline=?, icon=?, flags=(flags&~?)|? where topicid=?",[szHeadline, iIcon,GBFlags.dft_pinned,iFlags&GBFlags.dft_pinned, iTopicID],
                     function(err,info) {
                         initBoard(function() {
-                            amJSON.push( {"event": "newThreads", "data": mBoard} )
-                            amJSON.push( {"event": "showInfo", "data": "Topic was updated!"})
+                            amJSON.push( {"event": "newThreads", "data": mBoard} );
+                            amJSON.push( {"event": "showInfo", "data": "Topic was updated!"});
                             self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                         });
                     }
                 )
             })
-        }
+        };
 
         self.addPost = function(params, next) {
             //  Rechte pruefen:
@@ -937,7 +934,7 @@ module.exports = function GalaxyBoard(config) {
                                                         mysqlPool.query("update topics set posts=? where topicid=?", [iPostCount-1, iTopicID]);
                                                         //  NextAction setzen:  XXX sollte nach den neuen POSTS kommen!
                                                         amJSON.push( {"event": "action", "action": "showTopic", "postID": iPostID, "topicID": iTopicID, "page": iPage} )
-                                                        //  Neue Beiträge ausliefern
+                                                        //  Neue Beitrï¿½ge ausliefern
                                                         self.getPosts({topicID: iTopicID, page:iPage}, next); //  this will then call "next()"
                                                     }
                                                 )
@@ -950,7 +947,7 @@ module.exports = function GalaxyBoard(config) {
                     }
                 )
             })
-        }
+        };
 
         self.editPost = function(params, next) {
 
@@ -996,7 +993,7 @@ module.exports = function GalaxyBoard(config) {
                                         var iPage       = Math.ceil(iPostCount/(1.0*iPostsPerPage));
                                         //  NextAction setzen:  XXX sollte nach posts sein
                                         amJSON.push( {"event": "action", "action": "showTopic", "postID": iPostID, "topicID": iTopicID, "page": iPage});
-                                        //  Neue Beiträge ausliefern
+                                        //  Neue Beitrï¿½ge ausliefern
                                         self.getPosts({topicID: iTopicID, page:iPage}, next); //  this will then call "next()"
                                     }
                                 )
@@ -1005,7 +1002,7 @@ module.exports = function GalaxyBoard(config) {
                     })
                 }
             )
-        }
+        };
 
         self.delPost = function(params, next) {
             var iPostID = params.postID;
@@ -1076,7 +1073,7 @@ module.exports = function GalaxyBoard(config) {
                     })
                 }
             )
-        }
+        };
 
         self.reportPost = function(params, next) {
             var iPostID = parseInt(params.postID,10);
@@ -1105,7 +1102,7 @@ module.exports = function GalaxyBoard(config) {
                             iReportFlags = iReportFlags|dfpost_hide;
                         }
 
-                        var iThreadID = mTopic["boardid"]
+                        var iThreadID = mTopic["boardid"];
 
                         //  Post markieren das gemeldet wurde:
                         mysqlPool.query(
@@ -1115,7 +1112,7 @@ module.exports = function GalaxyBoard(config) {
                                 mysqlPool.query(
                                     "insert ignore into post_reports (postid,reporterid,boardid) values (?,?,?)", [iPostID, mUser["id"], iThreadID],
                                     function(err,info) {
-                                        //  Eine gute Idee wäre es wenn ein Beitrag 10x gemeldet wurde diesen auszublenden
+                                        //  Eine gute Idee waere es wenn ein Beitrag 10x gemeldet wurde diesen auszublenden
                                         amJSON.push({"event": "showInfo", "data": "POST REPORTED"});
 
                                         mysqlPool.query(
@@ -1127,14 +1124,14 @@ module.exports = function GalaxyBoard(config) {
                                                     mysqlPool.query("update posts set postflags=postflags|? where postid=?", [dfpost_hide, iPostID],
                                                         function(err,info) {
                                                             initBoard(function() {
-                                                                amJSON.push( {"event": "newThreads", "data": mBoard} )
+                                                                amJSON.push( {"event": "newThreads", "data": mBoard} );
                                                                 self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                                                             });
                                                         }
                                                     )
                                                 } else {
                                                     initBoard(function() {
-                                                        amJSON.push( {"event": "newThreads", "data": mBoard} )
+                                                        amJSON.push( {"event": "newThreads", "data": mBoard} );
                                                         self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                                                     });
                                                 }
@@ -1147,7 +1144,7 @@ module.exports = function GalaxyBoard(config) {
                     })
                 }
             )
-        }
+        };
 
         self.reportPostUndo = function(params, next) {
             var iPostID = parseInt(params.postID);
@@ -1170,7 +1167,7 @@ module.exports = function GalaxyBoard(config) {
                             return next();
                         }
 
-                        var iThreadID = mTopic["boardid"]
+                        var iThreadID = mTopic["boardid"];
 
                         //  Post markieren das gemeldet wurde:
                         mysqlPool.query(
@@ -1182,7 +1179,7 @@ module.exports = function GalaxyBoard(config) {
                                     function(err,info) {
                                         amJSON.push( {"event": "showInfo", "data": "POST freed."} );
                                         initBoard(function() {
-                                            amJSON.push( {"event": "newThreads", "data": mBoard} )
+                                            amJSON.push( {"event": "newThreads", "data": mBoard} );
                                             self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
                                         });
                                     }
@@ -1192,7 +1189,7 @@ module.exports = function GalaxyBoard(config) {
                     })
                 }
             )
-        }
+        };
 
         self.loginUser = function(params, next) {
     
@@ -1229,7 +1226,7 @@ module.exports = function GalaxyBoard(config) {
                         initUser(mResult.id, function() {
                             amJSON.push( {"event": "newUser", "data": mUser} );
                             initBoard(function() {
-                                amJSON.push( {"event": "newThreads", "data": mBoard} )
+                                amJSON.push( {"event": "newThreads", "data": mBoard} );
                                 return next();
                             });
                         });
@@ -1239,7 +1236,7 @@ module.exports = function GalaxyBoard(config) {
                     }
                 }
             )
-        }
+        };
 
         self.logoutUser = function(params, next) {
             //  Cookie loeschen
@@ -1247,15 +1244,15 @@ module.exports = function GalaxyBoard(config) {
             amJSON.push( {"event": "showInfo", "data": "USER LOGGED OUT"} );
 
             //  default user setzen (gast)
-            mUser = {"id": 0, "nick": "Guest", "flags": 0, "groups": [-1], "posts":0, "titel": "", "created":0, "messages":0, "lastlogin":0}   //  BasicInfo
+            mUser = {"id": 0, "nick": "Guest", "flags": 0, "groups": [-1], "posts":0, "titel": "", "created":0, "messages":0, "lastlogin":0};  //  BasicInfo
             amJSON.push( {"event": "newUser", "data": mUser} );
 
             //  Neue Boardstruktur schicken
             initBoard(function() {
-                amJSON.push( {"event": "newThreads", "data": mBoard} )
+                amJSON.push( {"event": "newThreads", "data": mBoard} );
                 next();
             });
-        }
+        };
 
         self.banUser = function(params, next) {
             var iPostID     =   params.postID;
@@ -1290,7 +1287,7 @@ module.exports = function GalaxyBoard(config) {
                     }
                 }
             )
-        }
+        };
 
         self.writePM = function(params, next) {
             //#+-----------+-------------+------+-----+-------------------+----------------+
@@ -1340,7 +1337,7 @@ module.exports = function GalaxyBoard(config) {
                             "select * from messages where userid=? and id=? limit 1", [mUser["id"],refID],
                             function(err,results) {
                                 if (results.length && results[0]["flag"]&8) {
-                                    amRefMessage = JSON.parse(results[0]["message"]);
+                                    amRefMessage = JSON.isValid(results[0]["message"]);
                                 }
                                 sendMSG(); // calls next()
                             }
@@ -1350,7 +1347,7 @@ module.exports = function GalaxyBoard(config) {
             } else {
                 sendMSG();  //  calls next()
             }
-        }
+        };
 
         self.getMessage = function(params, next) {
             //#print "Message",refID
@@ -1380,7 +1377,7 @@ module.exports = function GalaxyBoard(config) {
                             //  Neues PM-Format?
                             var result = results.shift();
                             if (result["flag"]&dfmsg_jsondata) {
-                                amJSON.push({"event": "action", "action": "showMessage", "data": JSON.parse(result["message"])});
+                                amJSON.push({"event": "action", "action": "showMessage", "data": JSON.isValid(result["message"])});
                                 next()
                             } else {
                                 //  Plaintext muss gewandelt werden:
@@ -1579,7 +1576,7 @@ module.exports = function GalaxyBoard(config) {
 
         //  ------------------------------------------------------------
         self.saveThread = function(params, next) {
-            if (!mUser.flags & GBFlags.dfu_superadmin) return next();
+            if (!self.isAdmin()) return next();
             var szDescription   =   params.description[0];
             //  ToDo: die Flags sind als Parameterin params. Besser waere es diese als Flags direkt zu uebergeben und hier mit einer Maske zu arbeiten!
             var iBoardFlags     =   (params["dfbf_closed"] ? GBFlags.dfbf_closed : 0) | (params["dfbf_hideboard"] ? GBFlags.dfbf_hideboard : 0) | (params["dfbf_showsubboards"] ? GBFlags.dfbf_showsubboards : 0);
@@ -1675,10 +1672,79 @@ module.exports = function GalaxyBoard(config) {
                 }
             )
         };
-        //
-        //self.createBoard = function(params, next) {
-        //    mysqlPool.query("insert into board")
-        //};
+
+        self.isAdmin = function() {
+            return mUser.flags & GBFlags.dfu_superadmin;
+        };
+
+        self.insertAccessRule = function(rule, callback) {
+            var query = queryBuilder.Query("\
+                INSERT INTO board_acl (boardid, accessid, bflags, eflags)\
+                VALUES (?boardId, ?accessId, ?bFlags, ?eFlags)\
+            ").query(rule);
+            mysqlPool.query(query.sql, query.params, function(err, result){
+                callback();
+            });
+        };
+
+        self.insertACL = function(board, injectPromise) {
+            async.each(board.acl, self.insertAccessRule, function(err){
+                // TODO error handling
+            }, function(err){
+                // TODO error handling
+                injectPromise.ready();
+            });
+        };
+
+        self.insertBoardConfig = function(board, injectPromise) {
+            var query = queryBuilder.Query("\
+                INSERT INTO board_config (boardid, prunedays, boardflags, boardrule, headline, description, prefixe)\
+                VALUES (?boardId, ?prunedays, ?boardflags, ?boardrule, ?headline, ?description, ?prefixe)\
+            ").query(board);
+            mysqlPool.query(query.sql, query.params, injectPromise.ready);
+        };
+
+        self.insertBoard = function(board, ready) {
+            var query = queryBuilder.Query("\
+                INSERT INTO boards (parentboardid, sortid)\
+                VALUES (?parentBoardId, ?sortId)\
+            ").query(board);
+            mysqlPool.query(query.sql, query.params, function(){
+                var injectPromise = new injectPromise.InjectPromise(2, function(){
+                    ready();
+                });
+                self.insertACL(board, injectPromise);
+                self.insertBoardConfig(board, injectPromise);
+            });
+        };
+
+        self.updateBoard = function(board) {
+
+        };
+
+        self.setBoard = function(params, next) {
+            if(!self.isAdmin()) {
+                console.log("Non-Admin user trying to set board");
+                return next();
+            }
+
+            entities.Board.isValid(params, function(){
+                if(board.boardid === null) {
+                    self.insertBoard(params, function(){
+                        amJSON.push({event: 'addedBoard'});
+                        return next();
+                    });
+                } else {
+                    self.updateBoard(params, function(){
+                        amJSON.push({event: 'updatedBoard'});
+                        return next();
+                    });
+                }
+            }, function(){
+                // TODO handle invalid object
+            });
+
+        };
     }
 }
  

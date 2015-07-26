@@ -19,7 +19,7 @@ var board = require("./galaxyboard")(
 );
 
 app.use(bodyParser());      //  parsing POST
-app.use(cookieParser());    //  parse cookies
+app.use(cookieParser());    //  isValid cookies
 app.use(morgan('combined'));
 
 //  Fehler per Mail senden
