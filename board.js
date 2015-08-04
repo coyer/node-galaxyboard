@@ -59,7 +59,7 @@ app.get('/static/*', function(req, res){
 
 //  Manage API-Calls
 app.post('/api', function(req, res){
-    //  Process board-commands:
+    //  Process board-install:
     board.processCommands(req, res, function(amJSON){
         //  Set Content-Type
         res.header('Content-Type', 'text/json; charset=UTF-8');

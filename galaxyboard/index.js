@@ -32,11 +32,11 @@ module.exports = function GalaxyBoard(config) {
         var mUser       =   null;   //  current User
         var mBoard      =   null;   //  current Boardstructure (suitable for current User)
         var iLTDate     =   0;      //  newest postdate; if this is higher than that a user knows a new boardstruct will be send
-        var mModlist    =   null;   //  Gecachte Moderatorenliste. Kann später global werden damit man sich SQLs spart.
+        var mModlist    =   null;   //  Gecachte Moderatorenliste. Kann spï¿½ter global werden damit man sich SQLs spart.
         var mGrouplist  =   null;   //  Forenzugriffe
 
-        //  Zunächst muss das Userobjekt und Boardobjekt initialisiert werden.
-        //  Danach werden die einzelnen API-Befehle ausgeführt.
+        //  Zunï¿½chst muss das Userobjekt und Boardobjekt initialisiert werden.
+        //  Danach werden die einzelnen API-Befehle ausgefï¿½hrt.
         async.series([
             //  Initialize mUser (if userId==0 then try to use Id from Cookie)
             function(next) {
@@ -46,7 +46,7 @@ module.exports = function GalaxyBoard(config) {
             function(next) {
                 initBoard(next);    //  Uses req + res from this scope
             }],
-            //  Process commands
+            //  Process install
             function() {
                 async.forEach(aCmd,
                     function(command, next) {
@@ -66,7 +66,7 @@ module.exports = function GalaxyBoard(config) {
 
         //  Bestimmt die Zugriffsrechte auf ein bestimmtes Board
         function ixCheckBoardAccess(iThreadID) {
-            //  Prüft den Zugriff auf das Board. 
+            //  Prï¿½ft den Zugriff auf das Board. 
             var iBoardFlags  =  0;   //  default keine Rechte
             var iExtendFlags =  0;
 
@@ -83,9 +83,9 @@ module.exports = function GalaxyBoard(config) {
             return  {"board": iBoardFlags, "extended": iExtendFlags}; //[iBoardFlags,iExtendFlags];
         }
 
-        //  Bestimmt Zugriffsrechte für Moderatoren
+        //  Bestimmt Zugriffsrechte fï¿½r Moderatoren
         function ixGetModFlags(iThreadID,mCachedBoard) {
-            //  Prüft den Zugriff auf das Board. 
+            //  Prï¿½ft den Zugriff auf das Board. 
             var iFlags  =   0;   //  default keine Rechte
             if (!mCachedBoard)
                 mCachedBoard = mBoard;
@@ -108,7 +108,7 @@ module.exports = function GalaxyBoard(config) {
                 if (!iMaxDepth)
                     break;
             }
-            //  aBoardPath ist in aufsteigender Reihenfolge und ist auch gut so... ggf. wollen wir ein "Recht" einer Gruppe in einer Untergruppe beschränken
+            //  aBoardPath ist in aufsteigender Reihenfolge und ist auch gut so... ggf. wollen wir ein "Recht" einer Gruppe in einer Untergruppe beschrï¿½nken
             aBoardPath.forEach(function(mBoard){
                 //  Existiert eine Gruppe?
                 if (mModlist[mBoard["id"]]) {
@@ -506,13 +506,13 @@ module.exports = function GalaxyBoard(config) {
                 }
 
                 if( (!(mTopic["perms"]["boardflags"] & GBFlags.dfbp_show) || !(mTopic["perms"]["boardflags"] & GBFlags.dfbp_readboard)) && // nicht anzeigbar und nicht lesbar
-                    !(mModlist[mTopic["boardid"]] && mModlist[mTopic["boardid"]][mUser["id"]])) {   // und wir sind auch kein mod (fuer den die einschränkung nicht zählt)
+                    !(mModlist[mTopic["boardid"]] && mModlist[mTopic["boardid"]][mUser["id"]])) {   // und wir sind auch kein mod (fuer den die einschrï¿½nkung nicht zï¿½hlt)
                     amJSON.push({"event": "showError", "data": "Missing permissions"});
                     amJSON.push({"event": "action", "action": "showLogin"});
                     return next();
                 }
 
-                //  Anzahl Beiträge ermitteln:
+                //  Anzahl Beitrï¿½ge ermitteln:
                 mysqlPool.query(
                     "select count(*) as anzahl from posts where topicid=?", [iTopicID],
                     function(err, results, fields) {
@@ -521,7 +521,7 @@ module.exports = function GalaxyBoard(config) {
                         //  Page ggf korrigieren:
                         iPage      = Math.max(0, Math.min(iPage-1, Math.ceil(iPostCount/(1.0*iPostsPerPage))));
 
-                        //  Beiträge auslesen:
+                        //  Beitrï¿½ge auslesen:
                         function readPosts() {
                             mysqlPool.query(
                                 "select"+
@@ -622,7 +622,7 @@ module.exports = function GalaxyBoard(config) {
                                 if(aOptions.length) {
                                     insertPoll();
                                 } else {
-                                    //  Feedback das Stimme gezählt
+                                    //  Feedback das Stimme gezï¿½hlt
                                     amJSON.push( {"event": "showInfo", "data": "@@@VOTECOUNTED@@@"} );
                                     //  Nochmal alle Posts ausgeben
                                     self.getPosts({topicID: iTopicID}, next); //  this will then call "next()"
@@ -937,7 +937,7 @@ module.exports = function GalaxyBoard(config) {
                                                         mysqlPool.query("update topics set posts=? where topicid=?", [iPostCount-1, iTopicID]);
                                                         //  NextAction setzen:  XXX sollte nach den neuen POSTS kommen!
                                                         amJSON.push( {"event": "action", "action": "showTopic", "postID": iPostID, "topicID": iTopicID, "page": iPage} )
-                                                        //  Neue Beiträge ausliefern
+                                                        //  Neue Beitrï¿½ge ausliefern
                                                         self.getPosts({topicID: iTopicID, page:iPage}, next); //  this will then call "next()"
                                                     }
                                                 )
@@ -996,7 +996,7 @@ module.exports = function GalaxyBoard(config) {
                                         var iPage       = Math.ceil(iPostCount/(1.0*iPostsPerPage));
                                         //  NextAction setzen:  XXX sollte nach posts sein
                                         amJSON.push( {"event": "action", "action": "showTopic", "postID": iPostID, "topicID": iTopicID, "page": iPage});
-                                        //  Neue Beiträge ausliefern
+                                        //  Neue Beitrï¿½ge ausliefern
                                         self.getPosts({topicID: iTopicID, page:iPage}, next); //  this will then call "next()"
                                     }
                                 )
@@ -1115,7 +1115,7 @@ module.exports = function GalaxyBoard(config) {
                                 mysqlPool.query(
                                     "insert ignore into post_reports (postid,reporterid,boardid) values (?,?,?)", [iPostID, mUser["id"], iThreadID],
                                     function(err,info) {
-                                        //  Eine gute Idee wäre es wenn ein Beitrag 10x gemeldet wurde diesen auszublenden
+                                        //  Eine gute Idee wï¿½re es wenn ein Beitrag 10x gemeldet wurde diesen auszublenden
                                         amJSON.push({"event": "showInfo", "data": "POST REPORTED"});
 
                                         mysqlPool.query(
