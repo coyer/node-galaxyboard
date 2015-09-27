@@ -15,7 +15,8 @@
     "morgan": "~1.6",
     "db-migrate": "~0.9",
     "node-sass": "~3.2",
-    "squiggle": "~1.0"
+    "squiggle": "~1.0",
+    "forever": "~0.15"
   },
   "devDependencies": {
     "mocha": "~2.2",

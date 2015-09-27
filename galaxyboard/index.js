@@ -41,16 +41,16 @@ module.exports = function GalaxyBoard(config) {
         //  Zun�chst muss das Userobjekt und Boardobjekt initialisiert werden.
         //  Danach werden die einzelnen API-Befehle ausgef�hrt.
         async.series([
-                //  Initialize mUser (if userId==0 then try to use Id from Cookie)
-                function (next) {
-                    initUser(0, next);  //  Uses req + res from this scope
-                },
-                //  Initialize Board
-                function (next) {
-                    initBoard(next);    //  Uses req + res from this scope
-                }],
-            //  Process commands
-            function () {
+            //  Initialize mUser (if userId==0 then try to use Id from Cookie)
+            function(next) {
+                initUser(0, next);  //  Uses req + res from this scope
+            },
+            //  Initialize Board
+            function(next) {
+                initBoard(next);    //  Uses req + res from this scope
+            }],
+            //  Process install
+            function() {
                 async.forEach(aCmd,
                     function (command, next) {
                         if (!self[command.cmd]) {
