@@ -23,6 +23,6 @@
     "supertest": "~1.0"
   },
   "scripts": {
-    "test": "node test/all.js"
+    "test": "node_modules/mocha/bin/mocha unit_tests/all.js"
   }
 }
