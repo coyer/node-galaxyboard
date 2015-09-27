@@ -1,5 +1,4 @@
 # node-galaxyboard
-A free &amp; simple nodejs bulletin-board
 
 You should not use Galaxyboard in production.
 

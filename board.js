@@ -2,11 +2,13 @@ var express = require("express");
 var app     = express();
 var fs      = require("fs");
 var zlib    = require('zlib');
+
 var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
-
 
 var config = require(process.env.GALAXYBOARD_CONFIG);
 var board = require("./galaxyboard")(
@@ -30,12 +32,13 @@ process.on('uncaughtException', function(err) {
 
     var errorConfig = config.get('error');
 
-    nodemailer.SMTP = {
-      host: errorConfig.mail.host
-    };
+    var transporter = nodemailer.createTransport(smtpTransport({
+        host: errorConfig.mail.host,
+        port: 25
+    }));
     var mailOptions = errorConfig.mail.message;
     mailOptions.text = JSON.stringify(err.stack);
-    nodemailer.send_mail(mailOptions,
+    transporter.sendMail(mailOptions,
         function(error, success){
             console.log("sendmail::error",error);
             console.log("sendmail::success",success);
