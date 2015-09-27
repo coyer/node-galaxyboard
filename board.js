@@ -18,8 +18,8 @@ var board = require("./galaxyboard")(
     }
 );
 
-app.use(bodyParser());      //  parsing POST
-app.use(cookieParser());    //  isValid cookies
+app.use(bodyParser.urlencoded({extended:true}));      //  parsing POST
+app.use(cookieParser());    //  parse cookies
 app.use(morgan('combined'));
 
 //  Fehler per Mail senden
@@ -47,14 +47,14 @@ process.on('uncaughtException', function(err) {
 //  Serve "index.html" and process AJAX-Crawls for index-page
 app.get('/', function(req, res){
     res.header('Content-Type', 'text/html; charset=UTF-8');
-    res.sendfile(__dirname + '/htdocs/index.html');
+    res.sendFile(__dirname + '/htdocs/index.html');
 });
 
 //  Server css/gfx
 app.get('/static/*', function(req, res){
     var filePath = __dirname + '/htdocs/static/' + req.params[0];
     console.log('loading asset: ' + filePath);
-    res.sendfile(filePath);
+    res.sendFile(filePath);
 });
 
 //  Manage API-Calls
