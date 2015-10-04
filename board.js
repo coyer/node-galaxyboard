@@ -3,11 +3,13 @@ var app     = express();
 var connectApiApp = express();
 var fs      = require("fs");
 var zlib    = require('zlib');
+
 var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
-
 
 var config = require(process.env.GALAXYBOARD_CONFIG);
 var board = require("./galaxyboard")(
@@ -19,8 +21,7 @@ var board = require("./galaxyboard")(
     }
 );
 
-
-app.use(bodyParser());      //  parsing POST
+app.use(bodyParser.urlencoded({extended:true}));      //  parsing POST
 app.use(cookieParser());    //  parse cookies
 app.use(morgan('combined'));
 
@@ -32,12 +33,13 @@ process.on('uncaughtException', function(err) {
 
     var errorConfig = config.get('error');
 
-    nodemailer.SMTP = {
-      host: errorConfig.mail.host
-    };
+    var transporter = nodemailer.createTransport(smtpTransport({
+        host: errorConfig.mail.host,
+        port: 25
+    }));
     var mailOptions = errorConfig.mail.message;
     mailOptions.text = JSON.stringify(err.stack);
-    nodemailer.send_mail(mailOptions,
+    transporter.sendMail(mailOptions,
         function(error, success){
             console.log("sendmail::error",error);
             console.log("sendmail::success",success);
@@ -49,14 +51,14 @@ process.on('uncaughtException', function(err) {
 //  Serve "index.html" and process AJAX-Crawls for index-page
 app.get('/', function(req, res){
     res.header('Content-Type', 'text/html; charset=UTF-8');
-    res.sendfile(__dirname + '/htdocs/index.html');
+    res.sendFile(__dirname + '/htdocs/index.html');
 });
 
 //  Server css/gfx
 app.get('/static/*', function(req, res){
     var filePath = __dirname + '/htdocs/static/' + req.params[0];
     console.log('loading asset: ' + filePath);
-    res.sendfile(filePath);
+    res.sendFile(filePath);
 });
 
 //  Manage API-Calls
