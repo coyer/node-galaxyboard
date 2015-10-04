@@ -1,5 +1,6 @@
 var express = require("express");
 var app     = express();
+var connectApiApp = express();
 var fs      = require("fs");
 var zlib    = require('zlib');
 var nodemailer = require('nodemailer');
@@ -17,6 +18,7 @@ var board = require("./galaxyboard")(
         "mysql": config.db
     }
 );
+
 
 app.use(bodyParser());      //  parsing POST
 app.use(cookieParser());    //  parse cookies
@@ -59,7 +61,7 @@ app.get('/static/*', function(req, res){
 
 //  Manage API-Calls
 app.post('/api', function(req, res){
-    //  Process board-install:
+    //  Process commands:
     board.processCommands(req, res, function(amJSON){
         //  Set Content-Type
         res.header('Content-Type', 'text/json; charset=UTF-8');
@@ -87,6 +89,11 @@ app.post('/api', function(req, res){
 });
 
 app.listen(config.port, config.host);
+
+
+//connectApiApp.add(bodyParser.json);
+//require('./conect_api')(connectApiApp, config);
+//connectApiApp.listen(config.connectApi.port, config.connectApi.host);
 
 process.on('SIGTERM', function () {
     app.close(function () {

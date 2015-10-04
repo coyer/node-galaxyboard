@@ -304,7 +304,7 @@ module.exports = function GalaxyBoard(config) {
                     //  Neue Gruppenliste erstellen:
                     mGrouplist = {};
                     mysqlPool.query(
-                        "select sql_cache a.boardid, a.accessid, a.bflags,a.eflags,b.nick as name from board_acl a left join users b on b.id = a.accessid where a.accessid>0",
+                        "select sql_cache a.boardid, a.userid, a.bflags,a.eflags,b.nick as name from board_user_acl a left join users b on b.id = a.userid",
                         function(err, results, fields) {
                             if(err) {
                                 console.log(err);
@@ -312,12 +312,12 @@ module.exports = function GalaxyBoard(config) {
                                 results.forEach(function(subset) {
                                     if (!mGrouplist[subset["boardid"]])
                                         mGrouplist[subset["boardid"]]    =   {};
-                                    mGrouplist[subset["boardid"]][subset["accessid"]]  =   subset;
+                                    mGrouplist[subset["boardid"]][subset["userid"]]  =   subset;
                                 });
                             }
                             //  Es gibt auch Gruppen welche als Moderatoren gehen wuerden:
                             mysqlPool.query(
-                                "select sql_cache a.boardid, a.accessid, a.bflags, a.eflags,b.description as name from board_acl a left join groups b on b.groupid = -a.accessid where a.accessid<0",
+                                "select sql_cache a.boardid, a.groupid, a.bflags, a.eflags,b.description as name from board_group_acl a left join groups b on b.groupid = a.groupid",
                                 function(err, results, fields) {
                                     if(err) {
                                         console.log(err);
@@ -325,7 +325,7 @@ module.exports = function GalaxyBoard(config) {
                                         results.forEach(function(subset) {
                                             if (!mGrouplist[subset["boardid"]])
                                                 mGrouplist[subset["boardid"]]    =   {};
-                                            mGrouplist[subset["boardid"]][subset["accessid"]]  =   subset;
+                                            mGrouplist[subset["boardid"]][subset["groupid"]]  =   subset;
                                         })
                                     }
                                     cb();
@@ -1675,10 +1675,6 @@ module.exports = function GalaxyBoard(config) {
                 }
             )
         };
-        //
-        //self.createBoard = function(params, next) {
-        //    mysqlPool.query("insert into board")
-        //};
     }
 }
  

@@ -15,7 +15,8 @@
     "morgan": "~1.6",
     "db-migrate": "~0.9",
     "node-sass": "~3.2",
-    "forever": "~0.15"
+    "forever": "~0.15",
+    "htmlspecialchars": "~1.0.5"
   },
   "devDependencies": {
     "mocha": "~2.2",

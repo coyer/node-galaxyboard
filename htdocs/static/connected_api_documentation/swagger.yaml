@@ -1,0 +1,154 @@
+# This document describes the connected api documentation for the galaxyboard software
+swagger: '2.0'
+info:
+  title: Galaxyboard Connect API
+  description: Let your users only register/login once with this api.
+  version: "0.1.0"
+# the domain of the service
+host: tbd
+# array of all schemes that your API supports
+schemes:
+  - https
+  - http
+# will be prefixed to all paths
+basePath: /connect_api
+produces:
+  - application/json
+paths:
+  /system:
+    post:
+      parameters:
+        - name: system
+          in: body
+          description: new system as json object
+          schema:
+            $ref: '#/definitions/System'
+      responses:
+        200:
+          description: system created successfully
+          schema:
+            $ref: '#/definitions/System'
+        403:
+          description: system already exists
+        
+  /system/{systemId}:
+    put:
+      parameters:
+        - name: systemId
+          in: path
+          description: Id of the connected system
+          type: string
+          required: true
+        - name: system
+          in: body
+          description: System Json you would like to send
+          schema:
+            $ref: '#/definitions/System'
+          required: true
+      responses:
+        200:
+          description: system updated successfully
+        400:
+          description: bad request
+        404:
+          description: system does not exist
+    delete:
+      parameters:
+        - name: systemId
+          in: path
+          description: Id of the connected system
+          type: string
+          required: true
+      responses:
+        200:
+          description: system deleted successfully
+        404:
+          description: system does not exist
+  
+  /system/{systemId}/user/{userId}:
+    put:
+      parameters:
+        - name: systemId
+          in: path
+          description: Id of the connected system
+          type: string
+          required: true
+        - name: userId
+          in: path
+          description: Userid in the connected system
+          type: string
+          required: true
+        - name: user
+          in: body
+          description: Json-Object of the user
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: user successfully created or updated
+        400:
+          description: Bad Request
+    delete:
+      parameters:
+        - name: systemId
+          in: path
+          description: Id of the connected system
+          type: string
+          required: true
+        - name: userId
+          in: path
+          description: Userid in the connected system
+          type: string
+          required: true
+      responses:
+        200:
+          description: user deleted successfully
+        404:
+          description: user or system does not exist
+          
+  /system/{systemId}/user/{userId}/session:
+    post:
+      parameters:
+        - name: systemId
+          in: path
+          description: id of the connected system
+          type: string
+          required: true
+        - name: userId
+          in: path
+          description: userid in the connected system
+          type: string
+          required: true
+      responses:
+        200:
+          description: created session
+          schema:
+            $ref: '#/definitions/Session'
+        404:
+          description: user or system does not exist
+            
+definitions:
+  System:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      loginPath:
+        type: string
+  User:
+    properties:
+      name:
+        type: string
+      eMail:
+        type: string
+      registeredSince:
+        type: string
+        description: ISO 8601 formatted datetime
+  Session:
+    properties:
+      forwardURL:
+        type: string
+      expires:
+        type: string
+        description: ISO 8601 formatted datetime
