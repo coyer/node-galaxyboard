@@ -16,6 +16,7 @@
   "error": {
     "mail": {
       "host": "localhost",
+      "port": 25,
       "message": {
         "sender": "board@galaxytrek.com",
         "to": "dbogatz@web.de",

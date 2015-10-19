@@ -37,84 +37,84 @@ var dfu_premium = 1 << 30;   //  REMX    premiumuser
 var dfu_superadmin = 1 << 31;   //  REMX    ist ein superadmin
 
 //  Boardflags (fuer das Board selbst)
-var dfbf_bbcode_board = 1 << 0    //  -obs-   BBCode default aktivieren (todo in headline)
-var dfbf_smilies_board = 1 << 1    //  -obs-   Smilies immer erlauben
-var dfbf_links_board = 1 << 2    //  -obs-
-var dfbf_bbcode_rule = 1 << 3    //  -obs-   Ob die Regeln bbcode enthalten duerfen
-var dfbf_smilies_rule = 1 << 4    //  -obs-
-var dfbf_links_rule = 1 << 5    //  -obs-
+var dfbf_bbcode_board = 1 << 0;    //  -obs-   BBCode default aktivieren (todo in headline)
+var dfbf_smilies_board = 1 << 1;    //  -obs-   Smilies immer erlauben
+var dfbf_links_board = 1 << 2;    //  -obs-
+var dfbf_bbcode_rule = 1 << 3;    //  -obs-   Ob die Regeln bbcode enthalten duerfen
+var dfbf_smilies_rule = 1 << 4;    //  -obs-
+var dfbf_links_rule = 1 << 5;    //  -obs-
 
-var dfbf_showsubboards = 1 << 6    //          Ob untergeordnete Boards angezeigt werden duerfen
-var dfbf_hideboard = 1 << 7    //          Versteckt das Forum
-var dfbf_closed = 1 << 8    //          Bereich abgeschlossen (nicht editierbar)
-var dfbf_chooseprefix = 1 << 9    //  REMX    Sofern Prefixe vorhanden *muss* eine Auswahl getroffen werden
-var dfbf_nonews = 1 << 10   //          Beitraege nicht in News erwaehnen
-var dfbf_dynmenu = 1 << 11   //  -obs-   dynamische menues!
+var dfbf_showsubboards = 1 << 6;    //          Ob untergeordnete Boards angezeigt werden duerfen
+var dfbf_hideboard = 1 << 7;    //          Versteckt das Forum
+var dfbf_closed = 1 << 8;    //          Bereich abgeschlossen (nicht editierbar)
+var dfbf_chooseprefix = 1 << 9;    //  REMX    Sofern Prefixe vorhanden *muss* eine Auswahl getroffen werden
+var dfbf_nonews = 1 << 10;   //          Beitraege nicht in News erwaehnen
+var dfbf_dynmenu = 1 << 11;   //  -obs-   dynamische menues!
 
 //  Benutzerrechte - Board: [boardflags]
 //  Post
-var dfbp_postanounce = 1 << 0    //          Can post announcements
-var dfbp_useicons = 1 << 1    //  -obs-   Can use topic/post icons immer erlaubt
-var dfbp_show = 1 << 2    //  [done]  Can see forum
-var dfbp_createtopic = 1 << 3    //  [done]  Can start new topics
-var dfbp_readboard = 1 << 4    //  [done]  Can read forum
-var dfbp_reply = 1 << 5    //  [done]  Can reply to topics
-var dfbp_poststicky = 1 << 6    //          Can post stickies
+var dfbp_postanounce = 1 << 0;    //          Can post announcements
+var dfbp_useicons = 1 << 1;    //  -obs-   Can use topic/post icons immer erlaubt
+var dfbp_show = 1 << 2;    //  [done]  Can see forum
+var dfbp_createtopic = 1 << 3;    //  [done]  Can start new topics
+var dfbp_readboard = 1 << 4;    //  [done]  Can read forum
+var dfbp_reply = 1 << 5;    //  [done]  Can reply to topics
+var dfbp_poststicky = 1 << 6;    //          Can post stickies
 //  Content
-var dfbp_attachfile = 1 << 16   //          Can attach files
-var dfbp_usebbcode = 1 << 17   //  -obs-   Can post BBCode [immer erlaubt]
-var dfbp_downloadfile = 1 << 18   //          Can download files
-var dfbp_postflash = 1 << 19   //          Can post Flash
-var dfbp_postimages = 1 << 20   //          Can post images
-var dfbp_signatures = 1 << 21   //  [done]  Can use signatures
-var dfbp_smilies = 1 << 22   //  -obs-   Can post smilies [immer erlaubt]
+var dfbp_attachfile = 1 << 16;   //          Can attach files
+var dfbp_usebbcode = 1 << 17;   //  -obs-   Can post BBCode [immer erlaubt]
+var dfbp_downloadfile = 1 << 18;   //          Can download files
+var dfbp_postflash = 1 << 19;   //          Can post Flash
+var dfbp_postimages = 1 << 20;   //          Can post images
+var dfbp_signatures = 1 << 21;   //  [done]  Can use signatures
+var dfbp_smilies = 1 << 22;   //  -obs-   Can post smilies [immer erlaubt]
 
 //  Actions (extendflags)   [extendflags]
-var dfbp_bumptopic = 1 << (32 - 32)   //         Can bump topics
-var dfbp_deleteownpost = 1 << (33 - 32)   //  [done] Can delete own posts
-var dfbp_editownpost = 1 << (34 - 32)   //  [done] Can edit own posts
-var dfbp_emailtopic = 1 << (35 - 32)   //         Can e-mail topics
-var dfbp_printtopic = 1 << (36 - 32)   //  -obs-  Can print topics
-var dfbp_reportpost = 1 << (37 - 32)   //  [done] Can report posts
-var dfbp_subscribe = 1 << (38 - 32)   //         Can subscribe forum
-var dfbp_closeowntopic = 1 << (39 - 32)   //  -obs-  Can lock own topics (absperren?
+var dfbp_bumptopic = 1 << (32 - 32);   //         Can bump topics
+var dfbp_deleteownpost = 1 << (33 - 32);   //  [done] Can delete own posts
+var dfbp_editownpost = 1 << (34 - 32);   //  [done] Can edit own posts
+var dfbp_emailtopic = 1 << (35 - 32);   //         Can e-mail topics
+var dfbp_printtopic = 1 << (36 - 32);   //  -obs-  Can print topics
+var dfbp_reportpost = 1 << (37 - 32);   //  [done] Can report posts
+var dfbp_subscribe = 1 << (38 - 32);   //         Can subscribe forum
+var dfbp_closeowntopic = 1 << (39 - 32);   //  -obs-  Can lock own topics (absperren?
 //  Misc
-var dfbp_ignoreflood = 1 << (48 - 32)   //         Can ignore flood limit
-var dfbp_noapproval = 1 << (49 - 32)   //         Can post without approval
-var dfbp_incpostcounter = 1 << (50 - 32)   //         Falls abgeschaltet wird Postcounter nicht erhoeht
-var dfbp_search = 1 << (51 - 32)   //         Can search the forum
+var dfbp_ignoreflood = 1 << (48 - 32);   //         Can ignore flood limit
+var dfbp_noapproval = 1 << (49 - 32);   //         Can post without approval
+var dfbp_incpostcounter = 1 << (50 - 32);   //         Falls abgeschaltet wird Postcounter nicht erhoeht
+var dfbp_search = 1 << (51 - 32);   //         Can search the forum
 //  Polls
-var dfbp_createpolls = 1 << (56 - 32)   //         Can create polls
-var dfbp_votepoll = 1 << (57 - 32)   //         Can vote in polls
-var dfbp_changevote = 1 << (58 - 32)   //         Can change existing vote
-var dfbp_votetopic = 1 << (59 - 32)   //         Topic bewerten
+var dfbp_createpolls = 1 << (56 - 32);   //         Can create polls
+var dfbp_votepoll = 1 << (57 - 32);   //         Can vote in polls
+var dfbp_changevote = 1 << (58 - 32);   //         Can change existing vote
+var dfbp_votetopic = 1 << (59 - 32);   //         Topic bewerten
 
 //  Moderatoren-Flags:      [modflags]
 //  Beitraege
-var dfmod_approvepost = 1 << 0    //  -obs-   Kann Beitraege freigeben
-var dfmod_setauthor = 1 << 1    //  -obs-   Kann Autor eines Beitrags aendern
-var dfmod_deletepost = 1 << 2    //  [done]  Kann Beitraege loeschen
-var dfmod_editpost = 1 << 3    //  [done]  Kann Beitraege aendern
-var dfmod_closereports = 1 << 4    //  [done]  Kann Meldungen schliessen und loeschen
-var dfmod_hidepost = 1 << 5    //  [done]  Kann einen Beitrag "verstecken" REMX: Ein durch Mod gemeldeter Beitrag wird sofort versteckt
-var dfmod_replypost = 1 << 6    //  [done]  Kann auf Beitrag antworten auch wenn thema geschlossen wurde.
+var dfmod_approvepost = 1 << 0;    //  -obs-   Kann Beitraege freigeben
+var dfmod_setauthor = 1 << 1;    //  -obs-   Kann Autor eines Beitrags aendern
+var dfmod_deletepost = 1 << 2;    //  [done]  Kann Beitraege loeschen
+var dfmod_editpost = 1 << 3;    //  [done]  Kann Beitraege aendern
+var dfmod_closereports = 1 << 4;    //  [done]  Kann Meldungen schliessen und loeschen
+var dfmod_hidepost = 1 << 5;    //  [done]  Kann einen Beitrag "verstecken" REMX: Ein durch Mod gemeldeter Beitrag wird sofort versteckt
+var dfmod_replypost = 1 << 6;    //  [done]  Kann auf Beitrag antworten auch wenn thema geschlossen wurde.
 //  Diverses
-var dfmod_managebans = 1 << 8    //          Kann Sperren verwalten
-var dfmod_postdetails = 1 << 9    //          Kann Beitrags-Details ansehen
-var dfmod_createbans = 1 << 10   //  [done]  Kann Verwarnungen aussprechen
+var dfmod_managebans = 1 << 8;    //          Kann Sperren verwalten
+var dfmod_postdetails = 1 << 9;    //          Kann Beitrags-Details ansehen
+var dfmod_createbans = 1 << 10;   //  [done]  Kann Verwarnungen aussprechen
 //  Themen
-var dfmod_closethread = 1 << 16   //  [done]  Kann Themen sperren
-var dfmod_jointhreads = 1 << 17   //  -obs-   Kann Themen zusammenfuehren
-var dfmod_movethread = 1 << 18   //  [done]  Kann Themen verschieben
-var dfmod_splitthread = 1 << 19   //  -obs-   Kann Themen teilen
-var dfmod_deletethread = 1 << 20   //  [done]  Kann Themen loeschen
-var dfmod_editthread = 1 << 21   //  [done]  Kann Themen editieren
-var dfmod_createtopic = 1 << 22   //  [done]  Kann Themen erstellen im geschlossenen Forum
+var dfmod_closethread = 1 << 16;   //  [done]  Kann Themen sperren
+var dfmod_jointhreads = 1 << 17;   //  -obs-   Kann Themen zusammenfuehren
+var dfmod_movethread = 1 << 18;   //  [done]  Kann Themen verschieben
+var dfmod_splitthread = 1 << 19;   //  -obs-   Kann Themen teilen
+var dfmod_deletethread = 1 << 20;   //  [done]  Kann Themen loeschen
+var dfmod_editthread = 1 << 21;   //  [done]  Kann Themen editieren
+var dfmod_createtopic = 1 << 22;   //  [done]  Kann Themen erstellen im geschlossenen Forum
 
 //  Beitragsflags           [postflags]
-var dfpost_needapproval = 1 << 0    //          Beitrag benoetigt Freigabe (ggf. auch Topic mit freigeben falls themenstarter?)
-var dfpost_hide = 1 << 1    //  [done]  Beitrag wurde versteckt
-var dfpost_reported = 1 << 2    //  [done]  Beitrag wurde gemeldet (darf nicht mehr geaendert werden)
+var dfpost_needapproval = 1 << 0;    //          Beitrag benoetigt Freigabe (ggf. auch Topic mit freigeben falls themenstarter?)
+var dfpost_hide = 1 << 1;    //  [done]  Beitrag wurde versteckt
+var dfpost_reported = 1 << 2;    //  [done]  Beitrag wurde gemeldet (darf nicht mehr geaendert werden)
 
 
 //  ---------------------------------------------------
@@ -139,29 +139,29 @@ function intval(t) {
 
 String.prototype.trim = function () {
     return this.replace(/^\s+|\s+$/g, "");
-}
+};
 String.prototype.ltrim = function () {
     return this.replace(/^\s+/, "");
-}
+};
 String.prototype.rtrim = function () {
     return this.replace(/\s+$/, "");
-}
+};
 String.prototype.pad = function (l) {
     if (typeof(l) == "undefined")l = "0";
     return ( l.substr(0, (l.length - this.length)) + this );
-}
+};
 String.prototype.escape = function () {
     return this.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+};
 String.prototype.jsstring = function () {
     return this.replace(/\'/g, "\\'");
-}
+};
 String.prototype.startswith = function (search) {
     return (this.substr(0, search.length) == search) ? true : false;
-}
+};
 String.prototype.endswith = function (search) {
     return (this.substr(this.length - search.length) == search) ? true : false;
-}
+};
 
 function getElementPosition(elem) {
     var xPosition = 0;
@@ -195,11 +195,15 @@ function debug(txt) {
 }
 
 function eatEvent(event) {
-    if (event.preventDefault)
+    if (event.preventDefault) {
         event.preventDefault();
+    }
     event.returnValue = false;
-    if (event.stopPropagation) event.stopPropagation()
-    else event.cancelBubble = true;
+    if (event.stopPropagation) {
+        event.stopPropagation();
+    } else {
+        event.cancelBubble = true;
+    }
     return false;
 }
 
@@ -241,7 +245,6 @@ function feedback(txt, szClass) {
             }, 1000);
         }, iTime);
     }, 500);
-
 }
 
 var hCurrentOverlay = null;
@@ -447,7 +450,7 @@ function CGalaxyboard() {
     };
     self.amxGetTopics = function (iThreadID) {
         return mTopics[iThreadID] || [];
-    }
+    };
     self.mxGetTopic = function (iTopicID) {
         if (mPosts["topicID"] == iTopicID) {
             return mPosts["topic"];
@@ -456,7 +459,9 @@ function CGalaxyboard() {
         }
     };
     self.mxGetFormData = function (p) {
-        if (!p) return ""
+        if (!p) {
+            return "";
+        }
 
         // formular auswerten
         var mParams = {};
@@ -519,7 +524,7 @@ function CGalaxyboard() {
                 location.hash = "!showTopic~" + mAction.topicID + "~" + mAction.page + "~" + mAction.postID;
             }
         });
-    }
+    };
 
     //  Einen Beitrag melden
     self.vxReport = function (iTopicID, iPostID) {
@@ -693,9 +698,8 @@ function CGalaxyboard() {
                 $("js_adminbox").style.display = "block";
                 $("js_content").style.margin = "0 auto 0 200px";
             } catch (e) {
-                debug(e)
+                debug(e);
             }
-            ;
         } else {
             $("js_adminbox").style.display = "none";
             $("js_content").style.margin = "0 auto";
@@ -759,7 +763,7 @@ function CGalaxyboard() {
                 $("js_tmp_subject").value = mTopic.headline;
                 $("js_tmp_icon" + mTopic.icon).checked = true;
                 $("js_tmp_pinned").checked = (mTopic.flags & dft_pinned) ? true : false;
-                $("js_tmp_subject").focus()
+                $("js_tmp_subject").focus();
             });
         }
     };
@@ -816,7 +820,7 @@ function CGalaxyboard() {
             return a ? new ActiveXObject([, "Msxml2", "Msxml3", "Microsoft"][a] + ".XMLHTTP") : new XMLHttpRequest
         } catch (e) {
         }
-    };
+    }
 
     //  AJAX-Request
     self.call = function (aList, cb) {
@@ -918,7 +922,11 @@ function CGalaxyboard() {
                     break;
                 case "newThreads":
                     //  Forum schachteln und dabei News herausfischen
-                    for (var key in data) if (data[data[key].pid]) data[data[key].pid].childs.push(key);
+                    for (var key in data) {
+                        if (typeof data[key].pid !== 'undefined' && data[key].pid !== null) {
+                            data[data[key].pid].childs.push(key);
+                        }
+                    }
                     //  Forum sortieren
                     for (var key in data) data[key].childs.sort(function (a, b) {
                         return data[a].sortid - data[b].sortid;

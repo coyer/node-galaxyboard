@@ -1,1 +1,3 @@
-exports.Board = require('./Types.js');
+require('./variable.js');
+require('./object.js');
+require('./collection');

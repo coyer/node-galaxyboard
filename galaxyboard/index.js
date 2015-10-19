@@ -8,7 +8,10 @@ var async = require("async");
 var fs = require("fs");
 var queryBuilder = require('squiggle');
 var entities = require('./entities');
+var tools = require('./tools');
 var injectPromise = require('./InjectPromise.js');
+var GroupACL = require('./GroupACL.js');
+var UserACL = require('./UserACL.js');
 
 module.exports = function GalaxyBoard(config) {
 
@@ -24,11 +27,12 @@ module.exports = function GalaxyBoard(config) {
 
     //  Create instance of MySQL
     var mysqlPool = mysql.createPool(config.mysql);
+    var dbServices = new(require('./database_service'))(mysqlPool);
 
     //
     //  Board API
     //
-    self.processCommands = function (req, res, onFinish, mockUser) {
+    self.processCommands = function processCommands(req, res, onFinish, mockUser) {
         var aCmd = JSON.parse(req.body.cmd);
         var amJSON = [];
         var self = this;
@@ -36,21 +40,22 @@ module.exports = function GalaxyBoard(config) {
         var mBoard = null;   //  current Boardstructure (suitable for current User)
         var iLTDate = 0;      //  newest postdate; if this is higher than that a user knows a new boardstruct will be send
         var mModlist = null;   //  Gecachte Moderatorenliste. Kann sp�ter global werden damit man sich SQLs spart.
-        var mGrouplist = null;   //  Forenzugriffe
+        var boardGroupACL = null;
+        var boardUserACL = null;
 
         //  Zun�chst muss das Userobjekt und Boardobjekt initialisiert werden.
         //  Danach werden die einzelnen API-Befehle ausgef�hrt.
         async.series([
-            //  Initialize mUser (if userId==0 then try to use Id from Cookie)
-            function(next) {
-                initUser(0, next);  //  Uses req + res from this scope
-            },
-            //  Initialize Board
-            function(next) {
-                initBoard(next);    //  Uses req + res from this scope
-            }],
+                //  Initialize mUser (if userId==0 then try to use Id from Cookie)
+                function (next) {
+                    initUser(0, next);  //  Uses req + res from this scope
+                },
+                //  Initialize Board
+                function (next) {
+                    initBoard(next);    //  Uses req + res from this scope
+                }],
             //  Process install
-            function() {
+            function () {
                 async.forEach(aCmd,
                     function (command, next) {
                         if (!self[command.cmd]) {
@@ -68,22 +73,13 @@ module.exports = function GalaxyBoard(config) {
         );
 
         //  Bestimmt die Zugriffsrechte auf ein bestimmtes Board
-        function ixCheckBoardAccess(iThreadID) {
-            //  Pr�ft den Zugriff auf das Board. 
-            var iBoardFlags = 0;   //  default keine Rechte
-            var iExtendFlags = 0;
-
-            //  Existiert eine Gruppe?
-            if (mGrouplist[iThreadID]) {
-                //  Dann diese Gruppe durchgehen und schauen ob wir als User bzw. als Gruppenmitglied enthalten sind:
-                for (var groupid in mGrouplist[iThreadID]) {
-                    if ((groupid < 0 && mUser["groups"].indexOf(parseInt(groupid)) != -1) || groupid == mUser["id"]) {
-                        iBoardFlags |= mGrouplist[iThreadID][groupid]["bflags"];
-                        iExtendFlags |= mGrouplist[iThreadID][groupid]["eflags"];
-                    }
-                }
-            }
-            return {"board": iBoardFlags, "extended": iExtendFlags}; //[iBoardFlags,iExtendFlags];
+        function ixCheckBoardAccess(boardId) {
+            var groupFlags = boardGroupACL.getFlags(boardId, mUser.groups);
+            var userFlags = boardUserACL.getFlags(boardId, mUser.id);
+            return {
+                board: groupFlags.board | userFlags.board,
+                extended: groupFlags.extended | userFlags.extended
+            };
         }
 
         //  Bestimmt Zugriffsrechte f�r Moderatoren
@@ -161,7 +157,7 @@ module.exports = function GalaxyBoard(config) {
                 "id": 0,
                 "nick": "Guest",
                 "flags": 0,
-                "groups": [-1],
+                "groups": [1],
                 "posts": 0,
                 "titel": "",
                 "created": 0,
@@ -218,14 +214,14 @@ module.exports = function GalaxyBoard(config) {
                             if (results.length) {
                                 //  Use result as UserData
                                 mUser = results[0];
-                                mUser["groups"] = [-1, -2];   //  User hat  Gast + Registriert Zugang
+                                mUser["groups"] = [1, 2];   //  User hat  Gast + Registriert Zugang
                                 //  Gruppen + Rechte auslesen; GruppenID ist negativ!!!
                                 mysqlPool.query(
                                     "select groupid from group_members where userid=?", [iUserID],
                                     function (err, results, fields) {
                                         if (!err && results.length) {
                                             for (var i = 0; i < results.length; i++)
-                                                mUser["groups"].push(-results[i].groupid);
+                                                mUser["groups"].push(results[i].groupid);
                                         }
                                         //  Last set Lastlogin
                                         var iLastLogin = new Date().getTime() / 1000;
@@ -310,46 +306,21 @@ module.exports = function GalaxyBoard(config) {
                             }
                         );
                     },
+
+                    function initUserACL(cb) {
+                        dbServices.acl.getUserAcl(function (rawUserACL) {
+                            boardUserACL = new UserACL(rawUserACL);
+                            cb();
+                        });
+                    },
+
                     //  Forenzugriffe (Gruppen und User):
                     //  --------------------------------------------------------------------------------------------------------------------------------------
-                    function getGrouplist(cb) {
-                        //  Bereits eine Gruppenliste vorhanden?
-                        if (mGrouplist != null)
-                            return cb();    //  Skip
-
-                        //  Neue Gruppenliste erstellen:
-                        mGrouplist = {};
-                        mysqlPool.query(
-                            "select sql_cache a.boardid, a.userid, a.bflags,a.eflags,b.nick as name from board_user_acl a left join users b on b.id = a.userid",
-                            function (err, results, fields) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-                                    results.forEach(function (subset) {
-                                        if (!mGrouplist[subset["boardid"]])
-                                            mGrouplist[subset["boardid"]] = {};
-                                        mGrouplist[subset["boardid"]][subset["userid"]] = subset;
-                                    });
-                                }
-                                //  Es gibt auch Gruppen welche als Moderatoren gehen wuerden:
-                                mysqlPool.query(
-                                    "select sql_cache a.boardid, a.groupid, a.bflags, a.eflags,b.description as name from board_group_acl a left join groups b on b.groupid = a.groupid",
-                                    function (err, results, fields) {
-                                        if (err) {
-                                            console.log(err);
-                                        } else {
-                                            results.forEach(function (subset) {
-                                                if (!mGrouplist[subset["boardid"]])
-                                                    mGrouplist[subset["boardid"]] = {};
-                                                mGrouplist[subset["boardid"]][subset["groupid"]] = subset;
-                                            })
-                                        }
-                                        cb();
-                                    }
-                                )
-                            }
-
-                        )
+                    function initGroupACL(cb) {
+                        dbServices.acl.getGroupACL(function(rawGroupACL){
+                            boardGroupACL = new GroupACL(rawGroupACL);
+                            cb();
+                        });
                     },
                     //  Boardstruktur
                     //  --------------------------------------------------------------------------------------------------------------------------------------
@@ -357,8 +328,26 @@ module.exports = function GalaxyBoard(config) {
                         var mCachedBoard = {
                             0: {
                                 "id": 0,
-                                "pid": -1,
-                                "headline": "Start",
+                                "pid": null,
+                                "sortid": null,
+                                "topiccount": 0,
+                                "postcount": 0,
+                                "lasttopicid": null,
+                                "headline": 'I am a board',
+                                "description": '',
+                                "boardrule": 'Optional notification about special rules in this board.',
+                                'boardflags': 0,
+                                'prefixe': null,
+                                'hits': 0,
+                                'posts': 0,
+                                'icon': 0,
+                                'topic': null,
+                                'topicflags': null,
+                                'lastpostdate': 0,
+                                'topicid': null,
+                                'lastpostid': 0,
+                                'username': 'nobody',
+                                'lastuserid': 0,
                                 "childs": [],
                                 "perms": {"modflags": 0, "boardflags": 0, "extendflags": 0},
                                 "reports": [],
@@ -368,7 +357,7 @@ module.exports = function GalaxyBoard(config) {
                         };
                         mysqlPool.query(
                             "select" +
-                            " b.boardid as id, a.parentboardid as pid, a.sortid, ifnull(a.topiccount,0) as topiccount, ifnull(a.postcount,0) as postcount, ifnull(a.topiccount,0) as originaltopiccount, ifnull(a.postcount,0) as originalpostcount, a.lasttopicid," +
+                            " b.boardid as id, a.parentboardid as pid, a.sortid, ifnull(a.topiccount,0) as topiccount, ifnull(a.postcount,0) as postcount, a.lasttopicid," +
                             " b.headline,b.description, b.boardrule, ifnull(b.boardflags,0) as boardflags, b.prefixe," +
                             " ifnull(c.hits,0) as hits, ifnull(c.posts,0) as posts, ifnull(c.icon,0) as icon, c.headline as topic, c.flags as topicflags, ifnull(c.lastpostdate,0) as lastpostdate, c.topicid," +
                             " ifnull(c.lastpostid,0) as lastpostid, ifnull(d.username,'nobody') as username, ifnull(d.userid,0) as lastuserid" +
@@ -384,66 +373,60 @@ module.exports = function GalaxyBoard(config) {
                                     results.forEach(function (subset) {
                                         if (subset["id"] != 0) {
                                             subset["childs"] = [];
-                                            if (subset["id"] == subset["pid"])    //  In sich selbst geschachtelt!
-                                                subset["pid"] = 0;              //  in root schieben!
+                                            if (!subset.pid) {
+                                                subset.pid = 0;
+                                            }
                                             mCachedBoard[subset["id"]] = subset;
                                         }
                                     });
                                 }
+
                                 //  Zugriffsrechte bereinigen (childs bleiben stehen und zeigen ggf auf leeren key!)
                                 mBoard = {0: mCachedBoard[0]};       //  Root-Struktur verwenden
-                                for (var key in mCachedBoard) {
+                                for (var boardId in mCachedBoard) {
                                     //  Moderatoren patchen:
-                                    mCachedBoard[key]["modlist"] = [];
-                                    if (mModlist[key]) {
-                                        for (var mMod in mModlist[key]) {
-                                            mMod = mModlist[key][mMod];
-                                            mCachedBoard[key]["modlist"].push({
+                                    mCachedBoard[boardId]["modlist"] = [];
+                                    if (mModlist[boardId]) {
+                                        for (var mMod in mModlist[boardId]) {
+                                            mMod = mModlist[boardId][mMod];
+                                            mCachedBoard[boardId]["modlist"].push({
                                                 "id": mMod["userid"],
                                                 "name": mMod["name"],
                                                 "flags": mMod["flags"]
                                             });
                                         }
                                     }
+                                    if(
+                                        boardGroupACL.hasBoardGroup(boardId, mUser.groups)
+                                        || boardUserACL.hasBoardUser(boardId, mUser.id)
+                                        || tools.for.collection(mModlist).hasChild([boardId, mUser.id])
+                                    ) {
+                                        mBoard[boardId] = mCachedBoard[boardId];
+                                        var iModFlags = ixGetModFlags(boardId, mCachedBoard);
 
-                                    if (mGrouplist[key]) {
-                                        //  Schnittmenge ermitteln von Werten welche in der eigenen Gruppe sowie in der Hgrouplist sind
-                                        var arrMenge = [];
-                                        for (var i = 0; i < mUser["groups"].length; i++) if (mGrouplist[key][mUser["groups"][i]]) arrMenge.push(mUser["groups"][i]);
+                                        //  Rechte patchen:
+                                        var flags = ixCheckBoardAccess(boardId);
+                                        mBoard[boardId]["perms"] = {
+                                            "modflags": iModFlags,
+                                            "boardflags": flags.board,
+                                            "extendflags": flags.extended
+                                        };
 
-                                        if (arrMenge.length || (mModlist[key] && mModlist[key][mUser["id"]])) {
-                                            mBoard[key] = mCachedBoard[key];
-                                            var iModFlags = ixGetModFlags(key, mCachedBoard);
-
-                                            //  Rechte patchen:
-                                            var flags = ixCheckBoardAccess(key);
-                                            mBoard[key]["perms"] = {
-                                                "modflags": iModFlags,
-                                                "boardflags": flags.board,
-                                                "extendflags": flags.extended
-                                            };
-
-                                            //  Neusten Beitrag finden:
-                                            if (iLTDate < mBoard[key]["lastpostdate"])
-                                                iLTDate = mBoard[key]["lastpostdate"];
+                                        //  Neusten Beitrag finden:
+                                        if (iLTDate < mBoard[boardId]["lastpostdate"]) {
+                                            iLTDate = mBoard[boardId]["lastpostdate"];
                                         }
                                     }
                                 }
 
-                                //  Jetzt kann es noch vorkommen das Unterforen vorhanden sind ohne Parent welche rausgefiltert werden
-                                //  Gleichzeitig eine Liste anlegen mit Foren in denen wir als Mod ggf Meldungen bearbeiten duerfen
                                 var aiUnreportPosts = [];
                                 for (var key in mBoard) {
-                                    if (key != 0 && !mBoard[mBoard[key]["pid"]]) {
-                                        delete(mBoard[key]);
-                                    } else {
-                                        if (mBoard[key]["perms"]["modflags"] != 0)
-                                            mBoard[0]["bIsMod"] = true;
-                                        if (mBoard[key]["perms"]["modflags"] & GBFlags.dfmod_closereports || mUser["flags"] & GBFlags.dfu_superadmin)
-                                            aiUnreportPosts.push(key);
-                                        if (mBoard[key]["perms"]["modflags"] & GBFlags.dfmod_managebans)
-                                            mBoard[0]["bManageBans"] = true;
-                                    }
+                                    if (mBoard[key]["perms"]["modflags"] != 0)
+                                        mBoard[0]["bIsMod"] = true;
+                                    if (mBoard[key]["perms"]["modflags"] & GBFlags.dfmod_closereports || mUser["flags"] & GBFlags.dfu_superadmin)
+                                        aiUnreportPosts.push(key);
+                                    if (mBoard[key]["perms"]["modflags"] & GBFlags.dfmod_managebans)
+                                        mBoard[0]["bManageBans"] = true;
                                 }
                                 //  Darf der User Meldungen bearbeiten?
                                 if (aiUnreportPosts.length) {
@@ -1337,7 +1320,7 @@ module.exports = function GalaxyBoard(config) {
                 "id": 0,
                 "nick": "Guest",
                 "flags": 0,
-                "groups": [-1],
+                "groups": [1],
                 "posts": 0,
                 "titel": "",
                 "created": 0,
@@ -1896,6 +1879,4 @@ module.exports = function GalaxyBoard(config) {
             }
         };
     }
-}
- 
-
+};

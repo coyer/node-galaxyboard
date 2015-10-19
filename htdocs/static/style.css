@@ -106,7 +106,7 @@ body div.header .content-header {
     height: 100%;
     line-height:20px;
     color:white;
-    background: url(./gfx/header-gfx.jpg) top center no-repeat;
+    background: url(gfx/header-gfx.jpg) top center no-repeat;
 }
 body div.header .content-header .logo {
     margin-left: -110px;

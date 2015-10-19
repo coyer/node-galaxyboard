@@ -3,7 +3,7 @@ var tools = require('../tools');
 
 exports.getInputErrors = function(board) {
     var inputErrorCollection = new eh.InputErrorCollection();
-    if(board.parentBoardId < 0 || !tools.Types.isInt(board.parentBoardId)) {
+    if(board.parentBoardId < 0 || !tools.for.variable(board.parentBoardId).isInt()) {
         inputErrorCollection.add(new eh.InputError(eh.TYPE_ERROR, eh.ERRORS.BASIC_VALIDATION_ERROR));
     }
 

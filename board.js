@@ -1,7 +1,6 @@
 var express = require("express");
 var app     = express();
 var connectApiApp = express();
-var fs      = require("fs");
 var zlib    = require('zlib');
 
 var nodemailer = require('nodemailer');
@@ -25,28 +24,27 @@ app.use(bodyParser.urlencoded({extended:true}));      //  parsing POST
 app.use(cookieParser());    //  parse cookies
 app.use(morgan('combined'));
 
-//  Fehler per Mail senden
-//  Generelle Fehler abfangen
-process.on('uncaughtException', function(err) {
-    console.log("uncaughtException");
-    console.log(err.stack);
-
-    var errorConfig = config.get('error');
-
-    var transporter = nodemailer.createTransport(smtpTransport({
-        host: errorConfig.mail.host,
-        port: 25
-    }));
-    var mailOptions = errorConfig.mail.message;
-    mailOptions.text = JSON.stringify(err.stack);
-    transporter.sendMail(mailOptions,
-        function(error, success){
-            console.log("sendmail::error",error);
-            console.log("sendmail::success",success);
-            console.log('Message ' + (success ? 'sent' : 'failed'));
-        }
-    );
-});
+////  Fehler per Mail senden
+////  Generelle Fehler abfangen
+//process.on('uncaughtException', function(err) {
+//    console.log("uncaughtException");
+//    console.log(err.stack);
+//
+//
+//    var transporter = nodemailer.createTransport(smtpTransport({
+//        host: config.error.mail.host,
+//        port: config.error.mail.port
+//    }));
+//    var mailOptions = errorConfig.mail.message;
+//    mailOptions.text = JSON.stringify(err.stack);
+//    transporter.sendMail(mailOptions,
+//        function(error, success){
+//            console.log("sendmail::error",error);
+//            console.log("sendmail::success",success);
+//            console.log('Message ' + (success ? 'sent' : 'failed'));
+//        }
+//    );
+//});
 
 //  Serve "index.html" and process AJAX-Crawls for index-page
 app.get('/', function(req, res){
