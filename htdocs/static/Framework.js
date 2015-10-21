@@ -693,13 +693,9 @@ function CGalaxyboard() {
     self.vxCheckMod = function () {
         //  Rechte fuer den Thread:
         if (mThreads[0].bIsMod) {
-            try {
-                $("js_adminbox").innerHTML = self.szxBuildAdminBox(mThreads, (mPosts && mPosts.topicID == iCurrentTopic) ? mPosts.topic : null);
-                $("js_adminbox").style.display = "block";
-                $("js_content").style.margin = "0 auto 0 200px";
-            } catch (e) {
-                debug(e);
-            }
+            $("js_adminbox").innerHTML = self.szxBuildAdminBox(mThreads, (mPosts && mPosts.topicID == iCurrentTopic) ? mPosts.topic : null);
+            $("js_adminbox").style.display = "block";
+            $("js_content").style.margin = "0 auto 0 200px";
         } else {
             $("js_adminbox").style.display = "none";
             $("js_content").style.margin = "0 auto";
@@ -832,12 +828,8 @@ function CGalaxyboard() {
 
         xhr.onreadystatechange = function () {
             if (this.readyState == 4) {
-                try {
-                    var mAction = self.vxDispatchData(JSON.parse(this.responseText));
-                    if (cb) cb(mAction);
-                } catch (e) {
-                    debug(e);
-                }
+                var mAction = self.vxDispatchData(JSON.parse(this.responseText));
+                if (cb) cb(mAction);
             }
         };
         xhr.open('POST', url, true);
@@ -916,9 +908,7 @@ function CGalaxyboard() {
                     mAction = amJSON[x];
                     break;
                 case "newTemplates":
-                    //try {
                     CTemplate.parseTemplate(self.translate(data)).process({"_MODIFIERS": self.mModifiers});
-                    //} catch(e){debug(e.message);debug("------------------------no templates");}
                     break;
                 case "newThreads":
                     //  Forum schachteln und dabei News herausfischen
@@ -1009,22 +999,17 @@ function CGalaxyboard() {
                     break;
             }
         }
-        //} catch(e) {debug(e.message)}
         return mAction;
     };
     self.vxAlertNewMessages = function () {
-        try {
-            var h = open('', '_newmessages', 'width=320,height=120,location=no,menubar=no,resizable=no,scrollbars=no,toolbar=no');
-            debug(h);
-            with (h.document) {
-                open();
-                write(self.translate(self.szxNewMails(mUser["messages"])));
-                close();
-            }
-            h.focus();
-        } catch (e) {
-            debug(e)
+        var h = open('', '_newmessages', 'width=320,height=120,location=no,menubar=no,resizable=no,scrollbars=no,toolbar=no');
+        debug(h);
+        with (h.document) {
+            open();
+            write(self.translate(self.szxNewMails(mUser["messages"])));
+            close();
         }
+        h.focus();
     };
 
     self.Integer = function (n, t, c, b) {
@@ -1316,36 +1301,28 @@ function CGalaxyboard() {
             }
             $("js_bt_deletemod").className = "small-button";
             $("js_bt_deletemod").onclick = function () {
-                try {
-                    //  ueber Moderatoren iterieren und Eintrag loeschen
-                    for (var i = 0; i < f.modlist.length; i++) {
-                        if (f.modlist[i].value.split("~")[0] == iUserID) {
-                            f.modlist[i] = null;
-                            return self.vxShowModOptions();
-                        }
+                //  ueber Moderatoren iterieren und Eintrag loeschen
+                for (var i = 0; i < f.modlist.length; i++) {
+                    if (f.modlist[i].value.split("~")[0] == iUserID) {
+                        f.modlist[i] = null;
+                        return self.vxShowModOptions();
                     }
-                } catch (e) {
-                    debug(e)
                 }
             };
             //  Aenderungen an Flags erfassen:
             $("js_modcontainer").style.display = "block";
             $("js_modcontainer").onclick = function () {
-                try {
-                    //  Flags durchtesten
-                    var iFlags = 0;
-                    for (var i = 0; i < o.length; i++) {
-                        iFlags |= (f.elements[o[i]].checked) ? window[o[i]] : 0;
+                //  Flags durchtesten
+                var iFlags = 0;
+                for (var i = 0; i < o.length; i++) {
+                    iFlags |= (f.elements[o[i]].checked) ? window[o[i]] : 0;
+                }
+                //  Ueber Moderatoren iterieren und Eintrag loeschen
+                for (var i = 0; i < f.modlist.length; i++) {
+                    if (f.modlist[i].value.split("~")[0] == iUserID) {
+                        f.modlist[i].value = iUserID + "~" + iFlags;
+                        break;
                     }
-                    //  Ueber Moderatoren iterieren und Eintrag loeschen
-                    for (var i = 0; i < f.modlist.length; i++) {
-                        if (f.modlist[i].value.split("~")[0] == iUserID) {
-                            f.modlist[i].value = iUserID + "~" + iFlags;
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    debug(e)
                 }
             }
         } else {
