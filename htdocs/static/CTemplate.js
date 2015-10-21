@@ -53,7 +53,7 @@ var CTemplate = (function() {
         });
 
         //  Finale virtuelle Funktion basteln
-        var sVirtualFunction = 'function __M__(f){var args=Array.prototype.slice.call(arguments).slice(1);return (typeof f == "function") ? f.apply(this,args) : __M__[f].apply(this,args);return arguments[1];}}';
+        var sVirtualFunction = 'function __M__(f){try{var args=Array.prototype.slice.call(arguments).slice(1);return (typeof f == "function") ? f.apply(this,args) : __M__[f].apply(this,args);}catch(e){console.log(f+"::"+e.message);return arguments[1];}}';
         sVirtualFunction+= '__M__.eat=function(){return "";};__M__.escape=function(s){return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");};__M__.capitalize=function(s){return String(s).toUpperCase();};__M__["default"]=function(s,d){return s!=null?s:d;};\n';
         sVirtualFunction+= "this.process=function(__CONTEXT__){if(__CONTEXT__._MODIFIERS!=null){for(var key in __CONTEXT__._MODIFIERS)__M__[key]=__CONTEXT__._MODIFIERS[key]};with(__CONTEXT__){\nvar __TMPL__='';__TMPL__+='<ESCAPE>"+tpl+"</ESCAPE>';\nreturn __TMPL__;}}";
 
@@ -64,6 +64,7 @@ var CTemplate = (function() {
         try {
             return new (Function(sVirtualFunction));
         } catch(e) {
+            debug(e);debug(sVirtualFunction);
             return null;
         }
     }
