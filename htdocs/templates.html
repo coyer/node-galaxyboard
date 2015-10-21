@@ -140,7 +140,6 @@
         {var pinned=0}
         {var unpinned=0}
         {for t in data}{if t.flags&dft_pinned}{var pinned=pinned+1}{else}{var unpinned=unpinned+1}{/if}{/for}
-{eval}debug(["pinned",pinned,unpinned]){/eval}
 
         <!-- Topics pinned -->
         {if pinned>0}
@@ -810,7 +809,7 @@
   <div class="edit-topic">
     <h3>@@@BOX_EDITTOPIC@@@</h3>
 
-    <form id="js_tmp_form" method="POST" onsubmit="try{system.vxEditTopic(${id}, true,this.headline.value, this.icon)} catch(e){debug(e)};return false;">
+    <form id="js_tmp_form" method="POST" onsubmit="system.vxEditTopic(${id}, true,this.headline.value, this.icon);return false;">
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <th width="30%">@@@TOPICHEADLINE@@@:</th>
@@ -846,7 +845,6 @@
 <!-- create Topic -->
 {macro szxCreateTopic(iThreadID, mTopic)}
     {var mUser = system.mxGetUser()}
-    {eval}debug(mTopic){/eval}
     <div class="innerwrapper">
       <div class="innerframe">
       <form onsubmit="return false;" method="POST" id="js_createtopic_form">
@@ -953,7 +951,6 @@
 <!-- Adminpanel erstellen -->
 {macro szxBuildAdminBox(mThreads, mTopic)}
   {var mUser = system.mxGetUser()}
-{eval}debug([mUser, mTopic]){/eval}
   {if mUser.flags&dfu_superadmin}
   <div class="innerframe" style="margin:0 0 8px 0;">
   <h1>AdminOptions</h1>
