@@ -485,7 +485,11 @@ function CGalaxyboard() {
             aNav.push(mThreads[iCur]);
             if (iCur == mThreads[iCur]["pid"])
                 break;
-            iCur = mThreads[iCur]["pid"];
+            if(iCur != 0) {
+                iCur = mThreads[iCur]["pid"];
+            } else {
+                break;
+            }
         }
         for (var i = aNav.length - 1; i >= 0; i--)
             szNav += '<a href="#!showThread~' + aNav[i]["id"] + '">' + aNav[i]["headline"].escape() + '</a>' + ((i > 0) ? ' &raquo; ' : '');
