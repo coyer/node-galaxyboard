@@ -187,13 +187,6 @@ function szxToLocaleDate(t, bWithTime) {
     return ((r.length > 1) ? r[0] : r) + (bWithTime ? (H + ":" + M + ":" + S) : '');
 }
 
-function debug(txt) {
-    try {
-        console.log(txt);
-    } catch (e) {
-    }
-}
-
 function eatEvent(event) {
     if (event.preventDefault) {
         event.preventDefault();
@@ -249,7 +242,6 @@ function feedback(txt, szClass) {
 
 var hCurrentOverlay = null;
 function vxOpenOverlay(template, onReady) {
-    debug("vxOpenOverlay");
     if (hCurrentOverlay) clearInterval(hCurrentOverlay);
     if ($("overlay-box").style.display != "none") {
         return vxResizeOverlay((template || $("js_overlay-box-content").innerHTML).trim(), onReady);
@@ -303,7 +295,6 @@ function vxOpenOverlay(template, onReady) {
 }
 
 function vxCloseOverlay() {
-    debug("vxCloseOverlay");
     if ($("overlay-box").style.display == "none") return; // muss nix geschlossen werden
     var pC = $("js_overlay-box-content");
     var pO = $("overlay-box");
@@ -335,7 +326,6 @@ function vxCloseOverlay() {
 }
 
 function vxResizeOverlay(template, onReady) {
-    debug("vxResizeOverlay");
     var pC = $("js_overlay-box-content");
     var pO = $("overlay-box");
     var iOldWidth = pC.offsetWidth;
@@ -519,7 +509,6 @@ function CGalaxyboard() {
     //  Antwort posten
     self.vxPostReply = function (iTopic, txt) {
         self.call([{"cmd": "addPost", "topicID": iTopic, "data": txt}], function (mAction) {
-            //debug("next action");debug(mAction);
             if (mAction.action == "showTopic") {
                 location.hash = "!showTopic~" + mAction.topicID + "~" + mAction.page + "~" + mAction.postID;
             }
@@ -648,9 +637,7 @@ function CGalaxyboard() {
         modlist.multiple = true;
         for (var i = 0; i < modlist.length; i++) {
             modlist[i].selected = true;
-            debug(modlist[i])
         }
-        debug(self.mxGetFormData(pForm));
 
         var mData = self.mxGetFormData(pForm);
         mData["cmd"] = "saveThread";
@@ -765,14 +752,12 @@ function CGalaxyboard() {
     };
     self.vxEditBans = function () {
         self.call([{"cmd": "getBans"}], function (mAction) {
-            debug(mAction);
             if (mAction.action == "banList")
                 vxOpenOverlay(self.szxEditBans(mAction.data));
         });
     };
     self.vxDeleteBan = function (id) {
         self.call([{"cmd": "delBan", "id": id}], function (mAction) {
-            debug(mAction);
             if (mAction.action == "banList")
                 vxOpenOverlay(self.szxEditBans(mAction.data));
         });
@@ -820,7 +805,6 @@ function CGalaxyboard() {
 
     //  AJAX-Request
     self.call = function (aList, cb) {
-        debug("system::call");
         if (!aList || !aList.length) return;
         var szPostdata = "cmd=" + encodeURIComponent(JSON.stringify(aList));
         var url = "./api" + "?ltd=" + self.ltd;
@@ -838,10 +822,7 @@ function CGalaxyboard() {
     };
     //  Thread anzeigen
     self.vxShowThreads = function (iThreadID) {
-        debug("vxShowThreads::" + iThreadID);
         if (mThreads && mThreads[iThreadID]) {
-            debug("rendering cached threads");
-            //debug(mThreads[iThreadID])
             $("js_content").innerHTML = self.szxBuildThreads(mThreads, iThreadID);
             iCurrentThread = iThreadID;
         } else {
@@ -855,7 +836,6 @@ function CGalaxyboard() {
 
     //  Neuen Topic erstellen:
     self.vxCreateTopic = function (iThreadID, pForm) {
-        debug("vxCreateTopic::" + iThreadID);
         //  Formular pruefen:
         if (!pForm.topic.value.trim()) return feedback("@@@NEEDTOPICHEADLINE@@@", "feedback-error");
         //  Icon pruefen
@@ -897,12 +877,9 @@ function CGalaxyboard() {
     //  EventDispatcher
     self.vxDispatchData = function (amJSON) {
         var mAction = {};   //  sollte nur eine action geben
-        //try {
         for (var x = 0; x < amJSON.length; x++) {
             var evnt = amJSON[x]["event"];
             var data = amJSON[x]["data"];
-            debug("event::" + evnt);
-            //debug(data);
             switch (evnt) {
                 case "action":
                     mAction = amJSON[x];
@@ -1003,7 +980,6 @@ function CGalaxyboard() {
     };
     self.vxAlertNewMessages = function () {
         var h = open('', '_newmessages', 'width=320,height=120,location=no,menubar=no,resizable=no,scrollbars=no,toolbar=no');
-        debug(h);
         with (h.document) {
             open();
             write(self.translate(self.szxNewMails(mUser["messages"])));
@@ -1109,7 +1085,6 @@ function CGalaxyboard() {
                     break;
                 default:
                     location.hash = "!showThread~0";
-                    debug(param);
             }
         }
     };
