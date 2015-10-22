@@ -617,6 +617,10 @@ function CGalaxyboard() {
         self.vxManageThreads(iCurrentThread);
     };
 
+    self.hasCurrentBoard = function() {
+        return iCurrentThread ? true : false;
+    };
+
     //  Shows a resultset for editing mods
     self.vxShowGroupResult = function (groupid) {
         if (!groupid) {

@@ -953,12 +953,14 @@
   {var mUser = system.mxGetUser()}
   {var modflags = mTopic?mTopic.perms.modflags:0}
   {if dfu_superadmin}
-  <div class="innerframe">
+  <div class="innerframe withIconButtons">
     <h1>@@@ADMIN_OPTIONS@@@</h1>
-    <div class="clickable" onclick="system.openPopupCreateBoard">@@@CREATE_BOARD@@@</div>
-    <div class="clickable" onclick="system.editCurrentBoard();">@@@EDIT_BOARD@@@</div>
-    <div class="clickable" onclick="system.openPopupMoveBoard">@@@MOVE_BOARD@@@</div>
-    <div class="clickable" onclick="system.openPopupDeleteBoard">@@@DELETE_BOARD@@@</div>
+    <div class="clickable" onclick="system.openPopupCreateBoard" title="@@@CREATE_BOARD@@@"><i class="fa fa-plus"></i></div>
+    {if system.hasCurrentBoard()}
+      <div class="clickable" onclick="system.editCurrentBoard();" title="@@@EDIT_BOARD@@@"><i class="fa fa-edit"></i></div>
+    {/if}
+    <div class="clickable" onclick="system.openPopupMoveBoard" title="@@@MOVE_BOARD@@@"><i class="fa fa-arrow-right"></i></div>
+    <div class="clickable" onclick="system.openPopupDeleteBoard" title="@@@DELETE_BOARD@@@"><i class="fa fa-trash"></i></div>
   </div>
   {/if}
   <div class="innerframe">

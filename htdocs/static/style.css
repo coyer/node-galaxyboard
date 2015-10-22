@@ -1039,6 +1039,21 @@ div.signature {
     text-align: left;
     margin: 0 0 8px 0;
 }
+#js_adminbox .innerframe.withIconButtons>div {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    text-align: center;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 17px;
+    background-color: #254050;
+}
+#js_adminbox .innerframe.withIconButtons i {
+    vertical-align: middle;
+}
 #js_adminbox .button {
     font-size:11px;
     white-space:nowrap;
