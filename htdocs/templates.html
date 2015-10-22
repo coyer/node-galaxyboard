@@ -951,66 +951,43 @@
 <!-- Adminpanel erstellen -->
 {macro szxBuildAdminBox(mThreads, mTopic)}
   {var mUser = system.mxGetUser()}
-  {if mUser.flags&dfu_superadmin}
-  <div class="innerframe" style="margin:0 0 8px 0;">
-  <h1>AdminOptions</h1>
-  <div class="button" onclick="system.vxManageThreads(0);">Edit Threads</div>
-<!--
-  <div class="button" onclick="system.vxManageThreads();">Add Thread</div>
-  <div class="button" onclick="alert('noch nicht drin');">Gruppen</div>
-  <div class="button" onclick="alert('noch nicht drin');">Benutzer</div>
--->
-  </div>
-  {/if}
-
-  <div class="innerframe">
   {var modflags = mTopic?mTopic.perms.modflags:0}
   {if dfu_superadmin}
+  <div class="innerframe">
     <h1>@@@ADMIN_OPTIONS@@@</h1>
-    <div class="button" onclick="system.openPopupCreateBoard">@@@CREATE_BOARD@@@</div>
-    <div class="button" onclick="system.openPopupEditBoard">@@@EDIT_BOARD@@@</div>
-    <div class="button" onclick="system.openPopupMoveBoard">@@@MOVE_BOARD@@@</div>
-    <div class="button" onclick="system.openPopupDeleteBoard">@@@DELETE_BOARD@@@</div>
-  {/if}
-  <h1>ModOptions</h1>
-  {if mTopic && (modflags&dfmod_movethread||mUser.flags&dfu_superadmin)}
-    <div class="button" onclick="system.vxMoveTopic(${mTopic.topicid},0);">@@@MOVETOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@MOVETOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_deletethread||mUser.flags&dfu_superadmin)}
-    <div class="button" onclick="system.vxDeleteTopic(${mTopic.topicid},0);">@@@DELETETOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@DELETETOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) && !(mTopic.flags&(dft_closed|dft_mod_closed))}
-    <div class="button" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);">@@@CLOSETOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@CLOSETOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) &&  (mTopic.flags&(dft_closed|dft_mod_closed))}
-    <div class="button" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);">@@@OPENTOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@OPENTOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
-    <div class="button" onclick="system.vxEditTopic(${mTopic.topicid});">@@@EDITTOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@EDITTOPIC@@@</div>
-  {/if}
-  <!-- Kann ich Meldungen bearbeiten? -->
-  {if mThreads && mThreads[0].reports.length}
-    <div class="button" onclick="system.vxShowReports();">@@@SHOWREPORTS@@@ (${mThreads[0].reports.length})</div>
-  {else}
-    <div class="button inactive">@@@SHOWREPORTS@@@</div>
-  {/if}
-  <!-- Bans bearbeiten? -->
-  {if mThreads && mThreads[0].bManageBans}
-    <div class="button" onclick="system.vxEditBans();">@@@BANLIST@@@</div>
-  {else}
-    <div class="button inactive">@@@BANLIST@@@</div>
-  {/if}
+    <div class="clickable" onclick="system.openPopupCreateBoard">@@@CREATE_BOARD@@@</div>
+    <div class="clickable" onclick="system.editCurrentBoard();">@@@EDIT_BOARD@@@</div>
+    <div class="clickable" onclick="system.openPopupMoveBoard">@@@MOVE_BOARD@@@</div>
+    <div class="clickable" onclick="system.openPopupDeleteBoard">@@@DELETE_BOARD@@@</div>
   </div>
+  {/if}
+  <div class="innerframe">
+      <h1>ModOptions</h1>
+      {if mTopic && (modflags&dfmod_movethread||mUser.flags&dfu_superadmin)}
+        <div class="clickable" onclick="system.vxMoveTopic(${mTopic.topicid},0);">@@@MOVETOPIC@@@</div>
+      {/if}
+      {if mTopic && (modflags&dfmod_deletethread||mUser.flags&dfu_superadmin)}
+        <div class="clickable" onclick="system.vxDeleteTopic(${mTopic.topicid},0);">@@@DELETETOPIC@@@</div>
+      {/if}
+      {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) && !(mTopic.flags&(dft_closed|dft_mod_closed))}
+        <div  class="clickable" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);">@@@CLOSETOPIC@@@</div>
+      {/if}
+      {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) &&  (mTopic.flags&(dft_closed|dft_mod_closed))}
+        <div class="clickable" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);">@@@OPENTOPIC@@@</div>
+      {/if}
+      {if mTopic && (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
+        <div class="clickable" onclick="system.vxEditTopic(${mTopic.topicid});">@@@EDITTOPIC@@@</div>
+      {/if}
+      <!-- Kann ich Meldungen bearbeiten? -->
+      {if mThreads && mThreads[0].reports.length}
+        <div class="clickable" onclick="system.vxShowReports();">@@@SHOWREPORTS@@@ (${mThreads[0].reports.length})</div>
+      {/if}
+      <!-- Bans bearbeiten? -->
+      {if mThreads && mThreads[0].bManageBans}
+        <div class="clickable" onclick="system.vxEditBans();">@@@BANLIST@@@</div>
+      {/if}
+      </div>
+    </div>
 {/macro}
 
 <!-- Template: Postings -->

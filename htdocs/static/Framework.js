@@ -613,6 +613,10 @@ function CGalaxyboard() {
         });
     };
 
+    self.editCurrentBoard = function() {
+        self.vxManageThreads(iCurrentThread);
+    };
+
     //  Shows a resultset for editing mods
     self.vxShowGroupResult = function (groupid) {
         if (!groupid) {

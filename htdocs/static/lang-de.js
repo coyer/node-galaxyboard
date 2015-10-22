@@ -38,7 +38,7 @@ var mTranslation = {
     "BOX_DELETETOPIC": "Thema löschen",
     "BOX_DELETETOPIC_QUESTION": "Soll das Thema wirklich gelöscht werden?",
     "BOX_EDITTOPIC": "Thema editieren",
-    "BOX_EDITTHREADS": "Thread editieren",
+    "BOX_EDITTHREADS": "Bereich bearbeiten",
     "TOPICHEADLINE": "Themenbezeichnung",
     "TOPICSYMBOL": "Themensymbol",
     "NOSYMBOL": "-kein symbol-",
@@ -115,10 +115,10 @@ var mTranslation = {
     "POLL_ADDOPTION": "Option hinzufügen",
     "POLL_DELOPTION": "Option entfernen",
     "NEEDPOLLOPTIONS": "Es werden mindestens 2 Umfrageoptionen benötigt!",
-    ADMIN_OPTIONS: 'Admin Optionen',
-    CREATE_BOARD: "Neues Board",
-    EDIT_BOARD: "Board bearbeiten",
-    MOVE_BOARD: "Board verschieben",
-    DELETE_BOARD: "Board löschen"
-}
-
+    ADMIN_OPTIONS: 'Bereich',
+    CREATE_BOARD: "Neu",
+    EDIT_BOARD: "Bearbeiten",
+    MOVE_BOARD: "Verschieben",
+    DELETE_BOARD: "Löschen",
+    ADD: "Hinzufügen"
+};

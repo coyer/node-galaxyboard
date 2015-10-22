@@ -1036,7 +1036,8 @@ div.signature {
     font-weight:bold;
     color:white;
     font-size:12px;
-    text-align:center;
+    text-align: left;
+    margin: 0 0 8px 0;
 }
 #js_adminbox .button {
     font-size:11px;
@@ -1166,4 +1167,10 @@ div.searchmod .search dd input {
 }
 #js_searchresult table.general tr.light {
     height:auto;
+}
+
+
+
+.clickable {
+    cursor: pointer;
 }
