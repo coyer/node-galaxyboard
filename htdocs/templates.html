@@ -963,23 +963,28 @@
     {/if}
   </div>
   {/if}
+  {if mTopic}
+  <div class="innerframe withIconButtons">
+      <h1>@@@TOPIC@@@</h1>
+      {if modflags&dfmod_movethread || mUser.flags&dfu_superadmin}
+        <div class="clickable" onclick="system.vxMoveTopic(${mTopic.topicid},0);" title="@@@MOVETOPIC@@@"><i class="fa fa-arrow-right"></i></div>
+      {/if}
+      {if modflags&dfmod_deletethread || mUser.flags&dfu_superadmin}
+        <div class="clickable" onclick="system.vxDeleteTopic(${mTopic.topicid},0);" title="@@@DELETETOPIC@@@"><i class="fa fa-trash"></i></div>
+      {/if}
+      {if (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) && !(mTopic.flags&(dft_closed|dft_mod_closed))}
+        <div  class="clickable" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);" title="@@@CLOSETOPIC@@@"><i class="fa fa-lock"></i></div>
+      {/if}
+      {if (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) &&  (mTopic.flags&(dft_closed|dft_mod_closed))}
+        <div class="clickable" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);" title="@@@OPENTOPIC@@@"><i class="fa fa-unlock"></i></div>
+      {/if}
+      {if (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
+        <div class="clickable" onclick="system.vxEditTopic(${mTopic.topicid});" title="@@@EDITTOPIC@@@"><i class="fa fa-edit"></i></div>
+      {/if}
+      </div>
+  {/if}
   <div class="innerframe">
-      <h1>ModOptions</h1>
-      {if mTopic && (modflags&dfmod_movethread||mUser.flags&dfu_superadmin)}
-        <div class="clickable" onclick="system.vxMoveTopic(${mTopic.topicid},0);">@@@MOVETOPIC@@@</div>
-      {/if}
-      {if mTopic && (modflags&dfmod_deletethread||mUser.flags&dfu_superadmin)}
-        <div class="clickable" onclick="system.vxDeleteTopic(${mTopic.topicid},0);">@@@DELETETOPIC@@@</div>
-      {/if}
-      {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) && !(mTopic.flags&(dft_closed|dft_mod_closed))}
-        <div  class="clickable" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);">@@@CLOSETOPIC@@@</div>
-      {/if}
-      {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) &&  (mTopic.flags&(dft_closed|dft_mod_closed))}
-        <div class="clickable" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);">@@@OPENTOPIC@@@</div>
-      {/if}
-      {if mTopic && (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
-        <div class="clickable" onclick="system.vxEditTopic(${mTopic.topicid});">@@@EDITTOPIC@@@</div>
-      {/if}
+      <h1>@@@MISC@@@</h1>
       <!-- Kann ich Meldungen bearbeiten? -->
       {if mThreads && mThreads[0].reports.length}
         <div class="clickable" onclick="system.vxShowReports();">@@@SHOWREPORTS@@@ (${mThreads[0].reports.length})</div>
@@ -988,7 +993,7 @@
       {if mThreads && mThreads[0].bManageBans}
         <div class="clickable" onclick="system.vxEditBans();">@@@BANLIST@@@</div>
       {/if}
-      </div>
+  </div>
     </div>
 {/macro}
 

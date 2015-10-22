@@ -120,5 +120,7 @@ var mTranslation = {
     EDIT_BOARD: "Bearbeiten",
     MOVE_BOARD: "Verschieben",
     DELETE_BOARD: "Löschen",
-    ADD: "Hinzufügen"
+    ADD: "Hinzufügen",
+    TOPIC: "Thema",
+    MISC: "Sonstiges"
 };
