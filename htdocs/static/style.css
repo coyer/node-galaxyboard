@@ -1189,3 +1189,26 @@ div.searchmod .search dd input {
 .clickable {
     cursor: pointer;
 }
+
+
+
+
+
+.defaultForm fieldset {
+    margin: 10px 0;
+}
+
+.defaultForm label {
+    vertical-align: top;
+    min-width: 150px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.defaultForm p {
+    margin: 5px 0;
+}
+
+.defaultForm input, .defaultForm textarea {
+    vertical-align: middle;
+}

@@ -955,7 +955,7 @@
   {if dfu_superadmin}
   <div class="innerframe withIconButtons">
     <h1>@@@ADMIN_OPTIONS@@@</h1>
-    <div class="clickable" onclick="system.openPopupCreateBoard" title="@@@CREATE_BOARD@@@"><i class="fa fa-plus"></i></div>
+    <div class="clickable" onclick="system.openPopupCreateBoard()" title="@@@CREATE_BOARD@@@"><i class="fa fa-plus"></i></div>
     {if system.hasCurrentBoard()}
       <div class="clickable" onclick="system.editCurrentBoard();" title="@@@EDIT_BOARD@@@"><i class="fa fa-edit"></i></div>
       <div class="clickable" onclick="system.openPopupMoveBoard" title="@@@MOVE_BOARD@@@"><i class="fa fa-arrow-right"></i></div>
@@ -966,11 +966,8 @@
   {if mTopic}
   <div class="innerframe withIconButtons">
       <h1>@@@TOPIC@@@</h1>
-      {if modflags&dfmod_movethread || mUser.flags&dfu_superadmin}
-        <div class="clickable" onclick="system.vxMoveTopic(${mTopic.topicid},0);" title="@@@MOVETOPIC@@@"><i class="fa fa-arrow-right"></i></div>
-      {/if}
-      {if modflags&dfmod_deletethread || mUser.flags&dfu_superadmin}
-        <div class="clickable" onclick="system.vxDeleteTopic(${mTopic.topicid},0);" title="@@@DELETETOPIC@@@"><i class="fa fa-trash"></i></div>
+      {if (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
+        <div class="clickable" onclick="system.vxEditTopic(${mTopic.topicid});" title="@@@EDITTOPIC@@@"><i class="fa fa-edit"></i></div>
       {/if}
       {if (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) && !(mTopic.flags&(dft_closed|dft_mod_closed))}
         <div  class="clickable" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);" title="@@@CLOSETOPIC@@@"><i class="fa fa-lock"></i></div>
@@ -978,8 +975,11 @@
       {if (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) &&  (mTopic.flags&(dft_closed|dft_mod_closed))}
         <div class="clickable" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);" title="@@@OPENTOPIC@@@"><i class="fa fa-unlock"></i></div>
       {/if}
-      {if (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
-        <div class="clickable" onclick="system.vxEditTopic(${mTopic.topicid});" title="@@@EDITTOPIC@@@"><i class="fa fa-edit"></i></div>
+      {if modflags&dfmod_movethread || mUser.flags&dfu_superadmin}
+        <div class="clickable" onclick="system.vxMoveTopic(${mTopic.topicid},0);" title="@@@MOVETOPIC@@@"><i class="fa fa-arrow-right"></i></div>
+      {/if}
+      {if modflags&dfmod_deletethread || mUser.flags&dfu_superadmin}
+        <div class="clickable" onclick="system.vxDeleteTopic(${mTopic.topicid},0);" title="@@@DELETETOPIC@@@"><i class="fa fa-trash"></i></div>
       {/if}
       </div>
   {/if}
@@ -1393,6 +1393,34 @@ dfu_ownavatar   =   1<<29L      ##  eigener avatar hochgeladen
 {/macro}
 
 
+{macro createBoardTemplate(allBoardsSorted)}
+    <div id="createBoard">
+        <h1>@@@CREATE_BOARD@@@</h1>
+        <form class="defaultForm">
+            <fieldset>
+                <legend>@@@GENERAL@@@</legend>
+                <p>
+                    <label for="cb_parentboardid">@@@BOARD_POSITION@@@</label>
+                    <select id="cb_parentboardid" name="parentboardid">
+                        {for thread in allBoardsSorted}
+                            <option value="${thread.id}">${thread.path}</option>
+                        {/for}
+                    </select>
+                </p>
+                <p><label for="cb_headline">@@@HEADLINE@@@</label><input id="cb_headline" type="text" name="headline"/></p>
+                <p><label for="cb_sortid">@@@SORTID@@@</label><input id="cb_sortid" type="text" name="sortid" /></p>
+                <p><label for="cb_description">@@@DESCRIPTION@@@</label><textarea id="cb_description" cols="50" rows="10" name="description"></textarea></p>
+                <p><label for="cb_boardrule">@@@BOARDRULE@@@</label><textarea id="cb_boardrule" cols="50" rows="10" name="boardrule"></textarea></p>
+            </fieldset>
+            <fieldset>
+                <legend>@@@BOARD_CONFIG@@@</legend>
+
+            </fieldset>
+        </form>
+    </div>
+{/macro}
+
+
 <!-- Funktionen im Framework registrieren -->
 {eval}
 system.szxBuildThreads  = szxBuildThreads;
@@ -1418,5 +1446,8 @@ system.szxBuildAdminBox             = szxBuildAdminBox;
 system.szxBuildReports              = szxBuildReports;
 system.szxBuildMessagelist          = szxBuildMessagelist;
 system.szxManageThreadsBox          = szxManageThreadsBox;
+
+system.createBoardTemplate = createBoardTemplate;
+
 system.bTemplates = true; // Templates geladen
 {/eval}

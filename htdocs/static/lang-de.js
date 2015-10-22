@@ -116,11 +116,17 @@ var mTranslation = {
     "POLL_DELOPTION": "Option entfernen",
     "NEEDPOLLOPTIONS": "Es werden mindestens 2 Umfrageoptionen benötigt!",
     ADMIN_OPTIONS: 'Bereich',
-    CREATE_BOARD: "Neu",
-    EDIT_BOARD: "Bearbeiten",
-    MOVE_BOARD: "Verschieben",
-    DELETE_BOARD: "Löschen",
+    CREATE_BOARD: "Bereich erstellen",
+    EDIT_BOARD: "Bereich bearbeiten",
+    MOVE_BOARD: "Bereich verschieben",
+    DELETE_BOARD: "Bereich löschen",
     ADD: "Hinzufügen",
     TOPIC: "Thema",
-    MISC: "Sonstiges"
+    MISC: "Sonstiges",
+    GENERAL: "Allgemein",
+    BOARD_POSITION: "Übergeordneter Bereich",
+    HEADLINE: "Name",
+    SORTID: "Sortiernummer",
+    DESCRIPTION: "Beschreibung",
+    BOARDRULE: "Regeln"
 };

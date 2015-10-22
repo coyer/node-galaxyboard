@@ -51,6 +51,8 @@ var dfbf_chooseprefix = 1 << 9;    //  REMX    Sofern Prefixe vorhanden *muss* e
 var dfbf_nonews = 1 << 10;   //          Beitraege nicht in News erwaehnen
 var dfbf_dynmenu = 1 << 11;   //  -obs-   dynamische menues!
 
+
+
 //  Benutzerrechte - Board: [boardflags]
 //  Post
 var dfbp_postanounce = 1 << 0;    //          Can post announcements
@@ -808,6 +810,21 @@ function CGalaxyboard() {
         return szTpl;
     };
 
+    self.getBoardsSorted = function() {
+        var result = {};
+        function iterateBoards(board, path) {
+            board.path = path + '/' + board.headline;
+            result[board.id] = board;
+            if(board.childs) {
+                board.childs.forEach(function(child){
+                    iterateBoards(mThreads[child], board.path);
+                });
+            }
+        };
+        iterateBoards(mThreads[0], '');
+        return result;
+    };
+
     function getXHR(a) {
         for (a = 0; a < 4; a++)try {
             return a ? new ActiveXObject([, "Msxml2", "Msxml3", "Microsoft"][a] + ".XMLHTTP") : new XMLHttpRequest
@@ -1339,6 +1356,16 @@ function CGalaxyboard() {
     self.vxShowPollEditor = function (bShow) {
         $("js_polleditor").style.display = bShow ? "table-row" : "none";
     };
+
+
+
+
+    // BOARD CRUD
+
+    self.openPopupCreateBoard = function() {
+        vxOpenOverlay(self.createBoardTemplate(system.getBoardsSorted()));
+    };
+
 
 }
 var system = new CGalaxyboard();
