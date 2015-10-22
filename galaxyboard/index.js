@@ -827,7 +827,7 @@ module.exports = function GalaxyBoard(config) {
 
                 //  Topic einfuegen
                 mysqlPool.query(
-                    "insert into topics (topicid,boardid,hits,posts,voting,icon,userid,username,headline,flags,lastpostid,lastpostdate) values (0,?,0,0,0,?,?,?,?,0,0,0)",
+                    "insert into topics (topicid,boardid,hits,posts,icon,userid,username,headline,flags) values (0,?,0,0,?,?,?,?,0)",
                     [iThreadID, iIcon, mUser["id"], mUser["nick"], szHeadline],
                     function (err, info) {
                         var iTopicID = info.insertId;

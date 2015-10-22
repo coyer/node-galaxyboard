@@ -6,7 +6,9 @@ DROP FOREIGN KEY fk_topics_board;
 UPDATE topics
 SET userid = 0
 WHERE userid IS NULL;
-ALTER TABLE topics CHANGE COLUMN userid userid INT(11) NOT NULL DEFAULT 0;
+ALTER TABLE topics
+    MODIFY COLUMN lastpostid INT NOT NULL,
+    MODIFY COLUMN lastpostdate INT NOT NULL;
 
 ALTER TABLE posts
 DROP FOREIGN KEY fk_posts_user,

@@ -104,9 +104,11 @@ ALTER TABLE posts
 ADD CONSTRAINT fk_posts_topic FOREIGN KEY (topicid) REFERENCES topics (topicid),
 ADD CONSTRAINT fk_posts_user FOREIGN KEY (userid) REFERENCES users (id);
 
-ALTER TABLE topics CHANGE COLUMN userid userid INT DEFAULT NULL;
+ALTER TABLE topics
+    MODIFY COLUMN lastpostid INT,
+    MODIFY COLUMN lastpostdate INT;
 UPDATE topics
-SET userid = NULL
+SET userid = 1
 WHERE userid = 0;
 ALTER TABLE topics
 ADD CONSTRAINT fk_topics_board FOREIGN KEY (boardid) REFERENCES boards (boardid),
