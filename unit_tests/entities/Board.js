@@ -1,17 +1,17 @@
 var expect = require('chai').expect;
 var entities = require('../../galaxyboard/entities');
-var flags = require('../../galaxyboard/GBFlags.js');
+var flags = require('../../galaxyboard/Flags.js');
 var eh = require('../../galaxyboard/ErrorHandling.js');
 
 var defaultBoardFlags =
-    flags.dfbf_bbcode_board
-    + flags.dfbf_smilies_board
-    + flags.dfbf_links_board
-    + flags.dfbf_bbcode_rule
-    + flags.dfbf_smilies_rule
-    + flags.dfbf_links_rule
-    + flags.dfbf_showsubboards
-    + flags.dfbf_dynmenu;
+    flags.board.allowBBCode
+    + flags.board.allowSmilies
+    + flags.board.allowLinks
+    + flags.board.allowBBCodeInBoardRule
+    + flags.board.allowSmiliesInBoardRule
+    + flags.board.allowLinksInBoardRule
+    + flags.board.showSubBoards
+    + flags.board.dynamicMenus;
 
 function getBasicBoard() {
     return {

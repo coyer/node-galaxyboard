@@ -6,119 +6,6 @@
  * Javscript/Ajax-Framework for games.
  */
 
-//  Boardflags (fuer das Board selbst)
-//  PAB-Konfiguration
-var dfpab_boardclosed = 1 << 0;   //  Gesamte Board ist geschlossen
-var dfpab_noregistration = 1 << 1;    //  Keine Registrierung erlauben
-var dfpab_approvereg = 1 << 2;    //  Registrierung muss manuell freigeschaltet werden
-var dfpab_usr_avatar = 1 << 30;   //  darf eigenen avatar hochladen
-
-//  Topicflags:
-var dft_closed = 1 << 0;    //  REMX    Topic geschlossen
-var dft_mod_closed = 1 << 1;    //  [done]  Topic geschlossen durch admin (kann dann auch nur durch admin geoeffnet werden)
-var dft_unapproved = 1 << 2;    //  REMX    Topic nicht freigegeben
-var dft_pinned = 1 << 3;    //  REMX    Topic festgepinnt
-
-//  Userflags
-var dfu_no_pn = 1 << 0;    //  REMX    will keine PN empfangen
-var dfu_no_sigs = 1 << 1;    //  [done]  will keine signaturen sehen
-var dfu_membermail = 1 << 2;    //  REMX    Jeder kann mir emails schicken
-//var dfu_adminmail       =   1<<3    //  -obs-
-var dfu_openpm = 1 << 4;    //  REMX    Popup oeffnen wenn neue Nachrichten
-//var dfu_summertime      =   1<<5    //  -obs-   Sommerzeit aktiviert +0100 ?
-//var dfu_bbcode_sig      =   1<<6    //  -obs-   bbcodes in signatur ABSCHALTEN
-//var dfu_smilies_sig     =   1<<7    //  -obs-   ABSCHALTEN
-//var dfu_links_sig       =   1<<8    //  -obs-   ABSCHALTEN
-
-var dfu_unapproved = 1 << 27;   //  REMX    User muss noch freigegeben werden.
-var dfu_invalid = 1 << 28;   //  REMX    EMail-Adresse des Users noch nicht geprueft!
-var dfu_ownavatar = 1 << 29;   //  REMX    eigener avatar hochgeladen
-var dfu_premium = 1 << 30;   //  REMX    premiumuser
-var dfu_superadmin = 1 << 31;   //  REMX    ist ein superadmin
-
-//  Boardflags (fuer das Board selbst)
-var dfbf_bbcode_board = 1 << 0;    //  -obs-   BBCode default aktivieren (todo in headline)
-var dfbf_smilies_board = 1 << 1;    //  -obs-   Smilies immer erlauben
-var dfbf_links_board = 1 << 2;    //  -obs-
-var dfbf_bbcode_rule = 1 << 3;    //  -obs-   Ob die Regeln bbcode enthalten duerfen
-var dfbf_smilies_rule = 1 << 4;    //  -obs-
-var dfbf_links_rule = 1 << 5;    //  -obs-
-
-var dfbf_showsubboards = 1 << 6;    //          Ob untergeordnete Boards angezeigt werden duerfen
-var dfbf_hideboard = 1 << 7;    //          Versteckt das Forum
-var dfbf_closed = 1 << 8;    //          Bereich abgeschlossen (nicht editierbar)
-var dfbf_chooseprefix = 1 << 9;    //  REMX    Sofern Prefixe vorhanden *muss* eine Auswahl getroffen werden
-var dfbf_nonews = 1 << 10;   //          Beitraege nicht in News erwaehnen
-var dfbf_dynmenu = 1 << 11;   //  -obs-   dynamische menues!
-
-
-
-//  Benutzerrechte - Board: [boardflags]
-//  Post
-var dfbp_postanounce = 1 << 0;    //          Can post announcements
-var dfbp_useicons = 1 << 1;    //  -obs-   Can use topic/post icons immer erlaubt
-var dfbp_show = 1 << 2;    //  [done]  Can see forum
-var dfbp_createtopic = 1 << 3;    //  [done]  Can start new topics
-var dfbp_readboard = 1 << 4;    //  [done]  Can read forum
-var dfbp_reply = 1 << 5;    //  [done]  Can reply to topics
-var dfbp_poststicky = 1 << 6;    //          Can post stickies
-//  Content
-var dfbp_attachfile = 1 << 16;   //          Can attach files
-var dfbp_usebbcode = 1 << 17;   //  -obs-   Can post BBCode [immer erlaubt]
-var dfbp_downloadfile = 1 << 18;   //          Can download files
-var dfbp_postflash = 1 << 19;   //          Can post Flash
-var dfbp_postimages = 1 << 20;   //          Can post images
-var dfbp_signatures = 1 << 21;   //  [done]  Can use signatures
-var dfbp_smilies = 1 << 22;   //  -obs-   Can post smilies [immer erlaubt]
-
-//  Actions (extendflags)   [extendflags]
-var dfbp_bumptopic = 1 << (32 - 32);   //         Can bump topics
-var dfbp_deleteownpost = 1 << (33 - 32);   //  [done] Can delete own posts
-var dfbp_editownpost = 1 << (34 - 32);   //  [done] Can edit own posts
-var dfbp_emailtopic = 1 << (35 - 32);   //         Can e-mail topics
-var dfbp_printtopic = 1 << (36 - 32);   //  -obs-  Can print topics
-var dfbp_reportpost = 1 << (37 - 32);   //  [done] Can report posts
-var dfbp_subscribe = 1 << (38 - 32);   //         Can subscribe forum
-var dfbp_closeowntopic = 1 << (39 - 32);   //  -obs-  Can lock own topics (absperren?
-//  Misc
-var dfbp_ignoreflood = 1 << (48 - 32);   //         Can ignore flood limit
-var dfbp_noapproval = 1 << (49 - 32);   //         Can post without approval
-var dfbp_incpostcounter = 1 << (50 - 32);   //         Falls abgeschaltet wird Postcounter nicht erhoeht
-var dfbp_search = 1 << (51 - 32);   //         Can search the forum
-//  Polls
-var dfbp_createpolls = 1 << (56 - 32);   //         Can create polls
-var dfbp_votepoll = 1 << (57 - 32);   //         Can vote in polls
-var dfbp_changevote = 1 << (58 - 32);   //         Can change existing vote
-var dfbp_votetopic = 1 << (59 - 32);   //         Topic bewerten
-
-//  Moderatoren-Flags:      [modflags]
-//  Beitraege
-var dfmod_approvepost = 1 << 0;    //  -obs-   Kann Beitraege freigeben
-var dfmod_setauthor = 1 << 1;    //  -obs-   Kann Autor eines Beitrags aendern
-var dfmod_deletepost = 1 << 2;    //  [done]  Kann Beitraege loeschen
-var dfmod_editpost = 1 << 3;    //  [done]  Kann Beitraege aendern
-var dfmod_closereports = 1 << 4;    //  [done]  Kann Meldungen schliessen und loeschen
-var dfmod_hidepost = 1 << 5;    //  [done]  Kann einen Beitrag "verstecken" REMX: Ein durch Mod gemeldeter Beitrag wird sofort versteckt
-var dfmod_replypost = 1 << 6;    //  [done]  Kann auf Beitrag antworten auch wenn thema geschlossen wurde.
-//  Diverses
-var dfmod_managebans = 1 << 8;    //          Kann Sperren verwalten
-var dfmod_postdetails = 1 << 9;    //          Kann Beitrags-Details ansehen
-var dfmod_createbans = 1 << 10;   //  [done]  Kann Verwarnungen aussprechen
-//  Themen
-var dfmod_closethread = 1 << 16;   //  [done]  Kann Themen sperren
-var dfmod_jointhreads = 1 << 17;   //  -obs-   Kann Themen zusammenfuehren
-var dfmod_movethread = 1 << 18;   //  [done]  Kann Themen verschieben
-var dfmod_splitthread = 1 << 19;   //  -obs-   Kann Themen teilen
-var dfmod_deletethread = 1 << 20;   //  [done]  Kann Themen loeschen
-var dfmod_editthread = 1 << 21;   //  [done]  Kann Themen editieren
-var dfmod_createtopic = 1 << 22;   //  [done]  Kann Themen erstellen im geschlossenen Forum
-
-//  Beitragsflags           [postflags]
-var dfpost_needapproval = 1 << 0;    //          Beitrag benoetigt Freigabe (ggf. auch Topic mit freigeben falls themenstarter?)
-var dfpost_hide = 1 << 1;    //  [done]  Beitrag wurde versteckt
-var dfpost_reported = 1 << 2;    //  [done]  Beitrag wurde gemeldet (darf nicht mehr geaendert werden)
-
-
 //  ---------------------------------------------------
 //  Prototypen Hilfsfunktionen:
 function $(id) {
@@ -747,7 +634,7 @@ function CGalaxyboard() {
                 "topicID": iTopicID,
                 "headline": szHeadline,
                 "icon": iIcon,
-                "flags": $("js_tmp_pinned").checked ? dft_pinned : 0
+                "flags": $("js_tmp_pinned").checked ? flags.topic.pinned : 0
             }], function (mAction) {
                 self["oldHash"] = null;
                 location.hash = "!showTopic~" + iTopicID + "~" + iCurrentPage;
@@ -759,7 +646,7 @@ function CGalaxyboard() {
             vxOpenOverlay(self.szxEditTopicBox(iTopicID), function () {
                 $("js_tmp_subject").value = mTopic.headline;
                 $("js_tmp_icon" + mTopic.icon).checked = true;
-                $("js_tmp_pinned").checked = (mTopic.flags & dft_pinned) ? true : false;
+                $("js_tmp_pinned").checked = (mTopic.flags & flags.topic.pinned) ? true : false;
                 $("js_tmp_subject").focus();
             });
         }
@@ -929,7 +816,7 @@ function CGalaxyboard() {
                     });
                     //  Neuste Posts "bubblen"
                     aNews = [];
-                    for (var key in data) if (data[key].lastpostdate && data[key].topic && (data[key].boardflags & dfbf_nonews) == 0) aNews.push(data[key]);
+                    for (var key in data) if (data[key].lastpostdate && data[key].topic && (data[key].boardflags & flags.board.noNews) == 0) aNews.push(data[key]);
                     aNews.sort(function (a, b) {
                         return b.lastpostdate - a.lastpostdate
                     });
@@ -962,7 +849,7 @@ function CGalaxyboard() {
                     mUser["messages"] = data || 0;
                     $("messagesbtn").innerHTML = self.translate("@@@MESSAGES@@@ (" + mUser["messages"] + ")");
                     //  Falls User ein Popup moechte, dieses nun oeffnen.
-                    if (mUser["flags"] & dfu_openpm && mUser["messages"] > iLastMessages)
+                    if (mUser["flags"] & flags.user.automaticallyOpenPM && mUser["messages"] > iLastMessages)
                         self.vxAlertNewMessages();
                     iLastMessages = mUser["messages"];
                     break;
@@ -987,7 +874,7 @@ function CGalaxyboard() {
                         $("messagesbtn").style.display = "";
                         $("messagesbtn").innerHTML = self.translate("@@@MESSAGES@@@ (" + mUser["messages"] + ")");
                     }
-                    if (mUser["flags"] & dfu_openpm && mUser["messages"] > 0)
+                    if (mUser["flags"] & flags.user.automaticallyOpenPM && mUser["messages"] > 0)
                         self.vxAlertNewMessages();
                     //  Falls User veraendert, Seite neu laden:
                     if (iCurrentUser != mUser.id) {
@@ -1196,18 +1083,18 @@ function CGalaxyboard() {
         });
     };
     self.vxSaveProfile = function (pForm) {
-        var signature = pForm.signature.value;
+        var signature = pForm.canUseSignature.value;
         var flags = 0;
-        if (pForm.dfu_no_pn.checked)     flags |= dfu_no_pn;
-        if (pForm.dfu_no_sigs.checked)   flags |= dfu_no_sigs;
-        if (pForm.dfu_membermail.checked)flags |= dfu_membermail;
-        if (pForm.dfu_openpm.checked)    flags |= dfu_openpm;
-        if (mUser.flags & dfu_superadmin) {
+        if (pForm.dfu_no_pn.checked)     flags |= flags.user.noPn;
+        if (pForm.dfu_no_sigs.checked)   flags |= flags.user.noSigs;
+        if (pForm.dfu_membermail.checked)flags |= flags.user.allowUserMail;
+        if (pForm.dfu_openpm.checked)    flags |= flags.user.automaticallyOpenPM;
+        if (mUser.flags & flags.user.superAdmin) {
             var nick = pForm.nick.value;
             var titel = pForm.titel.value;
             var email = pForm.email.value;
-            if (pForm.dfu_superadmin.checked)flags |= dfu_superadmin;
-            if (pForm.dfu_ownavatar.checked) flags |= dfu_ownavatar;
+            if (pForm.dfu_superadmin.checked)flags |= flags.user.superAdmin;
+            if (pForm.dfu_ownavatar.checked) flags |= flags.user.hasAvatar;
         } else {
             var nick = null;
             var titel = null;
@@ -1298,6 +1185,7 @@ function CGalaxyboard() {
             var iUserID = value[0];
             var iFlags = value[1];
             var f = $("js_editthreads_form");
+            // TODO this need to be changed, cause of the modified flag structure
             var o = "dfmod_approvepost,dfmod_setauthor,dfmod_deletepost,dfmod_editpost,dfmod_closereports,dfmod_hidepost,dfmod_replypost,dfmod_managebans,dfmod_postdetails,dfmod_createbans,dfmod_closethread,dfmod_movethread,dfmod_deletethread,dfmod_editthread".split(",")
             //  Flags durchtesten
             for (var i = 0; i < o.length; i++) {

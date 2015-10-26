@@ -1,29 +1,29 @@
 var expect = require('chai').expect;
 var UserACL = require('../galaxyboard/UserACL.js');
-var flags = require('../galaxyboard/GBFlags.js');
+var flags = require('../galaxyboard/Flags.js');
 
 function getSomeBFlags() {
-    return flags.dfbp_postanounce
-    | flags.dfbp_useicons
-    | flags.dfbp_show
-    | flags.dfbp_createtopic;
+    return flags.rights.board.basic.postAnnouncements
+    | flags.rights.board.basic.useIcons
+    | flags.rights.board.basic.seeBoard
+    | flags.rights.board.basic.createTopic;
 }
 
 function getSomeEFlags() {
-    return flags.dfbp_deleteownpost
-    | flags.dfbp_editownpost
-    | flags.dfbp_reportpost;
+    return flags.rights.board.extended.deleteOwnPost
+    | flags.rights.board.extended.editOwnPost
+    | flags.rights.board.extended.reportPost;
 }
 
 function getSomeOtherBFlags() {
-    return flags.dfbp_show
-    | flags.dfbp_createtopic
-    | flags.dfbp_readboard;
+    return flags.rights.board.basic.seeBoard
+    | flags.rights.board.basic.createTopic
+    | flags.rights.board.basic.readBoard;
 }
 
 function getSomeOtherEFlags() {
-    return flags.dfbp_reportpost
-    | flags.dfbp_incpostcounter;
+    return flags.rights.board.extended.reportPost
+    | flags.rights.board.extended.increaseCounter;
 }
 
 function getBasicRawACL() {
