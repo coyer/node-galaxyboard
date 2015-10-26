@@ -604,6 +604,10 @@ div.messages dl.light dd span {
     display:block;
 }
 
+div.messages .subject {
+    cursor: pointer;
+}
+
 /* Thread Columns */
 div.thread dl.dark dd.board {left:0;  right:40%;}
 div.thread dl.dark dd.topic {left:60%;right:30%;border-left: 1px solid #ddd;}
