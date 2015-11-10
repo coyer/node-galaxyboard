@@ -18,7 +18,7 @@
     "node-sass": "~3.2",
     "forever": "~0.15",
     "squiggle": "~1.0",
-    "htmlspecialchars": "~1.0.5"
+    "htmlspecialchars": "~1.0"
   },
   "devDependencies": {
     "mocha": "~2.2",

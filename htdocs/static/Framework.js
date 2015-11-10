@@ -8,9 +8,16 @@
 
 //  ---------------------------------------------------
 //  Prototypen Hilfsfunktionen:
-function $(id) {
-    return document.getElementById(id);
-}
+
+$.fn.windowPosition = function() {
+    var offset = this.offset();
+    return {
+        left: offset.left - this.scrollLeft(),
+        top: offset.top - this.scrollTop()
+    };
+};
+
+
 function floatval(t) {
     var z = parseFloat(t, 10);
     if (isNaN(z)) {
@@ -131,52 +138,57 @@ function feedback(txt, szClass) {
 
 var hCurrentOverlay = null;
 function vxOpenOverlay(template, onReady) {
+    var overlayBox = $('#overlay-box');
+    var overlayBoxContent = $('#js_overlay-box-content', overlayBox);
     if (hCurrentOverlay) clearInterval(hCurrentOverlay);
-    if ($("overlay-box").style.display != "none") {
-        return vxResizeOverlay((template || $("js_overlay-box-content").innerHTML).trim(), onReady);
+    if (overlayBox.css('display') != 'none') {
+        return vxResizeOverlay((template || overlayBoxContent.html()).trim(), onReady);
     }
-    if (typeof(template) == "string")
-        $("js_overlay-box-content").innerHTML = template.trim()
+    if (typeof(template) == "string") {
+        overlayBoxContent.html(template.trim());
+    }
 
-    //  Hintergrund einblenden; Overlay einblenden mit visibility:hidden;
-    $("dark-bg").style.display = '';
-    var pC = $("js_overlay-box-content");
-    var pO = $("overlay-box");
-    var b = document.getElementsByTagName("body")[0];
-    pC.style.overflow = "visible";
-    pC.style.visibility = 'hidden';
-    pO.style.visibility = 'hidden';
-    pO.style.display = '';
-    var iWidth = pC.offsetWidth;
-    var iHeight = pC.offsetHeight;
-    //  max. höhe overlay festlegen:
-    if (iHeight > (b.offsetHeight * 0.9)) {
-        iHeight = (b.offsetHeight * 0.9);
-        pC.style.overflow = "auto";
-        pC.style.overflowY = "auto";
-        pC.style.overflowX = "hidden";
-        pC.style.marginRight = "-20px";
+    // display background; display overlay with visibility: hidden
+    $("#dark-bg").css('display', '');
+    var body = $('body');
+    overlayBox.css('visibility', 'hidden').css('display', '');
+    overlayBoxContent.css('overflow', 'visible').css('visibility', 'hidden');
+    var iWidth = overlayBoxContent.outerWidth();
+    var iHeight = overlayBoxContent.outerHeight();
+    var bodyHeight = body.outerHeight();
+
+    //  set max height of overlay:
+    if (iHeight > (bodyHeight * 0.9)) {
+        iHeight = (bodyHeight * 0.9);
+        overlayBoxContent
+            .css('overflow', 'auto')
+            .css('overflow-y', 'auto')
+            .css('overflow-x', 'hidden')
+            .css('margin-right', '-20px');
     } else {
-        pC.style.overflow = "visible";
-        pC.style.overflowY = "visible";
-        pC.style.overflowX = "visible";
-        pC.style.marginRight = "0px";
+        overlayBoxContent
+            .css('overflow', 'visible')
+            .css('overflow-y', 'visible')
+            .css('overflow-x', 'visible')
+            .css('margin-right', '0px');
     }
 
     hCurrentOverlay = tween(function (w) {
         var e = Math.sin(Math.PI / 2 * w);
-        pO.style.width = iWidth * e + "px";
-        pO.style.height = iHeight * e + "px";
-        pO.style.marginTop = -(iHeight * e / 2) - 10 + "px";
-        pO.style.marginLeft = -(iWidth * e / 2) - 10 + "px"; // -10 padding
-        pO.style.visibility = '';
-        pO.style.opacity = w;
+        overlayBox
+            .width(iWidth * e)
+            .height(iHeight * e)
+            .css('margin-top', -(iHeight * e / 2) - 10 + "px")
+            .css('margin-left', -(iWidth * e / 2) - 10 + "px")
+            .css('visibility', '')
+            .css('opacity', w);
 
         if (w == 1) {
-            pC.style.opacity = '0';
-            pC.style.visibility = '';
+            overlayBoxContent
+                .css('opacity', '0')
+                .css('visibility', '');
             hCurrentOverlay = tween(function (w) {
-                pC.style.opacity = w;
+                overlayBoxContent.css('opacity', w);
                 if (w == 1 && onReady)onReady();
             }, 200);
         }
@@ -184,30 +196,32 @@ function vxOpenOverlay(template, onReady) {
 }
 
 function vxCloseOverlay() {
-    if ($("overlay-box").style.display == "none") return; // muss nix geschlossen werden
-    var pC = $("js_overlay-box-content");
-    var pO = $("overlay-box");
-    var iWidth = pC.offsetWidth;
-    var iHeight = pC.offsetHeight;
+    if ($("#overlay-box").css('display') == "none") return; // muss nix geschlossen werden
+    var overlayBox = $('#overlay-box');
+    var overlayBoxContent = $('#js_overlay-box-content', overlayBox);
+    var iWidth = overlayBoxContent.outerWidth();
+    var iHeight = overlayBoxContent.outerHeight;
     var b = document.getElementsByTagName("body")[0];
-    $("dark-bg").onmousedown = null;
+    $("#dark-bg").get(0).onmousedown = null;
     hCurrentOverlay = tween(function (w) {
-        pC.style.opacity = 1 - w;
+        overlayBoxContent.css('opacity', 1 - w);
         if (w == 1) {
-            pC.style.visibility = 'hidden';
+            overlayBoxContent.css('visibility', 'hidden');
             hCurrentOverlay = tween(function (w) {
                 var e = Math.cos(Math.PI / 2 * w);
-                pO.style.width = iWidth * e + "px";
-                pO.style.height = iHeight * e + "px";
-                pO.style.marginTop = -(iHeight * e / 2) - 10 + "px";
-                pO.style.marginLeft = -(iWidth * e / 2) - 10 + "px";
+                overlayBox
+                    .width(iWidth * e)
+                    .height(iHeight * e)
+                    .css('margin-top', -(iHeight * e / 2) - 10 + "px")
+                    .css('margin-left', -(iWidth * e / 2) - 10 + "px");
                 if (w == 1) {
-                    pO.style.visibility = 'hidden';
-                    pO.style.display = 'none';
-                    pO.style.width = "auto";
-                    pO.style.height = "auto";
-                    $("dark-bg").style.display = 'none';
-                    pC.innerHTML = '';
+                    overlayBox
+                        .css('visibility', 'hidden')
+                        .css('display', 'none')
+                        .css('width', 'auto')
+                        .css('height', 'auto');
+                    $('#dark-bg').css('display', 'none');
+                    overlayBoxContent.html('');
                 }
             }, 200);
         }
@@ -215,63 +229,68 @@ function vxCloseOverlay() {
 }
 
 function vxResizeOverlay(template, onReady) {
-    var pC = $("js_overlay-box-content");
-    var pO = $("overlay-box");
-    var iOldWidth = pC.offsetWidth;
-    var iOldHeight = pC.offsetHeight;
-    var b = document.getElementsByTagName("body")[0];
-    //  Ausblenden:
+    //var pC = $("js_overlay-box-content");
+    //var pO = $("overlay-box");
+    var overlayBox = $('#overlay-box');
+    var overlayBoxContent = $('#js_overlay-box-content');
+    var iOldWidth = overlayBoxContent.outerWidth();
+    var iOldHeight = overlayBoxContent.outerHeight();
+    var b = $('body');
+    //  hide:
     hCurrentOverlay = tween(function (pz) {
         pC.style.opacity = 1 - pz;
+        overlayBoxContent.css('opacity', pz);
         if (pz == 1) {
-            //  Neues Template rein:
-            if (typeof(template) == "string")
-                $("js_overlay-box-content").innerHTML = (template).trim()
-            if (typeof(template) == "object") {
-                $("js_overlay-box-content").innerHTML = "";
-                $("js_overlay-box-content").appendChild(template);
-            }
-            if (typeof(template) == "function") {
+            //  put in new template:
+            if (typeof(template) == "string") {
+                overlayBoxContent.html(template.trim());
+            } else if (typeof(template) == "object") {
+                overlayBoxContent.html('').appendChild(template);
+            } else if (typeof(template) == "function") {
                 template();
             }
 
-            //  Vergroessern
-            var oO = pC.style.overflow;
-            var oV = pC.style.visibility;
-            pC.style.overflow = "visible";
-            pC.style.visibility = "hidden";
-            pC.style.width = "auto";
-            pC.style.height = "auto";
-            pO.style.width = "auto";
-            pO.style.height = "auto";
-            var iWidth = pC.offsetWidth;
-            var iHeight = pC.offsetHeight;
-            pC.style.overflow = oO;
-            pC.style.visibility = oV;
+            //  increase size
+            var originalOverflowBehavior = overlayBoxContent.css('overflow');
+            var originalVisibilitySetting = overlayBoxContent.css('visibility');
+            overlayBoxContent
+                .css('overflow', 'visible')
+                .css('visibility', 'hidden')
+                .css('width', 'auto')
+                .css('height', 'auto');
+            overlayBox.css('width', 'auto').css('height', 'auto');
+            var iWidth = overlayBoxContent.outerWidth();
+            var iHeight = overlayBoxContent.outerHeight();
+            overlayBoxContent
+                .css('overflow', originalOverflowBehavior)
+                .css('visibility', originalVisibilitySetting);
 
             //  max. hoehe overlay festlegen:
             if (iHeight > (b.offsetHeight * 0.9)) {
                 iHeight = (b.offsetHeight * 0.9);
-                pC.style.overflow = "auto";
-                pC.style.overflowY = "auto";
-                pC.style.overflowX = "hidden";
-                pC.style.marginRight = "-20px";
+                overlayBoxContent
+                    .css('overflow', 'auto')
+                    .css('overflow-y', 'auto')
+                    .css('overflow-x', 'auto')
+                    .css('margin-right', '-20px');
             } else {
-                pC.style.overflow = "visible";
-                pC.style.overflowY = "visible";
-                pC.style.overflowX = "visible";
-                pC.style.marginRight = "0px";
+                overlayBoxContent
+                    .css('overflow', 'visible')
+                    .css('overflow-y', 'visible')
+                    .css('overflow-x', 'visible')
+                    .css('margin-right', '0px');
             }
             hCurrentOverlay = tween(function (pz) {
                 var e = Math.sin(Math.PI / 2 * pz);
                 var w = iOldWidth + (iWidth - iOldWidth) * e;
                 var h = iOldHeight + (iHeight - iOldHeight) * e;
-                pO.style.width = w + "px";
-                pO.style.height = h + "px";
-                pO.style.marginTop = -(h / 2) - 10 + "px";
-                pO.style.marginLeft = -(w / 2) - 10 + "px";
+                overlayBox
+                    .width(w)
+                    .height(h)
+                    .css('margin-top', -(h / 2) - 10 + "px")
+                    .css('margin-left', -(w / 2) - 10 + "px");
                 if (pz == 1) hCurrentOverlay = tween(function (pz) {
-                    pC.style.opacity = pz;
+                    overlayBoxContent.css('opacity', pz);
                     if (pz == 1 && onReady)onReady();
                 }, 200);
             }, 300);
@@ -309,10 +328,15 @@ function CGalaxyboard() {
             tmp[i].className = (tmp[i] == pNode) ? "active" : "";
         }
         for (var i = 0; i < aInactives.length; i++) {
-            $(aInactives[i]).style.display = (aInactives[i] == szActive) ? "block" : "none";
+            var display = aInactives[i] == szActive ? "block" : "none";
+            $('#' + aInactives[i]).css('display', display);
         }
+    };
 
-    }
+    self.createTabs = function(selector) {
+        $('test');
+    };
+
     //  3 Setters for nodejs
     self.vxSetThreads = function (m) {
         mThreads = m
@@ -385,10 +409,10 @@ function CGalaxyboard() {
         return szNav;
     };
     self.vxReply = function (iPostID) {
-        //  Postcontainer einblenden; zur Ansicht scrollen
-        $("js_postreply1").style.display = "";
-        $("js_postreply2").style.display = "";
-        window.scrollTo(0, getElementPosition($("js_postreply1")).top);
+        //  show post container and scroll to it
+        $("#js_postreply1").css('display', '');
+        $("#js_postreply2").css('display', '');
+        window.scrollTo(0, $("#js_postreply1").windowPosition().top);
         //  Reply-Cite?
         if (iPostID) {
             mCite = null;
@@ -396,7 +420,7 @@ function CGalaxyboard() {
                 if (mPosts["posts"][i]["postid"] == iPostID)
                     mCite = mPosts["posts"][i];
             if (mCite)
-                $("obj_bb_content0").value = '[quote=' + mCite["username"] + ']' + mCite["content"] + '[/quote]';
+                $("#obj_bb_content0").val('[quote=' + mCite["username"] + ']' + mCite["content"] + '[/quote]');
         }
     };
     //  Antwort posten
@@ -433,7 +457,7 @@ function CGalaxyboard() {
         }
         if (opt.length) {
             self.call([{"cmd": "voteOption", "topicID": iTopicID, "options": opt}], function () {
-                $("js_content").innerHTML = self.szxBuildPosts(mPosts);
+                $("#js_content").html(self.szxBuildPosts(mPosts));
                 self.vxCheckMod();
             });
         }
@@ -455,16 +479,16 @@ function CGalaxyboard() {
     };
     //  Einen Beitrag editieren
     self.vxEditPost = function (iPostID) {
-        $("postID" + iPostID).innerHTML = self.szxBBEditor(iPostID);
+        $("#postID" + iPostID).html(self.szxBBEditor(iPostID));
         mCite = null;
         for (var i = 0; i < mPosts["posts"].length; i++)
             if (mPosts["posts"][i]["postid"] == iPostID)
                 mCite = mPosts["posts"][i];
         if (mCite)
-            $("obj_bb_content" + iPostID).value = mCite["content"];
+            $("#obj_bb_content" + iPostID).val(mCite["content"]);
         //  Buttons einblenden
-        $("postID" + iPostID + "_buttons").style.display = "none";
-        $("postID" + iPostID + "_buttons_edit").style.display = "";
+        $("#postID" + iPostID + "_buttons").css('display', 'none');
+        $("#postID" + iPostID + "_buttons_edit").css('display', '');
     };
     //  Editierten Post senden
     self.vxPostEdit = function (iPostID, txt) {
@@ -513,20 +537,20 @@ function CGalaxyboard() {
     //  Shows a resultset for editing mods
     self.vxShowGroupResult = function (groupid) {
         if (!groupid) {
-            $("js_searchresult").style.display = "none";
-            $("js_btaddgroup").style.display = "none";
+            $("#js_searchresult").css('display', 'none');
+            $("#js_btaddgroup").css('display', 'none');
         } else {
-            $("js_searchresult").style.display = "block";
-            $("js_searchresult").innerHTML = self.szxListNames(mGroups[groupid].members);
-            $("js_btaddgroup").style.display = "block";
+            $("#js_searchresult").css('display', 'none');
+            $("#js_searchresult").html(self.szxListNames(mGroups[groupid].members));
+            $("#js_btaddgroup").css('display', 'block');
         }
     }
 
     //  Adds a group to modlist
     self.vxAddGroup = function (groupid) {
         //  Close Layer
-        $("js_searchmod").style.display = "none";
-        var modlist = $("js_editthreads_form").modlist;
+        $("#js_searchmod").css('display', 'none');
+        var modlist = $("#js_editthreads_form").get(0).modlist;
         modlist.options[modlist.length] = new Option(mGroups[groupid].name, -groupid + "~0");
         modlist.options[modlist.length - 1].selected = true;
         modlist.onchange();
@@ -534,7 +558,7 @@ function CGalaxyboard() {
 
     self.vxSaveNewThread = function (pForm) {
         //  Alle eingetragenen Moderatoren selektieren
-        var modlist = $("js_editthreads_form").modlist;
+        var modlist = $("#js_editthreads_form").get(0).modlist;
         modlist.multiple = true;
         for (var i = 0; i < modlist.length; i++) {
             modlist[i].selected = true;
@@ -575,18 +599,22 @@ function CGalaxyboard() {
         }
     };
     self.vxShowReports = function () {
-        $('js_content').innerHTML = self.szxBuildReports(mThreads, mThreads[0].reports);
+        $('#js_content').html(self.szxBuildReports(mThreads, mThreads[0].reports));
         self.vxCheckMod();
     };
     self.vxCheckMod = function () {
         //  Rechte fuer den Thread:
+        var adminBox = $('#js_adminbox');
+        var content = $('#js_content');
         if (mThreads[0].bIsMod) {
-            $("js_adminbox").innerHTML = self.szxBuildAdminBox(mThreads, (mPosts && mPosts.topicID == iCurrentTopic) ? mPosts.topic : null);
-            $("js_adminbox").style.display = "block";
-            $("js_content").style.margin = "0 auto 0 200px";
+            adminBox
+                .html(self.szxBuildAdminBox(mThreads, (mPosts && mPosts.topicID == iCurrentTopic) ? mPosts.topic : null))
+                .css('display', 'block');
+            content
+                .css('margin', '0 auto 0 200px');
         } else {
-            $("js_adminbox").style.display = "none";
-            $("js_content").style.margin = "0 auto";
+            adminBox.css('display', 'none');
+            content.css('margin', '0 auto');
         }
     };
     self.vxDeleteTopic = function (iTopicID, bConfirmed) {
@@ -634,7 +662,7 @@ function CGalaxyboard() {
                 "topicID": iTopicID,
                 "headline": szHeadline,
                 "icon": iIcon,
-                "flags": $("js_tmp_pinned").checked ? flags.topic.pinned : 0
+                "flags": $("#js_tmp_pinned").is(':checked') ? flags.topic.pinned : 0 // TODO check if .is(':checked') is correct. I do not have internet currently
             }], function (mAction) {
                 self["oldHash"] = null;
                 location.hash = "!showTopic~" + iTopicID + "~" + iCurrentPage;
@@ -644,10 +672,11 @@ function CGalaxyboard() {
             //  Hinweis einblenden
             var mTopic = self.mxGetTopic(iTopicID);
             vxOpenOverlay(self.szxEditTopicBox(iTopicID), function () {
-                $("js_tmp_subject").value = mTopic.headline;
-                $("js_tmp_icon" + mTopic.icon).checked = true;
-                $("js_tmp_pinned").checked = (mTopic.flags & flags.topic.pinned) ? true : false;
-                $("js_tmp_subject").focus();
+                var subject = $('#js_tmp_subject');
+                subject.val(mTopic.headline);
+                $('#js_tmp_icon' + mTopic.icon).prop('checked', true);
+                $('#js_tmp_pinned').prop('checked', (mTopic.flags & flags.topic.pinned) ? true : false);
+                subject.focus();
             });
         }
     };
@@ -666,10 +695,11 @@ function CGalaxyboard() {
 
     self.iThreadSelectedFromTree = 0;
     self.vxToggleTree = function (id) {
-        if ($("js_tmp_ul" + id) && mThreads[id].childs.length) {
+        var ul = $('#js_tmp_ul' + id);
+        if (ul && mThreads[id].childs.length) {
             mThreads[id].treeopen = mThreads[id].treeopen ? false : true;
-            $("js_tmp_ul" + id).style.display = mThreads[id].treeopen ? 'block' : 'none';
-            $("js_tmp_em" + id).className = mThreads[id].treeopen ? 'open' : 'close';
+            ul.css('display', mThreads[id].treeopen ? 'block' : 'none');
+            $('#js_tmp_em' + id).get(0).className = mThreads[id].treeopen ? 'open' : 'close';
         }
     };
     self.vxSelectTree = function (id) {
@@ -678,7 +708,7 @@ function CGalaxyboard() {
         for (var i = 0; i < arr.length; i++) {
             arr[i].className = "";
         }
-        $("js_tmp_a" + id).className = "active";
+        $("#js_tmp_a" + id).get(0).className = "active";
     };
     self.szxGetThreadAsTree = function (id) {
         if (!mThreads[id]) return "";
@@ -738,20 +768,23 @@ function CGalaxyboard() {
     };
     //  Thread anzeigen
     self.vxShowThreads = function (iThreadID) {
+        var content = $('#js_content');
         if (mThreads && mThreads[iThreadID]) {
-            $("js_content").innerHTML = self.szxBuildThreads(mThreads, iThreadID);
+            content.html(self.szxBuildThreads(mThreads, iThreadID));
             iCurrentThread = iThreadID;
         } else {
             feedback("Thread not accessible.", "feedback-error");
             iCurrentThread = 0;
             if (mThreads && mThreads[0])
-                $("js_content").innerHTML = self.szxBuildThreads(mThreads, 0);
+                content.html(self.szxBuildThreads(mThreads, 0));
         }
         self.vxCheckMod();
     };
 
     //  Neuen Topic erstellen:
     self.vxCreateTopic = function (iThreadID, pForm) {
+        var form = $('#js_createtopic_form');
+        var rawForm = form.get(0);
         //  Formular pruefen:
         if (!pForm.topic.value.trim()) return feedback("@@@NEEDTOPICHEADLINE@@@", "feedback-error");
         //  Icon pruefen
@@ -761,12 +794,12 @@ function CGalaxyboard() {
         if (!pForm.obj_bb_content0.value.trim()) return feedback("@@@NEEDMESSAGE@@@", "feedback-error");
         //  Falls icon==100 dann Umfrage pruefen:
         if (iIcon == 100) {
-            if ($("js_createtopic_form").uoptions.length < 2) return feedback("@@@NEEDPOLLOPTIONS@@@", "feedback-error");
-            var iPollOptions = ~~$("js_createtopic_form").auswahl.value;
-            var iPollRuntime = ~~$("js_createtopic_form").laufzeit.value;
+            if (rawForm.uoptions.length < 2) return feedback("@@@NEEDPOLLOPTIONS@@@", "feedback-error");
+            var iPollOptions = ~~rawForm.auswahl.value;
+            var iPollRuntime = ~~rawForm.laufzeit.value;
             var aPollOptions = [];
-            for (var i = 0; i <= $("js_createtopic_form").uoptions.options.length - 1; i++)
-                aPollOptions.push($("js_createtopic_form").uoptions.options[i].value);
+            for (var i = 0; i <= rawForm.uoptions.options.length - 1; i++)
+                aPollOptions.push(rawForm.uoptions.options[i].value);
         } else {
             var iPollOptions = 0;
             var iPollRuntime = 0;
@@ -826,7 +859,7 @@ function CGalaxyboard() {
                         var d = new Date(aNews[i].lastpostdate * 1000);
                         szNews += '<a href="#!showTopic~' + aNews[i].topicid + '~' + Math.ceil(aNews[i].posts / self.iPostsPerPage) + '~' + aNews[i].lastpostid + '" title="' + (aNews[i].username.escape()) + ': ' + aNews[i].topic.escape() + '">' + (String(d.getHours()).pad("00") + ":" + String(d.getMinutes()).pad("00") + " " + aNews[i].topic.escape()) + '</a>';
                     }
-                    $("newscontent").innerHTML = szNews;
+                    $("#newscontent").html(szNews);
                     mThreads = data;
                     //  Den "neusten" Beitrag merken:
                     if (aNews.length && aNews[0].lastpostdate > self.ltd)
@@ -843,11 +876,11 @@ function CGalaxyboard() {
                 case "newMessageList":
                     amMessageList = data || [];
                     if (location.hash.indexOf("showMessages"))
-                        $("js_content").innerHTML = self.szxBuildMessagelist(amMessageList);
+                        $("#js_content").html(self.szxBuildMessagelist(amMessageList));
                     break;
                 case "newMessageCount":
                     mUser["messages"] = data || 0;
-                    $("messagesbtn").innerHTML = self.translate("@@@MESSAGES@@@ (" + mUser["messages"] + ")");
+                    $("#messagesbtn").html(self.translate("@@@MESSAGES@@@ (" + mUser["messages"] + ")"));
                     //  Falls User ein Popup moechte, dieses nun oeffnen.
                     if (mUser["flags"] & flags.user.automaticallyOpenPM && mUser["messages"] > iLastMessages)
                         self.vxAlertNewMessages();
@@ -859,20 +892,17 @@ function CGalaxyboard() {
                 case "newUser":
                     var iCurrentUser = mUser.id;
                     mUser = data;
-                    $("userinfo").innerHTML = data.nick.escape();
+                    $("#userinfo").html(data.nick.escape());
+                    var userButtons = $("#logoutbtn, #profilebtn, #messagesbtn");
+                    var loginButton = $('#loginbtn');
                     if (data.id == 0) {
-                        //  Gast
-                        $("loginbtn").style.display = "";
-                        $("logoutbtn").style.display = "none";
-                        $("profilebtn").style.display = "none";
-                        $("messagesbtn").style.display = "none";
+                        loginButton.css('display', '');
+                        userButtons.css('display', 'none')
                     } else {
                         //  Angemeldet
-                        $("loginbtn").style.display = "none";
-                        $("logoutbtn").style.display = "";
-                        $("profilebtn").style.display = "";
-                        $("messagesbtn").style.display = "";
-                        $("messagesbtn").innerHTML = self.translate("@@@MESSAGES@@@ (" + mUser["messages"] + ")");
+                        loginButton.css('display', 'none');
+                        userButtons.css('display', '');
+                        $("#messagesbtn").html(self.translate("@@@MESSAGES@@@ (" + mUser["messages"] + ")"));
                     }
                     if (mUser["flags"] & flags.user.automaticallyOpenPM && mUser["messages"] > 0)
                         self.vxAlertNewMessages();
@@ -954,7 +984,7 @@ function CGalaxyboard() {
                     break;
                 case "createTopic":
                     if (mThreads && mThreads[intval(param[1])])
-                        $("js_content").innerHTML = self.szxCreateTopic(intval(param[1]), mThreads[intval(param[1])]);
+                        $("#js_content").html(self.szxCreateTopic(intval(param[1]), mThreads[intval(param[1])]));
                     else
                         feedback("ERROR: Parent not available", "feedback-error");
                     break;
@@ -967,15 +997,20 @@ function CGalaxyboard() {
                             "postID": intval(param[3])
                         }], function (mAction) {
                             if (mAction && mAction.action == "showLogin") {
-                                $("js_content").innerHTML = "";
+                                $("#js_content").html("");
                                 self.vxCheckMod();
                                 return self.vxLogin();
                             }
                             if (mPosts && mPosts["topicID"] == intval(param[1])) {
                                 iCurrentTopic = intval(param[1]);
                                 iCurrentPage = intval(param[2]);
-                                $("js_content").innerHTML = self.szxBuildPosts(mPosts);
-                                if (param.length == 4 && $("postID" + param[3])) $("postID" + param[3]).scrollIntoView();
+                                $("#js_content").html(self.szxBuildPosts(mPosts));
+                                if(param[3]) {
+                                    var topicToShow = $('#postID' + param[3]);
+                                    if(topicToShow) {
+                                        topicToShow.get(0).scrollIntoView();
+                                    }
+                                }
                                 self.vxCheckMod();
                                 //  Merken das wir dieses Topic kennen
                                 var t = self.mxGetTopic(iCurrentTopic);
@@ -984,9 +1019,13 @@ function CGalaxyboard() {
                         });
                         break;
                     } else {    //  Posts vorhanden?
-                        $("js_content").innerHTML = self.szxBuildPosts(mPosts);
-                        if (param[3] && $("postID" + param[3]))
-                            $("postID" + param[3]).scrollIntoView();
+                        $("#js_content").html(self.szxBuildPosts(mPosts));
+                        if(param[3]) {
+                            var topicToShow = $('#postID' + param[3]);
+                            if(topicToShow) {
+                                topicToShow.get(0).scrollIntoView();
+                            }
+                        }
                         self.vxCheckMod();
                     }
                     break;
@@ -1068,7 +1107,7 @@ function CGalaxyboard() {
 
     self.vxLogin = function () {
         vxOpenOverlay(self.szxLoginBox(), function () {
-            $("js_tmp_login").focus()
+            $("#js_tmp_login").get(0).focus()
         });
     };
     self.vxProcessLogin = function (p) {
@@ -1122,6 +1161,9 @@ function CGalaxyboard() {
             });
         return txt;
     };
+    self.lang = function(key) {
+        return mTranslation[key] ? mTranslation[key] : "#" + key + "#";
+    };
     self.vxSendMessage = function (pForm, cb) {
         try {
             var refid = intval(pForm.refid.value);
@@ -1150,19 +1192,28 @@ function CGalaxyboard() {
         if (arr && arr.length)   self.call([{"cmd": "deleteMessages", "messageList": arr}]);
     };
     self.vxShowMessage = function (refid) {
-        //  evtzl. wieder schliessen?
-        if (self.iCurrentMessage && self.iCurrentMessage == refid && $("js_msg_" + self.iCurrentMessage)) {
-            $("js_msg_" + self.iCurrentMessage).style.height = "0";
-            self.iCurrentMessage = 0;
+        //  eventually close again ?
+
+        if (self.iCurrentMessage && self.iCurrentMessage == refid) {
+            var currentMessage = $("js_msg_" + self.iCurrentMessage);
+            if(currentMessage) {
+                currentMessage.css('height', 0);
+                self.iCurrentMessage = 0;
+            }
             return;
         }
 
         self.call([{"cmd": "getMessage", "refID": intval(refid)}], function (mAction) {
-            if (self.iCurrentMessage && $("js_msg_" + self.iCurrentMessage))
-                $("js_msg_" + self.iCurrentMessage).style.height = "0";
+            if(self.iCurrentMessage) {
+                var currentMessage = $('#js_msg_' + self.iCurrentMessage);
+                if(currentMessage) {
+                    currentMessage.css('height', 0);
+                }
+            }
             if (mAction.action == "showMessage") {
-                $("js_msg_" + refid).innerHTML = self.szxShowMessage(refid, mAction.data);
-                $("js_msg_" + refid).style.height = Math.min($("js_msg_table_" + refid).offsetHeight + 32, 400) + "px";
+                var newMessage = $('#js_msg_' + refid);
+                newMessage.html(self.szxShowMessage(refid, mAction.data));
+                newMessage.height(Math.min($("#js_msg_table_" + refid).outerHeight() + 32, 400));
                 self.iCurrentMessage = refid;
             }
         });
@@ -1175,24 +1226,26 @@ function CGalaxyboard() {
         location.hash = '#!showSearch';
         self.call([{"cmd": "getSearch", "search": search}], function (mAction) {
             if (mAction.action == "showSearch") {
-                $("js_content").innerHTML = self.szxShowSearch(mAction.data);
+                $("#js_content").html(self.szxShowSearch(mAction.data));
             }
         });
     };
     self.vxShowModOptions = function (value) {
+        var btnDeleteMod = $('#js_bt_deletemod');
+        var modContainer = $('#js_modcontainer');
         if (value) {
             value = value.split("~");
             var iUserID = value[0];
             var iFlags = value[1];
-            var f = $("js_editthreads_form");
+            var f = $("#js_editthreads_form").get(0);
             // TODO this need to be changed, cause of the modified flag structure
             var o = "dfmod_approvepost,dfmod_setauthor,dfmod_deletepost,dfmod_editpost,dfmod_closereports,dfmod_hidepost,dfmod_replypost,dfmod_managebans,dfmod_postdetails,dfmod_createbans,dfmod_closethread,dfmod_movethread,dfmod_deletethread,dfmod_editthread".split(",")
             //  Flags durchtesten
             for (var i = 0; i < o.length; i++) {
                 f.elements[o[i]].checked = (iFlags & window[o[i]]) ? true : false;
             }
-            $("js_bt_deletemod").className = "small-button";
-            $("js_bt_deletemod").onclick = function () {
+            btnDeleteMod.get(0).className = "small-button";
+            btnDeleteMod.get(0).onclick = function () {
                 //  ueber Moderatoren iterieren und Eintrag loeschen
                 for (var i = 0; i < f.modlist.length; i++) {
                     if (f.modlist[i].value.split("~")[0] == iUserID) {
@@ -1202,8 +1255,8 @@ function CGalaxyboard() {
                 }
             };
             //  Aenderungen an Flags erfassen:
-            $("js_modcontainer").style.display = "block";
-            $("js_modcontainer").onclick = function () {
+            modContainer.css('display', 'block');
+            modContainer.get(0).onclick = function () {
                 //  Flags durchtesten
                 var iFlags = 0;
                 for (var i = 0; i < o.length; i++) {
@@ -1218,31 +1271,30 @@ function CGalaxyboard() {
                 }
             }
         } else {
-            $("js_modcontainer").style.display = "none";
-            $("js_modcontainer").onclick = null;
-            $("js_bt_deletemod").className = "small-button inactive";
-            $("js_bt_deletemod").onclick = null;
+            modContainer.css('display', 'none').get(0).onclick = null;
+            btnDeleteMod.get(0).className = 'small-button inactive';
+            btnDeleteMod.get(0).onclick = null;
         }
     };
 
     //  POLL Funktionen
     self.vxPollAddOption = function () {
-        $("js_createtopic_form").uoptions.options[$("js_createtopic_form").uoptions.options.length] = new Option($("js_createtopic_form").uoption.value, $("js_createtopic_form").uoption.value, false, true);
-        $("js_createtopic_form").uoption.value = "";
+        $("#js_createtopic_form").get(0).uoptions.options[$("js_createtopic_form").uoptions.options.length] = new Option($("js_createtopic_form").uoption.value, $("js_createtopic_form").uoption.value, false, true);
+        $("#js_createtopic_form").get(0).uoption.value = "";
         self.vxPollSelOptions();
     };
     self.vxPollDelOption = function () {
-        for (var i = $("js_createtopic_form").uoptions.options.length - 1; i >= 0; i--) {
-            if ($("js_createtopic_form").uoptions.options[i].selected)
-                $("js_createtopic_form").uoptions.options[i] = null;
+        for (var i = $("#js_createtopic_form").get(0).uoptions.options.length - 1; i >= 0; i--) {
+            if ($("#js_createtopic_form").get(0).uoptions.options[i].selected)
+                $("#js_createtopic_form").get(0).uoptions.options[i] = null;
         }
     };
     self.vxPollSelOptions = function () {
-        for (var i = $("js_createtopic_form").uoptions.options.length - 1; i >= 0; i--)
-            $("js_createtopic_form").uoptions.options[i].selected = true;
+        for (var i = $("#js_createtopic_form").get(0).uoptions.options.length - 1; i >= 0; i--)
+            $("#js_createtopic_form").get(0).uoptions.options[i].selected = true;
     };
     self.vxShowPollEditor = function (bShow) {
-        $("js_polleditor").style.display = bShow ? "table-row" : "none";
+        $("#js_polleditor").css('display', bShow ? "table-row" : "none");
     };
 
 

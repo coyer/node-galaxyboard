@@ -1216,3 +1216,8 @@ div.searchmod .search dd input {
 .defaultForm input, .defaultForm textarea {
     vertical-align: middle;
 }
+
+.flagOption {
+    display: inline-block;
+    width: 250px;
+}

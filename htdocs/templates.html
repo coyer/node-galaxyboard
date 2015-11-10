@@ -1390,6 +1390,7 @@
 {macro createBoardTemplate(allBoardsSorted)}
     <div id="createBoard">
         <h1>@@@CREATE_BOARD@@@</h1>
+        
         <form class="defaultForm">
             <fieldset>
                 <legend>@@@GENERAL@@@</legend>
@@ -1403,12 +1404,24 @@
                 </p>
                 <p><label for="cb_headline">@@@HEADLINE@@@</label><input id="cb_headline" type="text" name="headline"/></p>
                 <p><label for="cb_sortid">@@@SORTID@@@</label><input id="cb_sortid" type="text" name="sortid" /></p>
-                <p><label for="cb_description">@@@DESCRIPTION@@@</label><textarea id="cb_description" cols="50" rows="10" name="description"></textarea></p>
-                <p><label for="cb_boardrule">@@@BOARDRULE@@@</label><textarea id="cb_boardrule" cols="50" rows="10" name="boardrule"></textarea></p>
+                <p><label for="cb_description">@@@DESCRIPTION@@@</label><textarea id="cb_description" cols="150" rows="7" name="description"></textarea></p>
+                <p><label for="cb_boardrule">@@@BOARDRULE@@@</label><textarea id="cb_boardrule" cols="150" rows="7" name="boardrule"></textarea></p>
             </fieldset>
             <fieldset>
-                <legend>@@@BOARD_CONFIG@@@</legend>
-
+                <legend>@@@GENERAL_CONFIG@@@</legend>
+                {for flag in flags.board.general}
+                    <div class="flagOption">
+                        <input id="option${flag_index}" type="checkbox" name="${flag_index}" value="${flag_index}"><label for="option${flag_index}">${system.lang("board_" + flag_index)}</label>
+                    </div>
+                {/for}
+            </fieldset>
+            <fieldset>
+                <legend>@@@MISC@@@</legend>
+                {for flag in flags.board.config}
+                <div class="flagOption">
+                    <input id="option${flag_index}" type="checkbox" name="${flag_index}" value="${flag_index}"><label for="option${flag_index}">${system.lang("board_" + flag_index)}</label>
+                </div>
+                {/for}
             </fieldset>
         </form>
     </div>

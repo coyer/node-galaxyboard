@@ -56,6 +56,7 @@ app.get('/flags.js', function(req, res){
     res.sendFile(__dirname + '/galaxyboard/Flags.js');
 });
 
+
 //  Server css/gfx
 app.get('/static/*', function(req, res){
     var filePath = __dirname + '/htdocs/static/' + req.params[0];

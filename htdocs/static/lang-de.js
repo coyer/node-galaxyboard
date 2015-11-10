@@ -128,5 +128,24 @@ var mTranslation = {
     HEADLINE: "Name",
     SORTID: "Sortiernummer",
     DESCRIPTION: "Beschreibung",
-    BOARDRULE: "Regeln"
+    BOARDRULE: "Regeln",
+
+    GENERAL_CONFIG: 'Allgemeine Konfiguration',
+    board_closed: 'Board geschlossen',
+    board_noRegistration: 'Keine Registrierung',
+    board_approveRegistration: 'Registrierung müssen bestätigt werden',
+    board_userAvatar: 'Useravatare erlauben',
+
+    board_allowBBCode: 'VERALTET: BBCode erlauben',
+    board_allowSmilies: 'VERALTET: Smilies erlauben',
+    board_allowLinks: 'VERALTET: Links erlauben',
+    board_allowBBCodeInBoardRule: 'VERALTET: BBCode in Regeln erlauben',
+    board_allowSmiliesInBoardRule: 'VERALTET: Smilies in Regeln erlauben',
+    board_allowLinksInBoardRule: 'VERALTET: Links in Regeln erlauben',
+    board_showSubBoards: 'Unterboards anzeigen',
+    board_hideBoard: 'Board verstecken',
+    board_boardClosed: 'Board schließen',
+    board_forcePrefix: 'Prefixe erzwingen',
+    board_noNews: 'Beiträge nicht in News anzeigen',
+    board_dynamicMenus: 'Dynamische Menüs'
 };
