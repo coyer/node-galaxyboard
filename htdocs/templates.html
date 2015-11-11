@@ -449,7 +449,7 @@
                 <tr class="dark" style="display:none;" id="js_postreply2">
                   <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(new Date(), true)}</div></td>
                   <td class="row2"><div class="headline">
-                        <div class="small-button" onclick="system.vxPostReply(${iTopicID}, $('obj_bb_content0').value);">@@@SEND@@@</div>
+                        <div id="btnPostReply" class="small-button" data-topic-id="${iTopicID}">@@@SEND@@@</div>
                         <div class="small-button" onclick="$('js_postreply1').style.display='none';$('js_postreply2').style.display='none';">@@@ABORT@@@</div>
                         <div class="clear"></div>
                   </div></td>

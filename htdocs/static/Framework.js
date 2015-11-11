@@ -1307,6 +1307,12 @@ function CGalaxyboard() {
     };
 
 
+
+    // Events
+    $(document).on('click', '#btnPostReply', function(){
+        system.vxPostReply($(this).attr('data-topic-id'), $('#obj_bb_content0').val());
+    });
+
 }
 var system = new CGalaxyboard();
 
