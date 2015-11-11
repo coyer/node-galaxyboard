@@ -525,14 +525,23 @@ module.exports = function GalaxyBoard(config) {
                     return next();
                 }
 
-                if ((!(mTopic["perms"]["boardflags"] & flags.rights.board.basic.seeBoard) || !(mTopic["perms"]["boardflags"] & flags.rights.board.basic.readBoard)) && // nicht anzeigbar und nicht lesbar
-                    !(mModlist[mTopic["boardid"]] && mModlist[mTopic["boardid"]][mUser["id"]])) {   // und wir sind auch kein mod (fuer den die einschr�nkung nicht z�hlt)
+                if (
+                    (
+                        !(mTopic["perms"]["boardflags"] & flags.rights.board.basic.seeBoard)
+                        || !(mTopic["perms"]["boardflags"] & flags.rights.board.basic.readBoard)
+                    ) && !(
+                        mModlist[mTopic["boardid"]]
+                        && mModlist[mTopic["boardid"]][mUser["id"]]
+                    ) && !(
+                        self.isAdmin()
+                    )
+                ) {
                     amJSON.push({"event": "showError", "data": "Missing permissions"});
                     amJSON.push({"event": "action", "action": "showLogin"});
                     return next();
                 }
 
-                //  Anzahl Beitr�ge ermitteln:
+                //  get postings amount:
                 mysqlPool.query(
                     "select count(*) as anzahl from posts where topicid=?", [iTopicID],
                     function (err, results, fields) {
@@ -541,7 +550,7 @@ module.exports = function GalaxyBoard(config) {
                         //  Page ggf korrigieren:
                         iPage = Math.max(0, Math.min(iPage - 1, Math.ceil(iPostCount / (1.0 * iPostsPerPage))));
 
-                        //  Beitr�ge auslesen:
+                        //  read postings:
                         function readPosts() {
                             mysqlPool.query(
                                 "select" +
