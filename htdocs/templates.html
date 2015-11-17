@@ -338,7 +338,7 @@
                   </tr>
                 </table>
                 {if mPosts.poll.pollend > new Date().getTime()/1000}
-                <div class="small-button" onclick="system.vxVote($('js_poll_form'),${mPosts.topicID})">@@@VOTE@@@</div>
+                <div id="btnPostVote" class="small-button" data-topic-id="${mPosts.topicID}">@@@VOTE@@@</div>
                 <div class="clear"></div>
                 {/if}
               </form>
@@ -413,8 +413,8 @@
                       <div class="clear"></div>
                     </div>
                     <div class="headline" id="postID${p.postid}_buttons_edit" style="display:none;">
-                        <div class="small-button" onclick="system.vxPostEdit(${p.postid}, $('obj_bb_content${p.postid}').value);">@@@SEND@@@</div>
-                        <div class="small-button" onclick="system.vxShowTopic(${iTopicID});">@@@ABORT@@@</div>
+                        <div id="btnPostEdit" class="small-button" data-post-id="${p.postid}">@@@SEND@@@</div>
+                        <div id="btnCancelPostEdit" class="small-button" data-topic-id="${iTopicID}">@@@ABORT@@@</div>
                         <div class="clear"></div>
                     </div>
                   </td>
@@ -450,7 +450,7 @@
                   <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(new Date(), true)}</div></td>
                   <td class="row2"><div class="headline">
                         <div id="btnPostReply" class="small-button" data-topic-id="${iTopicID}">@@@SEND@@@</div>
-                        <div class="small-button" onclick="$('js_postreply1').style.display='none';$('js_postreply2').style.display='none';">@@@ABORT@@@</div>
+                        <div id="btnCancelPostReply" class="small-button">@@@ABORT@@@</div>
                         <div class="clear"></div>
                   </div></td>
                 </tr>
@@ -489,7 +489,7 @@
         // GlobaleFunktion definieren
         if(window) {
           window.bbOnClick = function(event, src, id) {
-            var input = $("obj_bb_content"+id);
+            var input = $("#obj_bb_content"+id).get(0);
             var aTag  = src.name.split(",")[0];
             var eTag  = src.name.split(",")[1];
 
@@ -705,7 +705,7 @@
                   {/for}
                 </select>
                 <div class="small-button inactive" id="js_bt_deletemod">@@@DELETE@@@</div>
-                <div class="small-button" onclick="$('js_searchmod').style.display='block';">@@@ADD@@@</div>
+                <div id="btnSearchMod" class="small-button">@@@ADD@@@</div>
               </td>
               <td width="50%"><div style="display:none;" id="js_modcontainer">
                 <h4>Rechteliste</h4>
@@ -743,8 +743,8 @@
               </dl>
               <div class="clear"></div>
               <div id="js_searchresult"></div>
-              <div id="js_btaddgroup" class="small-button" style="display:none;" onclick="system.vxAddGroup($('js_selectgroup').value)">Gruppe hinzufügen</div>
-              <div class="small-button" onclick="$('js_searchmod').style.display='none';">@@@ABORT@@@</div>
+              <div id="js_btaddgroup" class="small-button" style="display:none;"">Gruppe hinzufügen</div>
+              <div id="btnCancelAddMod" class="small-button">@@@ABORT@@@</div>
               <div class="clear"></div>
             </div>
           </div>
@@ -762,8 +762,8 @@
         noch nicht drin
         </div>
         <!-- Buttons zum Abschicken -->
-        <div onclick="system.vxSaveNewThread($('js_editthreads_form'))" class="button" style="float:right;">@@@SAVE@@@</div>
-        <div onclick="vxCloseOverlay();" class="button" style="float:right;">@@@ABORT@@@</div>
+        <div id="btnSaveNewThread" class="button" style="float:right;">@@@SAVE@@@</div>
+        <div class="button btnCloseOverlay" style="float:right;">@@@ABORT@@@</div>
         <div class="clear"></div>
         </form>
     {/if}
@@ -838,7 +838,7 @@
     </table>
     </form>
     <div onclick="vxCloseOverlay();" class="button">@@@ABORT@@@</div>
-    <div onclick="system.vxEditTopic(${id}, true, $('js_tmp_form').headline.value, $('js_tmp_form').icon);" class="button">@@@SAVE@@@</div>
+    <div id="btnEditTopic" data-topic-id="${id}" class="button">@@@SAVE@@@</div>
     <div class="clear"></div>
   </div>
 {/macro}
@@ -935,7 +935,7 @@
                 <tr class="dark" id="js_postreply2">
                   <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(new Date(), true)}</div></td>
                   <td class="row2"><div class="headline">
-                        <div class="small-button" onclick="system.vxCreateTopic(${iThreadID}, $('js_createtopic_form'));">@@@CREATE@@@</div>
+                        <div class="small-button" onclick="system.vxCreateTopic(${iThreadID}, $('#js_createtopic_form').get(0));">@@@CREATE@@@</div>
                         <div class="small-button" onclick="history.back();">@@@ABORT@@@</div>
                         <div class="clear"></div>
                   </div></td>
@@ -1114,7 +1114,7 @@
         <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(1000*mPost.postdate, true)}</div></td>
         <td class="row2">
           <div class="headline">
-            <div class="small-button" onclick="system.vxBanUser(${mPost.postid}, $('js_tmp_form'))">@@@BANUSER@@@</div>
+            <div class="small-button btnBanUser" data-post-id="${mPost.postid}">@@@BANUSER@@@</div>
             <div class="clear"></div>
           </div>
         </td>
@@ -1213,7 +1213,7 @@
     </table>
   </div>
   <div class="headline" id="js_msg_${iRefID}_buttons" style="position:absolute;left:0;width:100%;bottom:0;">
-    <div class="small-button" onclick="$('js_msg_textarea_${iRefID}').style.display='block';$('js_msg_${iRefID}_buttons').style.display='none';$('js_msg_content_${iRefID}').style.bottom='100px';">@@@REPLY@@@</div>
+    <div class="small-button btnReply" data-ref-id="${iRefID}">@@@REPLY@@@</div>
     <div class="small-button" onclick="system.vxDeleteMessages([${iRefID}])">@@@DELETE@@@</div>
     <div class="clear"></div>
   </div>
@@ -1225,8 +1225,8 @@
       <textarea name="message" style="width:100%;height:80px;bottom:20px;position:absolute;"></textarea>
     </form>
     <div style="position:absolute;bottom:0;right:0;">
-      <div class="small-button" onclick="system.vxSendMessage($('js_msg_form_${iRefID}'),function(){system.oldHash=null;location.hash='!showMessages';system.loadFromHash()})">@@@SEND@@@</div>
-      <div class="small-button" onclick="$('js_msg_textarea_${iRefID}').style.display='none';$('js_msg_${iRefID}_buttons').style.display='block';$('js_msg_content_${iRefID}').style.bottom='20px';">@@@ABORT@@@</div>
+      <div id="btnSendReply" data-ref-id="${iRefID}" class="small-button">@@@SEND@@@</div>
+      <div id="btnCancelReply" data-ref-id="${iRefID}" class="small-button" onclick="">@@@ABORT@@@</div>
     </div>
   </div>
 </div>

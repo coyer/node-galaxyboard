@@ -477,18 +477,35 @@ function CGalaxyboard() {
             vxOpenOverlay(self.szxConfirmDeletePostBox(iPostID));
         }
     };
+
+    /**
+     * Edit posts
+     */
+
+    var originalContent;
+    var currentPostId;
     //  Einen Beitrag editieren
-    self.vxEditPost = function (iPostID) {
-        $("#postID" + iPostID).html(self.szxBBEditor(iPostID));
+    self.vxEditPost = function (postId) {
+        var container = $("#postID" + postId);
+        originalContent = container.html();
+        currentPostId = postId;
+        container.html(self.szxBBEditor(postId));
         mCite = null;
         for (var i = 0; i < mPosts["posts"].length; i++)
-            if (mPosts["posts"][i]["postid"] == iPostID)
+            if (mPosts["posts"][i]["postid"] == postId)
                 mCite = mPosts["posts"][i];
         if (mCite)
-            $("#obj_bb_content" + iPostID).val(mCite["content"]);
+            $("#obj_bb_content" + postId).val(mCite["content"]);
         //  Buttons einblenden
-        $("#postID" + iPostID + "_buttons").css('display', 'none');
-        $("#postID" + iPostID + "_buttons_edit").css('display', '');
+        $("#postID" + postId + "_buttons").css('display', 'none');
+        $("#postID" + postId + "_buttons_edit").css('display', '');
+    };
+    self.cancelEditPost = function() {
+        $('#postID' + currentPostId).html(originalContent);
+        $("#postID" + currentPostId + "_buttons").css('display', '');
+        $("#postID" + currentPostId + "_buttons_edit").css('display', 'none');
+        currentPostId = undefined;
+        originalContent = undefined;
     };
     //  Editierten Post senden
     self.vxPostEdit = function (iPostID, txt) {
@@ -1307,12 +1324,86 @@ function CGalaxyboard() {
     };
 
 
+    /**
+     * UI-Events
+     * these events where previously implemented with e.g. onclick="" on an html node
+     */
 
-    // Events
     $(document).on('click', '#btnPostReply', function(){
         system.vxPostReply($(this).attr('data-topic-id'), $('#obj_bb_content0').val());
     });
 
+    $(document).on('click', '#btnCancelPostReply', function(){
+        $('#js_postreply1').css('display', 'none');
+        $('#js_postreply2').css('display', 'none');
+    });
+
+    $(document).on('click', '#btnPostVote', function(){
+        self.vxVote($('#js_poll_form').get(0), $(this).attr('data-topic-id'));
+    });
+
+    $(document).on('click', '#btnPostEdit', function(){
+        var postId = $(this).attr('data-post-id');
+        self.vxPostEdit(postId, $('#obj_bb_content' + postId).val());
+    });
+
+    $(document).on('click', '#btnCancelPostEdit', self.cancelEditPost);
+
+    $(document).on('click', '#btnSearchMod', function(){
+        $('#js_searchmod').css('display', 'block');
+    });
+
+    $(document).on('click', '#js_btaddgroup', function(){
+        self.vxAddGroup($('#js_selectgroup').val());
+    });
+
+    $(document).on('click', '#btnCancelAddMod', function(){
+        $('#js_searchmod').css('display', 'none');
+    });
+
+    $(document).on('click', '#btnSaveNewThread', function(){
+        system.vxSaveNewThread($('#js_editthreads_form').get(0));
+    });
+
+    $(document).on('click', '.btnCloseOverlay', vxCloseOverlay);
+
+    $(document).on('click', '#btnEditTopic', function(){
+        var form = $('#js_tmp_form').get(0);
+        system.vxEditTopic(
+            $(this).attr('data-topic-id'),
+            true,
+            form.headline.value,
+            form.icon
+        );
+    });
+
+    $(document).on('click', '.btnBanUser', function() {
+        self.vxBanUser($(this).attr('data-post-id'), $('#js_tmp_form').get(0))
+    });
+
+    $(document).on('click', '.btnReply', function(){
+        var refId = $(this).attr('data-ref-id');
+        $('#js_msg_textarea_' + refId).css('display', 'block');
+        $('#js_msg_' + refId + '_buttons').css('display', 'none');
+        $('#js_msg_content_' + refId).css('bottom', '100px');
+    });
+
+    $(document).on('click', '#btnSendReply', function(){
+        var refId = $(this).attr('data-ref-id');
+        self.vxSendMessage($('#js_msg_form_' + refId).get(0), function(){
+                self.oldHash=null;
+                location.hash='!showMessages';
+                self.loadFromHash()
+            }
+        );
+    });
+
+    $(document).on('click', '#btnCancelReply', function(){
+        var refId = $(this).attr('data-ref-id');
+        $('#js_msg_textarea_' + refId).css('display', 'none');
+        $('#js_msg_' + refId + '_buttons').css('display', 'block');
+        $('#js_msg_content_' + refId).css('bottom', '20px');
+    });
 }
 var system = new CGalaxyboard();
 

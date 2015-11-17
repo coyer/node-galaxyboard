@@ -1094,7 +1094,7 @@ module.exports = function GalaxyBoard(config) {
                     mxGetTopic(iTopicID, function (mTopic) {
                         //  thema wurde geschlossen und/oder ausgeblendet:
                         if (!(mTopic["perms"]["topicflags"] & (flags.topic.closed | flags.topic.modClosed) == 0) &&
-                            !mTopic["perms"]["modflags"] & (GBFlags.dfmod_deletepost)) {
+                            !mTopic["perms"]["modflags"] & (flags.rights.post.deletePost)) {
                             amJSON.push({"event": "showError", "data": "Topic closed!"});
                             return next();
                         }
