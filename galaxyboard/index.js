@@ -129,9 +129,12 @@ module.exports = function GalaxyBoard(config) {
             //#| topicid | boardid | hits | posts | voting | icon | userid  | username | headline | flags | lastpostid | lastpostdate |
             //#+---------+---------+------+-------+--------+------+---------+----------+----------+-------+------------+--------------+
             mysqlPool.query(
-                "select * from topics where topicid=? limit 1", [iTopicID],
+                "select * from topics where topicid=? and not isDeleted limit 1", [iTopicID],
                 function (err, results, fields) {
-                    if (!results.length) cb(null);
+                    if (!results.length) {
+                        cb(null);
+                        return;
+                    }
                     var mTopic = results[0];
 
                     //  Rechte patchen:
@@ -364,7 +367,7 @@ module.exports = function GalaxyBoard(config) {
                             " ifnull(c.lastpostid,0) as lastpostid, ifnull(d.username,'nobody') as username, ifnull(d.userid,0) as lastuserid" +
                             " from        boards a" +
                             " join   board_config b on b.boardid=a.boardid" +
-                            " left join   topics  c on c.topicid=a.lasttopicid" +
+                            " left join   topics  c on c.topicid=a.lasttopicid and not c.isDeleted" +
                             " left join   posts   d on d.postid =c.lastpostid",
                             function (err, results, fields) {
                                 //  Step I  vorhandene Boards in dictionary wandeln:
@@ -433,7 +436,13 @@ module.exports = function GalaxyBoard(config) {
                                 //  Darf der User Meldungen bearbeiten?
                                 if (aiUnreportPosts.length) {
                                     mysqlPool.query(
-                                        "select count(*) as reports, a.boardid, p.*, b.content,t.headline,u.signature,u.posts,unix_timestamp(u.created) as created,u.titel from post_reports a left join posts p on p.postid=a.postid left join postbodies b on b.postid=a.postid left join topics t on t.topicid=p.topicid left join users u on u.id=p.userid where a.boardid in (" + aiUnreportPosts.join(",") + ") group by a.postid",
+                                        "select count(*) as reports, a.boardid, p.*, b.content,t.headline,u.signature,u.posts,unix_timestamp(u.created) as created,u.titel " +
+                                        " from post_reports a" +
+                                        " left join posts p on p.postid=a.postid" +
+                                        " left join postbodies b on b.postid=a.postid" +
+                                        " left join topics t on t.topicid=p.topicid and not t.isDeleted" +
+                                        " left join users u on u.id=p.userid" +
+                                        " where a.boardid in (" + aiUnreportPosts.join(",") + ") group by a.postid",
                                         function (err, results, fields) {
                                             if (err) {
                                                 console.log(["getBoard", err]);
@@ -482,7 +491,7 @@ module.exports = function GalaxyBoard(config) {
             //#+---------+---------+------+-------+--------+------+---------+----------+----------+-------+------------+--------------+
             var iBoardID = parseInt(params.threadID, 10);
             mysqlPool.query(
-                "select * from topics where boardid=? order by lastpostdate desc", [iBoardID],
+                "select * from topics where boardid=? and not isDeleted order by lastpostdate desc", [iBoardID],
                 function (err, results, fields) {
                     if (err) {
                         console.log(["getTopics", err]);
@@ -725,14 +734,11 @@ module.exports = function GalaxyBoard(config) {
                     amJSON - push({"event": "showError", "data": "Delete Topic not allowed!"});
                     return next();
                 }
-                //  Umfragen loeschen
-                mysqlPool.query("delete from poll_options where pid=?", [iTopicID]);
-                mysqlPool.query("delete from polls where pid=?", [iTopicID]);
-                mysqlPool.query("delete from poll_votes where pid=?", [iTopicID]);
+
                 //  Topic loeschen
                 mysqlPool.query(
-                    "delete from topics where topicid=?", [iTopicID],
-                    function () {
+                    "UPDATE topics SET isDeleted = true WHERE topicid=?", [iTopicID],
+                    function (err) {
                         initBoard(function () {
                             amJSON.push({"event": "newThreads", "data": mBoard});
                             amJSON.push({"event": "showInfo", "data": "Topic was deleted!"});
