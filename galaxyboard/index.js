@@ -833,10 +833,10 @@ module.exports = function GalaxyBoard(config) {
             }
 
             //  Recht im Board pruefen:
-            var flags = ixCheckBoardAccess(iThreadID);
+            var boardFlags = ixCheckBoardAccess(iThreadID);
             var iModFlags = ixGetModFlags(iThreadID);
-            var iBoardFlags = flags.board;
-            var iExtendFlags = flags.extended;
+            var iBoardFlags = boardFlags.board;
+            var iExtendFlags = boardFlags.extended;
 
             if (iBoardFlags & flags.rights.board.basic.seeBoard &&
                 iBoardFlags & flags.rights.board.basic.readBoard &&
