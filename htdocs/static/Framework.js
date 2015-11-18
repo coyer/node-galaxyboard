@@ -1324,6 +1324,11 @@ function CGalaxyboard() {
     };
 
 
+    self.isSuperAdmin = function() {
+        return mUser.flags & flags.user.superAdmin;
+    };
+
+
     /**
      * UI-Events
      * these events where previously implemented with e.g. onclick="" on an html node

@@ -118,13 +118,13 @@
         {/if}
         <!-- Topic bauen -->
         <!-- kann topic erstellt werden? -->
-        {if data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create && system.amxGetTopics(iThreadID).length}
+        {if data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create && system.amxGetTopics(iThreadID).length || system.isSuperAdmin()}
         <div class="button" onclick="location.hash='!createTopic~${iThreadID}';" style="float:right;margin:14px 0 4px;">@@@CREATETOPIC@@@</div>
         <div class="clear"></div>
         {/if}
         ${szxBuildTopics(iThreadID)}
         <!-- kann topic erstellt werden? -->
-        {if data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create}
+        {if data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create || system.isSuperAdmin()}
         <div class="button" onclick="location.hash='!createTopic~${iThreadID}';" style="float:right;margin:14px 0 4px;">@@@CREATETOPIC@@@</div>
         <div class="clear"></div>
         {/if}
