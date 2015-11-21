@@ -124,7 +124,7 @@
         {/if}
         ${szxBuildTopics(iThreadID)}
         <!-- kann topic erstellt werden? -->
-        {if data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create || system.isSuperAdmin()}
+        {if (data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create || system.isSuperAdmin()) && data[iThreadID].topiccount > 5}
         <div class="button" onclick="location.hash='!createTopic~${iThreadID}';" style="float:right;margin:14px 0 4px;">@@@CREATETOPIC@@@</div>
         <div class="clear"></div>
         {/if}
