@@ -865,7 +865,7 @@ module.exports = function GalaxyBoard(config) {
                                             function (err, info) {
                                                 //  TopicID im Parent updaten
                                                 mysqlPool.query(
-                                                    "update boards set lasttopicid=? where boardid=? and lasttopicid<?", [iTopicID, iThreadID, iTopicID],
+                                                    "update boards set lasttopicid=?, topiccount = topiccount + 1 where boardid=? and lasttopicid<?", [iTopicID, iThreadID, iTopicID],
                                                     function (err, info) {
                                                         initBoard(function () {
                                                             amJSON.push({"event": "newThreads", "data": mBoard});
