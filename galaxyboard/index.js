@@ -509,7 +509,7 @@ module.exports = function GalaxyBoard(config) {
                             };
                             amTopics.push(mTopic);
                         });
-                        amJSON.push({"event": "newTopics", "data": amTopics});
+                        amJSON.push({"event": "newTopics", "data": { boardId: params.threadID, topics: amTopics}});
                     }
                     return next();
                 }
@@ -735,18 +735,35 @@ module.exports = function GalaxyBoard(config) {
                     return next();
                 }
 
-                //  Topic loeschen
-                mysqlPool.query(
-                    "UPDATE topics SET isDeleted = true WHERE topicid=?", [iTopicID],
-                    function (err) {
-                        initBoard(function () {
-                            amJSON.push({"event": "newThreads", "data": mBoard});
-                            amJSON.push({"event": "showInfo", "data": "Topic was deleted!"});
-                            self.getTopics({threadID: mTopic["boardid"]}, next); //  this will then call "next()"
-                        });
+                async.series([
+                    function(cb) {
+                        mysqlPool.query("UPDATE topics SET isDeleted = true WHERE topicid=?", [iTopicID], cb);
+                    },
+                    function(cb) {
+                        amJSON.push({"event": "showInfo", "data": "Topic was deleted!"});
+                        self.decreaseTopicCount(mTopic.boardid, cb);
+                    },
+                    function(cb) {
+                        next();
+                        cb();
                     }
-                )
+                ]);
             })
+        };
+
+        self.decreaseTopicCount = function(boardId, cb) {
+            //// decrease in current cach
+            //for(var key in mBoard) {
+            //    if(key == boardId) {
+            //        mBoard[key].topiccount--;
+            //    }
+            //}
+            // decrease in database
+            mysqlPool.query(
+                "UPDATE boards SET topiccount = topiccount - 1 WHERE boardid = ?",
+                [boardId],
+                cb
+            );
         };
 
         self.closeTopicMod = function (params, next) {
@@ -838,9 +855,13 @@ module.exports = function GalaxyBoard(config) {
             var iBoardFlags = boardFlags.board;
             var iExtendFlags = boardFlags.extended;
 
-            if (iBoardFlags & flags.rights.board.basic.seeBoard &&
-                iBoardFlags & flags.rights.board.basic.readBoard &&
-                (iBoardFlags & flags.rights.board.basic.createTopic || iModFlags & flags.rights.topic.create)) {
+            if (
+                (
+                    iBoardFlags & flags.rights.board.basic.seeBoard &&
+                    iBoardFlags & flags.rights.board.basic.readBoard &&
+                    (iBoardFlags & flags.rights.board.basic.createTopic || iModFlags & flags.rights.topic.create)
+                ) || self.isAdmin()
+            ) {
 
                 //  Topic einfuegen
                 mysqlPool.query(
@@ -912,7 +933,7 @@ module.exports = function GalaxyBoard(config) {
                     }
                 )
             } else {
-                amJSON.push({"event": "showError", "data": "Board not available!"});
+                amJSON.push({"event": "showError", "data": "You have not enaugh rights!"});
                 next();
             }
         };

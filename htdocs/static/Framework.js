@@ -883,9 +883,7 @@ function CGalaxyboard() {
                         self.ltd = aNews[0].lastpostdate;
                     break;
                 case "newTopics":
-                    if (data.length) {
-                        mTopics[data[0]["boardid"]] = data;
-                    }
+                    mTopics[data.boardId] = data.topics;
                     break;
                 case "newPosts":
                     mPosts = data || {};
