@@ -2,6 +2,8 @@
 /.idea
 /database.json
 /commands/pid
+/htdocs/static/bower.js
+bower_components
 
 
 ### gitignore from https://github.com/github/gitignore/blob/master/Node.gitignore

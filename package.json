@@ -3,7 +3,7 @@
   "version": "0.70.0",
   "private": true,
   "scripts": {
-    "start": "node board"
+    "test": "node_modules/mocha/bin/mocha unit_tests/all.js"
   },
   "dependencies": {
     "async": "*",
@@ -18,14 +18,17 @@
     "node-sass": "~3.2",
     "forever": "~0.15",
     "squiggle": "~1.0",
-    "htmlspecialchars": "~1.0"
+    "htmlspecialchars": "~1.0",
+    "bunyan": "~1.4"
   },
   "devDependencies": {
     "mocha": "~2.2",
     "chai": "~3.2",
-    "supertest": "~1.0"
-  },
-  "scripts": {
-    "test": "node_modules/mocha/bin/mocha unit_tests/all.js"
+    "supertest": "~1.0",
+    "grunt": "~0.4.5",
+    "grunt-bower-concat": "~0.6.0",
+    "load-grunt-tasks": "~3.3.0",
+    "bower": "~1.6",
+    "grunt-cli": "~0.1.13"
   }
 }

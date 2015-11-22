@@ -1,0 +1,24 @@
+{
+  "name": "GalaxyBoard",
+  "description": "Galaxyboard is bulletin board",
+  "main": "",
+  "authors": [
+    "mschop <mschopdev@gmail.com>"
+  ],
+  "license": "NLL",
+  "homepage": "https://github.com/mschop/node-galaxyboard",
+  "moduleType": [
+    "globals"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "responsive-tabs": "~1.5"
+  }
+}
