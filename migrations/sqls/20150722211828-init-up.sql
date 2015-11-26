@@ -1,8 +1,8 @@
--- MySQL dump 10.11
+-- MySQL dump 10.13  Distrib 5.5.44, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: board
+-- Host: localhost    Database: galaxyboard
 -- ------------------------------------------------------
--- Server version	5.0.51a-24+lenny2
+-- Server version	5.5.44-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -20,26 +20,26 @@
 --
 
 DROP TABLE IF EXISTS `banlist`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `banlist` (
-  `ban_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `ban_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `ban_fromid` int(10) unsigned NOT NULL,
-  `ban_userid` int(10) unsigned NOT NULL default '0',
+  `ban_userid` int(10) unsigned NOT NULL DEFAULT '0',
   `ban_ip` varchar(40) NOT NULL,
   `ban_email` varchar(100) NOT NULL,
-  `ban_start` int(11) unsigned NOT NULL default '0',
-  `ban_end` int(11) unsigned NOT NULL default '0',
-  `ban_exclude` tinyint(1) unsigned NOT NULL default '0',
+  `ban_start` int(11) unsigned NOT NULL DEFAULT '0',
+  `ban_end` int(11) unsigned NOT NULL DEFAULT '0',
+  `ban_exclude` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `ban_reason` text NOT NULL,
   `ban_give_reason` text NOT NULL,
-  PRIMARY KEY  (`ban_id`),
+  PRIMARY KEY (`ban_id`),
   KEY `ban_end` (`ban_end`),
   KEY `ban_user` (`ban_userid`,`ban_exclude`),
   KEY `ban_email` (`ban_email`,`ban_exclude`),
   KEY `ban_ip` (`ban_ip`,`ban_exclude`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `banlist`
@@ -55,16 +55,16 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `board_acl`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `board_acl` (
   `boardid` int(11) NOT NULL,
   `accessid` int(11) NOT NULL COMMENT 'a negative id is used for groups and a positive id for users. ',
-  `bflags` int(10) unsigned NOT NULL default '0',
-  `eflags` int(10) unsigned NOT NULL default '0' COMMENT 'extended flags',
-  PRIMARY KEY  (`boardid`,`accessid`)
+  `bflags` int(10) unsigned NOT NULL DEFAULT '0',
+  `eflags` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'extended flags',
+  PRIMARY KEY (`boardid`,`accessid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='AccessControllList. Defines permissions of user or group';
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `board_acl`
@@ -81,19 +81,19 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `board_config`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `board_config` (
-  `boardid` int(11) NOT NULL default '0',
-  `prunedays` smallint(6) NOT NULL default '0',
-  `boardflags` int(10) unsigned NOT NULL default '0',
+  `boardid` int(11) NOT NULL DEFAULT '0',
+  `prunedays` smallint(6) NOT NULL DEFAULT '0',
+  `boardflags` int(10) unsigned NOT NULL DEFAULT '0',
   `boardrule` text NOT NULL,
   `headline` varchar(128) NOT NULL,
   `description` varchar(256) NOT NULL,
-  `prefixe` varchar(2048) default NULL,
-  PRIMARY KEY  (`boardid`)
+  `prefixe` varchar(2048) DEFAULT NULL,
+  PRIMARY KEY (`boardid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `board_config`
@@ -110,18 +110,18 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `boards`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `boards` (
-  `boardid` int(11) NOT NULL auto_increment,
-  `parentboardid` int(11) NOT NULL default '0',
-  `sortid` int(11) NOT NULL default '0',
-  `topiccount` int(11) NOT NULL default '0',
-  `postcount` int(11) NOT NULL default '0',
-  `lasttopicid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`boardid`)
+  `boardid` int(11) NOT NULL AUTO_INCREMENT,
+  `parentboardid` int(11) NOT NULL DEFAULT '0',
+  `sortid` int(11) NOT NULL DEFAULT '0',
+  `topiccount` int(11) NOT NULL DEFAULT '0',
+  `postcount` int(11) NOT NULL DEFAULT '0',
+  `lasttopicid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`boardid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 DELAY_KEY_WRITE=1;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `boards`
@@ -138,15 +138,15 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `group_members`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `group_members` (
-  `userid` int(11) NOT NULL default '0',
-  `groupid` int(11) NOT NULL default '0',
+  `userid` int(11) NOT NULL DEFAULT '0',
+  `groupid` int(11) NOT NULL DEFAULT '0',
   KEY `userid` (`userid`),
   KEY `groupid_idx` (`groupid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='gruppenzugehrigkeit';
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `group_members`
@@ -163,14 +163,14 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `groups`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `groups` (
-  `groupid` int(11) NOT NULL auto_increment,
+  `groupid` int(11) NOT NULL AUTO_INCREMENT,
   `description` varchar(64) NOT NULL,
-  PRIMARY KEY  (`groupid`)
+  PRIMARY KEY (`groupid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `groups`
@@ -187,22 +187,22 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `messages`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `messages` (
-  `id` int(11) NOT NULL auto_increment,
-  `empfangen` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `flag` tinyint(4) NOT NULL default '0',
-  `userid` int(11) NOT NULL default '0',
-  `fromid` int(11) NOT NULL default '0',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `empfangen` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `flag` tinyint(4) NOT NULL DEFAULT '0',
+  `userid` int(11) NOT NULL DEFAULT '0',
+  `fromid` int(11) NOT NULL DEFAULT '0',
   `subject` varchar(128) NOT NULL,
   `message` text NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `userid` (`userid`),
   KEY `empfangen` (`empfangen`),
   KEY `uidflag_idx` (`userid`,`flag`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `messages`
@@ -214,19 +214,43 @@ LOCK TABLES `messages` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `migrations`
+--
+
+DROP TABLE IF EXISTS `migrations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `migrations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `run_on` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `migrations`
+--
+
+LOCK TABLES `migrations` WRITE;
+/*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `mods`
 --
 
 DROP TABLE IF EXISTS `mods`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mods` (
   `boardid` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
-  `flags` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`boardid`,`userid`)
+  `flags` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`boardid`,`userid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `mods`
@@ -243,15 +267,15 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `poll_options`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `poll_options` (
   `pid` int(11) NOT NULL,
   `value` int(11) NOT NULL,
-  `poption` varchar(128) default NULL,
+  `poption` varchar(128) DEFAULT NULL,
   KEY `pid` (`pid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `poll_options`
@@ -267,15 +291,15 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `poll_votes`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `poll_votes` (
   `pid` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
   `vote` int(11) NOT NULL,
-  PRIMARY KEY  (`pid`,`userid`,`vote`)
+  PRIMARY KEY (`pid`,`userid`,`vote`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `poll_votes`
@@ -291,18 +315,18 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `polls`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `polls` (
-  `id` int(11) NOT NULL auto_increment,
-  `pid` int(11) NOT NULL default '0',
-  `laufzeit` int(11) NOT NULL default '0',
-  `maxoptions` int(11) NOT NULL default '0',
-  `startdate` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`),
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pid` int(11) NOT NULL DEFAULT '0',
+  `laufzeit` int(11) NOT NULL DEFAULT '0',
+  `maxoptions` int(11) NOT NULL DEFAULT '0',
+  `startdate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
   KEY `pid` (`pid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `polls`
@@ -318,16 +342,16 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `post_reports`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `post_reports` (
   `postid` int(11) NOT NULL,
   `reporterid` int(11) NOT NULL,
   `boardid` int(11) NOT NULL,
-  PRIMARY KEY  (`postid`,`reporterid`),
+  PRIMARY KEY (`postid`,`reporterid`),
   KEY `boardid` (`boardid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `post_reports`
@@ -343,16 +367,16 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `postbodies`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `postbodies` (
   `postid` int(11) NOT NULL,
   `lastedit` int(11) NOT NULL,
   `content` text NOT NULL,
-  PRIMARY KEY  (`postid`),
+  PRIMARY KEY (`postid`),
   FULLTEXT KEY `content` (`content`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 DELAY_KEY_WRITE=1;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `postbodies`
@@ -369,21 +393,21 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `posts`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `posts` (
-  `postid` int(11) NOT NULL auto_increment,
-  `topicid` int(11) NOT NULL default '0',
-  `userid` int(11) NOT NULL default '0',
+  `postid` int(11) NOT NULL AUTO_INCREMENT,
+  `topicid` int(11) NOT NULL DEFAULT '0',
+  `userid` int(11) NOT NULL DEFAULT '0',
   `postflags` int(10) unsigned NOT NULL,
   `postdate` int(11) NOT NULL,
   `username` char(32) NOT NULL,
   `userip` char(16) NOT NULL,
-  PRIMARY KEY  (`postid`),
+  PRIMARY KEY (`postid`),
   KEY `userid` (`userid`),
   KEY `postdate` (`postdate`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 DELAY_KEY_WRITE=1;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `posts`
@@ -400,15 +424,15 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `topic_votes`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `topic_votes` (
   `topicid` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
   `voting` int(11) NOT NULL,
-  PRIMARY KEY  (`topicid`,`userid`)
+  PRIMARY KEY (`topicid`,`userid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `topic_votes`
@@ -424,25 +448,25 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `topics`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `topics` (
-  `topicid` int(11) NOT NULL auto_increment,
-  `boardid` int(11) NOT NULL default '0',
-  `hits` int(11) NOT NULL default '0',
-  `posts` int(11) NOT NULL default '0',
+  `topicid` int(11) NOT NULL AUTO_INCREMENT,
+  `boardid` int(11) NOT NULL DEFAULT '0',
+  `hits` int(11) NOT NULL DEFAULT '0',
+  `posts` int(11) NOT NULL DEFAULT '0',
   `voting` int(11) NOT NULL,
-  `icon` int(11) NOT NULL default '0',
-  `userid` int(11) NOT NULL default '0',
+  `icon` int(11) NOT NULL DEFAULT '0',
+  `userid` int(11) NOT NULL DEFAULT '0',
   `username` char(32) NOT NULL,
   `headline` char(100) NOT NULL,
   `flags` int(11) NOT NULL,
   `lastpostid` int(11) NOT NULL,
   `lastpostdate` int(11) NOT NULL,
-  PRIMARY KEY  (`topicid`),
+  PRIMARY KEY (`topicid`),
   KEY `board_date_idx` (`boardid`,`lastpostdate`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `topics`
@@ -459,28 +483,28 @@ UNLOCK TABLES;
 --
 
 DROP TABLE IF EXISTS `users`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nick` varchar(32) NOT NULL,
   `snp_hash` binary(20) NOT NULL COMMENT 'Salt''n''Pepper Hash',
   `country` char(2) NOT NULL,
   `city` varchar(64) NOT NULL,
   `email` varchar(96) NOT NULL,
-  `created` int(10) unsigned NOT NULL default '0' COMMENT 'unix_timestamp',
-  `lastlogin` int(10) unsigned NOT NULL default '0' COMMENT 'unix_timestamp',
-  `posts` int(11) unsigned NOT NULL default '0',
-  `flags` int(10) unsigned NOT NULL default '0',
+  `created` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'unix_timestamp',
+  `lastlogin` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'unix_timestamp',
+  `posts` int(11) unsigned NOT NULL DEFAULT '0',
+  `flags` int(10) unsigned NOT NULL DEFAULT '0',
   `titel` varchar(32) NOT NULL,
   `signature` varchar(255) NOT NULL,
   `language` varchar(2) NOT NULL,
-  `dformat` varchar(24) NOT NULL default '%d.%m.%y %H:%M',
-  `timezone` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
+  `dformat` varchar(24) NOT NULL DEFAULT '%d.%m.%y %H:%M',
+  `timezone` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=MyISAM AUTO_INCREMENT=10656002 DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `users`
@@ -488,7 +512,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','\r9-rÇd–NU≤o„õòù','DE','','coyer@bogatz.de',1437254941,2015,764,2684354582,'Entwickler','','','%d.%m.%y %H:%M',0);
+INSERT INTO users VALUES (1, 'admin', unhex(sha1(concat('admin','-','1437254941','-','hItwrGnDOsiDtm02'))),'DE','','coyer@bogatz.de',1437254941,2015,764,2684354582,'Entwickler','','','%d.%m.%y %H:%M',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -501,4 +525,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-18 22:39:58
+-- Dump completed on 2015-07-23 22:12:01

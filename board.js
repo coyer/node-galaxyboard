@@ -1,6 +1,6 @@
 var express = require("express");
 var app     = express();
-var fs      = require("fs");
+var connectApiApp = express();
 var zlib    = require('zlib');
 
 var nodemailer = require('nodemailer');
@@ -9,77 +9,64 @@ var smtpTransport = require('nodemailer-smtp-transport');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
-var config = require('config');
 
-var dbConnInfo;
-if(typeof process.env.GB_DB_HOST === 'undefined') {
-    dbConnInfo = {
-        host: "localhost",
-        database: "board",
-        user: "root",
-        password: "",
-        connectionLimit: config.get('dbConnectionLimit')
-    };
-} else {
-    dbConnInfo = {
-        host: process.env.GB_DB_HOST,
-        database: process.env.GB_DB_DATABASE,
-        user: process.env.GB_DB_USER,
-        password: process.env.GB_DB_PASS,
-        connectionLimit: config.get('dbConnectionLimit')
-    };
-}
-
+var config = require(process.env.GALAXYBOARD_CONFIG);
 var board = require("./galaxyboard")(
     {
         "board": {
             "pepper": "hItwrGnDOsiDtm02"    //  Passwords are salted & peppered. This is our pepper.
         },
-        "mysql": dbConnInfo
+        "mysql": config.db
     }
 );
 
-app.use(bodyParser());      //  parsing POST
+app.use(bodyParser.urlencoded({extended:true}));      //  parsing POST
 app.use(cookieParser());    //  parse cookies
 app.use(morgan('combined'));
 
-//  Fehler per Mail senden
-//  Generelle Fehler abfangen
-process.on('uncaughtException', function(err) {
-    console.log("uncaughtException");
-    console.log(err.stack);
-
-    var errorConfig = config.get('error');
-
-    var transporter = nodemailer.createTransport(smtpTransport({
-        host: errorConfig.mail.host,
-        port: 25
-    }));
-    var mailOptions = errorConfig.mail.message;
-    mailOptions.text = JSON.stringify(err.stack);
-    transporter.sendMail(mailOptions,
-        function(error, success){
-            console.log("sendmail::error",error);
-            console.log("sendmail::success",success);
-            console.log('Message ' + (success ? 'sent' : 'failed'));
-        }
-    );
-});
+////  Fehler per Mail senden
+////  Generelle Fehler abfangen
+//process.on('uncaughtException', function(err) {
+//    console.log("uncaughtException");
+//    console.log(err.stack);
+//
+//
+//    var transporter = nodemailer.createTransport(smtpTransport({
+//        host: config.error.mail.host,
+//        port: config.error.mail.port
+//    }));
+//    var mailOptions = errorConfig.mail.message;
+//    mailOptions.text = JSON.stringify(err.stack);
+//    transporter.sendMail(mailOptions,
+//        function(error, success){
+//            console.log("sendmail::error",error);
+//            console.log("sendmail::success",success);
+//            console.log('Message ' + (success ? 'sent' : 'failed'));
+//        }
+//    );
+//});
 
 //  Serve "index.html" and process AJAX-Crawls for index-page
 app.get('/', function(req, res){
     res.header('Content-Type', 'text/html; charset=UTF-8');
-    res.sendfile(__dirname + '/htdocs/index.html');
+    res.sendFile(__dirname + '/htdocs/index.html');
 });
+
+app.get('/flags.js', function(req, res){
+    res.sendFile(__dirname + '/galaxyboard/Flags.js');
+});
+
 
 //  Server css/gfx
 app.get('/static/*', function(req, res){
-    res.sendfile(__dirname + '/htdocs/static/' + req.params[0]);
+    var filePath = __dirname + '/htdocs/static/' + req.params[0];
+    console.log('loading asset: ' + filePath);
+    res.sendFile(filePath);
 });
 
 //  Manage API-Calls
 app.post('/api', function(req, res){
-    //  Process board-commands:
+    //  Process commands:
     board.processCommands(req, res, function(amJSON){
         //  Set Content-Type
         res.header('Content-Type', 'text/json; charset=UTF-8');
@@ -106,4 +93,15 @@ app.post('/api', function(req, res){
     });
 });
 
-app.listen(8002, "0.0.0.0");
+app.listen(config.port, config.host);
+
+
+//connectApiApp.add(bodyParser.json);
+//require('./conect_api')(connectApiApp, config);
+//connectApiApp.listen(config.connectApi.port, config.connectApi.host);
+
+process.on('SIGTERM', function () {
+    app.close(function () {
+        process.exit(0);
+    });
+});

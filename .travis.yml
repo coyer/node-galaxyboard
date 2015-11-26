@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+- stable
+before_deploy:
+- chmod 774 deploy.sh
+deploy:
+  provider: script
+  script: ./deploy.sh
+  on:
+    tag: true

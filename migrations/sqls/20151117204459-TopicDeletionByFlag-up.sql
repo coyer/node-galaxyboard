@@ -1,0 +1,1 @@
+ALTER TABLE topics ADD COLUMN isDeleted BOOL NOT NULL DEFAULT false;

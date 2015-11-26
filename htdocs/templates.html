@@ -25,7 +25,7 @@
                 {if o2}
                 <dl class="light">
                   <dd class="icon">
-                    {if o2.boardflags & dfbf_closed}
+                    {if o2.boardflags & flags.board.boardClosed}
                       <span class="bigfolder-close"></span>
                     {else}
                       <span class="bigfolder-open"></span>
@@ -80,7 +80,7 @@
                 {if o}
                 <dl class="light">
                   <dd class="icon">
-                    {if o.boardflags & dfbf_closed}
+                    {if o.boardflags & flags.board.boardClosed}
                       <span class="bigfolder-close"></span>
                     {else}
                       <span class="bigfolder-open"></span>
@@ -118,13 +118,13 @@
         {/if}
         <!-- Topic bauen -->
         <!-- kann topic erstellt werden? -->
-        {if data[iThreadID].perms.boardflags & dfbp_createtopic||data[iThreadID].perms.modflags & dfmod_createtopic && system.amxGetTopics(iThreadID).length}
+        {if data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create && system.amxGetTopics(iThreadID).length || system.isSuperAdmin()}
         <div class="button" onclick="location.hash='!createTopic~${iThreadID}';" style="float:right;margin:14px 0 4px;">@@@CREATETOPIC@@@</div>
         <div class="clear"></div>
         {/if}
         ${szxBuildTopics(iThreadID)}
         <!-- kann topic erstellt werden? -->
-        {if data[iThreadID].perms.boardflags & dfbp_createtopic||data[iThreadID].perms.modflags & dfmod_createtopic}
+        {if (data[iThreadID].perms.boardflags & flags.rights.board.basic.createTopic||data[iThreadID].perms.modflags & flags.rights.topic.create || system.isSuperAdmin()) && data[iThreadID].topiccount > 5}
         <div class="button" onclick="location.hash='!createTopic~${iThreadID}';" style="float:right;margin:14px 0 4px;">@@@CREATETOPIC@@@</div>
         <div class="clear"></div>
         {/if}
@@ -139,8 +139,7 @@
         <!--Prüfe festgepinnte Beiträge-->
         {var pinned=0}
         {var unpinned=0}
-        {for t in data}{if t.flags&dft_pinned}{var pinned=pinned+1}{else}{var unpinned=unpinned+1}{/if}{/for}
-{eval}debug(["pinned",pinned,unpinned]){/eval}
+        {for t in data}{if t.flags&flags.topic.pinned}{var pinned=pinned+1}{else}{var unpinned=unpinned+1}{/if}{/for}
 
         <!-- Topics pinned -->
         {if pinned>0}
@@ -153,11 +152,11 @@
             <dd class="lanswer"><div class="headline">@@@LBEITRAG@@@</div></dd>
           </dl>
           {for t in data}
-          {if t.flags&dft_pinned}
+          {if t.flags&flags.topic.pinned}
             <dl class="light">
               <dd class="icon1">
                 <!-- (un)gelesen + offen/geschlossen -->
-                <span class="folder{if system.bIsUnreadTopic(t.topicid,t.lastpostdate)}1{else}0{/if}{if t.flags&dft_closed}1{else}0{/if}" title="${t.lastpostdate}"></span>
+                <span class="folder{if system.bIsUnreadTopic(t.topicid,t.lastpostdate)}1{else}0{/if}{if t.flags&flags.topic.closed}1{else}0{/if}" title="${t.lastpostdate}"></span>
               </dd>
               <dd class="icon2">{if t.icon}<img src="./static/icons/${t.icon}.gif" />{else}&nbsp;{/if}</dd>
               <dd class="topic"><a href="#!showTopic~${t.topicid}~${Math.ceil(t.posts / system.iPostsPerPage)}~${t.lastpostid}">${t.headline|escape}</a></dd>
@@ -181,11 +180,11 @@
             <dd class="lanswer"><div class="headline">@@@LBEITRAG@@@</div></dd>
           </dl>
           {for t in data}
-          {if !(t.flags&dft_pinned)}
+          {if !(t.flags&flags.topic.pinned)}
             <dl class="light">
               <dd class="icon1">
                 <!-- (un)gelesen + offen/geschlossen -->
-                <span class="folder{if system.bIsUnreadTopic(t.topicid,t.lastpostdate)}1{else}0{/if}{if t.flags&dft_closed}1{else}0{/if}" title="${t.lastpostdate}"></span>
+                <span class="folder{if system.bIsUnreadTopic(t.topicid,t.lastpostdate)}1{else}0{/if}{if t.flags&flags.topic.closed}1{else}0{/if}" title="${t.lastpostdate}"></span>
               </dd>
               <dd class="icon2">{if t.icon}<img src="./static/icons/${t.icon}.gif" />{else}&nbsp;{/if}</dd>
               <dd class="topic"><a href="#!showTopic~${t.topicid}~${Math.ceil(t.posts / system.iPostsPerPage)}~${t.lastpostid}">${t.headline|escape}</a></dd>
@@ -267,29 +266,29 @@
             {var bCanEdit = false}
             {var bCanReport = false}
             {var bCanDelete = false}
-            {if (t.perms.topicflags & (dft_closed|dft_mod_closed)) == 0}
-              {if (t.perms.boardflags&dfbp_reply)}
+            {if (t.perms.topicflags & (flags.topic.closed | flags.topic.modClosed)) == 0}
+              {if (t.perms.boardflags&flags.rights.board.basic.reply)}
                 {var bCanPost = true}
               {/if}
               <!--  Darf Editieren (nur wenn für board erlaubt, es ein eigener beitrag ist sowie nicht gemeldet wurde.): -->
-              {if (t.perms.extendflags&dfbp_editownpost)}
+              {if (t.perms.extendflags&flags.rights.board.extended.editOwnPost)}
                 {var bCanEdit = true}
               {/if}
               <!--  Beiträge melden? -->
-              {if (t.perms.extendflags&dfbp_reportpost)}
+              {if (t.perms.extendflags&flags.rights.board.extended.reportPost)}
                 {var bCanReport = true}
               {/if}
               <!--  Eigenen Beitrag löschen -->
-              {if (t.perms.extendflags&dfbp_deleteownpost)}
+              {if (t.perms.extendflags&flags.rights.board.extended.deleteOwnPost)}
                 {var bCanDelete = true}
               {/if}
             {/if}
             <!-- Antworten btn -->
             <h1 class="topic-headline">${t.headline|escape}</h1>
             <div class="button-container">
-                {if bCanPost||(t.perms.modflags&dfmod_replypost)}<div class="button" onclick="system.vxReply();">@@@REPLY@@@</div>{/if}
+                {if bCanPost||(t.perms.modflags&flags.rights.post.replyOnClosedTopic)}<div class="button" onclick="system.vxReply();">@@@REPLY@@@</div>{/if}
                 {if bCanEdit && t.userid==system.mxGetUser()["id"]}<div class="button" onclick="system.vxEditTopic(${iTopicID});">@@@EDITTOPIC@@@</div>{/if}
-                {if (t.perms.extendflags&dfbp_closeowntopic) && t.userid==system.mxGetUser()["id"] && !(t.flags&(dft_closed|dft_mod_closed))}<div class="button" onclick="system.vxCloseTopicUser(${iTopicID},0);">@@@CLOSETOPIC@@@</div>{/if}
+                {if (t.perms.extendflags&flags.rights.board.extended.closeOwnTopic) && t.userid==system.mxGetUser()["id"] && !(t.flags&(flags.topic.closed|flags.topic.modClosed))}<div class="button" onclick="system.vxCloseTopicUser(${iTopicID},0);">@@@CLOSETOPIC@@@</div>{/if}
             </div>
             <div class="clear"></div>
             <!-- Forumsnavigation -->
@@ -339,7 +338,7 @@
                   </tr>
                 </table>
                 {if mPosts.poll.pollend > new Date().getTime()/1000}
-                <div class="small-button" onclick="system.vxVote($('js_poll_form'),${mPosts.topicID})">@@@VOTE@@@</div>
+                <div id="btnPostVote" class="small-button" data-topic-id="${mPosts.topicID}">@@@VOTE@@@</div>
                 <div class="clear"></div>
                 {/if}
               </form>
@@ -374,14 +373,14 @@
                       <dd>${szxToLocaleDate(1000*p.created)}</dd>
                     </dl>
                   </td>
-                  {if p.postflags&dfpost_hide && !(t.perms.modflags&dfmod_closereports)}
+                  {if p.postflags&flags.post.hidden && !(t.perms.modflags&flags.rights.post.closeReports)}
                     <td class="row1" id="postID${p.postid}">
                       <div class="posting" style="border:2px solid red;padding:8px;text-align:center;">@@@MESSAGEBLOCKED@@@</div>
                     </td>
                   {else}
                     <td class="row1" id="postID${p.postid}">
-                      <div class="posting" {if (p.postflags&dfpost_hide)} style="opacity:0.5;border:2px solid red;padding:4px;"{/if}>${p.content|escape|BB|EMOT}</div>
-                      {if t.perms.boardflags&dfbp_signatures && (mUser.flags&dfu_no_sigs)==0}
+                      <div class="posting" {if (p.postflags&flags.post.hidden)} style="opacity:0.5;border:2px solid red;padding:4px;"{/if}>${p.content|escape|BB|EMOT}</div>
+                      {if t.perms.boardflags&flags.rights.board.basic.canUseSignature && (mUser.flags&flags.user.noSigs)==0}
                         {if p.signature.trim()}
                           <div class="signature">${p.signature|escape|BB|EMOT}</div>
                         {/if}
@@ -393,29 +392,29 @@
                   <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(1000*p.postdate, true)}</div></td>
                   <td class="row2">
                     <div class="headline" id="postID${p.postid}_buttons">
-                      {if bCanPost||(t.perms.modflags&dfmod_replypost)}
+                      {if bCanPost||(t.perms.modflags&flags.rights.post.replyOnClosedTopic)}
                         <div class="small-button" onclick="system.vxReply();">@@@REPLY@@@</div>
                         <div class="small-button" onclick="system.vxReply(${p.postid});">@@@CITE@@@</div>
                       {/if}
-                      {if (bCanEdit   && p.userid==mUser.id) || (t.perms.modflags&dfmod_editpost)}<div class="small-button" onclick="system.vxEditPost(${p.postid});">@@@EDIT@@@</div>{/if}
-                      {if (bCanDelete && p.userid==mUser.id) || (t.perms.modflags&dfmod_deletepost)}<div class="small-button" onclick="system.vxDeletePost(${p.postid});">@@@DELETE@@@</div>{/if}
-                      {if (p.postflags&dfpost_reported) && (t.perms.modflags&dfmod_closereports || mUser.flags&dfu_superadmin)}
+                      {if (bCanEdit   && p.userid==mUser.id) || (t.perms.modflags&flags.rights.post.editPost)}<div class="small-button" onclick="system.vxEditPost(${p.postid});">@@@EDIT@@@</div>{/if}
+                      {if (bCanDelete && p.userid==mUser.id) || (t.perms.modflags&flags.rights.post.deletePost)}<div class="small-button" onclick="system.vxDeletePost(${p.postid});">@@@DELETE@@@</div>{/if}
+                      {if (p.postflags&flags.post.reported) && (t.perms.modflags&flags.rights.post.closeReports || mUser.flags&flags.user.superAdmin)}
                         <div class="small-button" onclick="system.vxReportUndo(${iTopicID}, ${p.postid});">@@@UNREPORT@@@</div>
                       {else}
                         {if (bCanReport && p.userid!=mUser.id)}<div class="small-button" onclick="system.vxReport(${iTopicID}, ${p.postid});">@@@REPORT@@@</div>{/if}
                       {/if}
 
-{if !(p.flags&dfu_no_pn)}
+{if !(p.flags&flags.user.noPn)}
           <div onclick="vxOpenOverlay(system.szxWritePM(${p.userid},'${p.username|escape}'));" class="small-button">@@@PM@@@</div>
 {/if}
-                      {if t.perms.modflags&dfmod_createbans}
+                      {if t.perms.modflags&flags.rights.post.createBans}
                       <div class="small-button mod" onclick="system.vxBanUser(${p.postid});">@@@BANUSER@@@</div>
                       {/if}
                       <div class="clear"></div>
                     </div>
                     <div class="headline" id="postID${p.postid}_buttons_edit" style="display:none;">
-                        <div class="small-button" onclick="system.vxPostEdit(${p.postid}, $('obj_bb_content${p.postid}').value);">@@@SEND@@@</div>
-                        <div class="small-button" onclick="system.vxShowTopic(${iTopicID});">@@@ABORT@@@</div>
+                        <div id="btnPostEdit" class="small-button" data-post-id="${p.postid}">@@@SEND@@@</div>
+                        <div id="btnCancelPostEdit" class="small-button" data-topic-id="${iTopicID}">@@@ABORT@@@</div>
                         <div class="clear"></div>
                     </div>
                   </td>
@@ -450,8 +449,8 @@
                 <tr class="dark" style="display:none;" id="js_postreply2">
                   <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(new Date(), true)}</div></td>
                   <td class="row2"><div class="headline">
-                        <div class="small-button" onclick="system.vxPostReply(${iTopicID}, $('obj_bb_content0').value);">@@@SEND@@@</div>
-                        <div class="small-button" onclick="$('js_postreply1').style.display='none';$('js_postreply2').style.display='none';">@@@ABORT@@@</div>
+                        <div id="btnPostReply" class="small-button" data-topic-id="${iTopicID}">@@@SEND@@@</div>
+                        <div id="btnCancelPostReply" class="small-button">@@@ABORT@@@</div>
                         <div class="clear"></div>
                   </div></td>
                 </tr>
@@ -461,7 +460,7 @@
             <!-- Antworten btn -->
             <h1 class="topic-headline">${t.headline|escape}</h1>
             <div class="button-container">
-                {if bCanPost||(t.perms.modflags&dfmod_replypost)}<div class="button" onclick="system.vxReply();">@@@REPLY@@@</div>{/if}
+                {if bCanPost||(t.perms.modflags&flags.rights.post.replyOnClosedTopic)}<div class="button" onclick="system.vxReply();">@@@REPLY@@@</div>{/if}
             </div>
             <div class="clear"></div>
         {/if}
@@ -490,7 +489,7 @@
         // GlobaleFunktion definieren
         if(window) {
           window.bbOnClick = function(event, src, id) {
-            var input = $("obj_bb_content"+id);
+            var input = $("#obj_bb_content"+id).get(0);
             var aTag  = src.name.split(",")[0];
             var eTag  = src.name.split(",")[1];
 
@@ -634,6 +633,7 @@
 {/macro}
 
 <!-- ManageThreadsBox -->
+<!-- TODO: This box needs to be fixed. Flags have changed -->
 {macro szxManageThreadsBox(mThreads, mGroups, iSelected)}
   <div class="edit-threads">
     <h3>@@@BOX_EDITTHREADS@@@</h3>
@@ -688,9 +688,9 @@
             <dl>
                 <dt>Einstellungen</dt>
                 <dd>
-                <label><input type="checkbox" name="dfbf_showsubboards" value="1" {if mThreads[iSelected].boardflags&dfbf_showsubboards} checked{/if}>Untergeordnete Foren anzeigen</label><br>
-                <label><input type="checkbox" name="dfbf_hideboard"     value="1" {if mThreads[iSelected].boardflags&dfbf_hideboard} checked{/if}>Forum verstecken</label><br>
-                <label><input type="checkbox" name="dfbf_closed"        value="1" {if mThreads[iSelected].boardflags&dfbf_closed} checked{/if}>Forum geschlossen</label>
+                <label><input type="checkbox" name="dfbf_showsubboards" value="1" {if mThreads[iSelected].boardflags&flags.board.showSubBoards} checked{/if}>Untergeordnete Foren anzeigen</label><br>
+                <label><input type="checkbox" name="dfbf_hideboard"     value="1" {if mThreads[iSelected].boardflags&flags.board.hideBoard} checked{/if}>Forum verstecken</label><br>
+                <label><input type="checkbox" name="dfbf_closed"        value="1" {if mThreads[iSelected].boardflags&flags.board.boardClosed} checked{/if}>Forum geschlossen</label>
                 </dd>
             </dl>
         </div>
@@ -705,7 +705,7 @@
                   {/for}
                 </select>
                 <div class="small-button inactive" id="js_bt_deletemod">@@@DELETE@@@</div>
-                <div class="small-button" onclick="$('js_searchmod').style.display='block';">@@@ADD@@@</div>
+                <div id="btnSearchMod" class="small-button">@@@ADD@@@</div>
               </td>
               <td width="50%"><div style="display:none;" id="js_modcontainer">
                 <h4>Rechteliste</h4>
@@ -743,8 +743,8 @@
               </dl>
               <div class="clear"></div>
               <div id="js_searchresult"></div>
-              <div id="js_btaddgroup" class="small-button" style="display:none;" onclick="system.vxAddGroup($('js_selectgroup').value)">Gruppe hinzufügen</div>
-              <div class="small-button" onclick="$('js_searchmod').style.display='none';">@@@ABORT@@@</div>
+              <div id="js_btaddgroup" class="small-button" style="display:none;"">Gruppe hinzufügen</div>
+              <div id="btnCancelAddMod" class="small-button">@@@ABORT@@@</div>
               <div class="clear"></div>
             </div>
           </div>
@@ -762,8 +762,8 @@
         noch nicht drin
         </div>
         <!-- Buttons zum Abschicken -->
-        <div onclick="system.vxSaveNewThread($('js_editthreads_form'))" class="button" style="float:right;">@@@SAVE@@@</div>
-        <div onclick="vxCloseOverlay();" class="button" style="float:right;">@@@ABORT@@@</div>
+        <div id="btnSaveNewThread" class="button" style="float:right;">@@@SAVE@@@</div>
+        <div class="button btnCloseOverlay" style="float:right;">@@@ABORT@@@</div>
         <div class="clear"></div>
         </form>
     {/if}
@@ -810,7 +810,7 @@
   <div class="edit-topic">
     <h3>@@@BOX_EDITTOPIC@@@</h3>
 
-    <form id="js_tmp_form" method="POST" onsubmit="try{system.vxEditTopic(${id}, true,this.headline.value, this.icon)} catch(e){debug(e)};return false;">
+    <form id="js_tmp_form" method="POST" onsubmit="system.vxEditTopic(${id}, true,this.headline.value, this.icon);return false;">
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <th width="30%">@@@TOPICHEADLINE@@@:</th>
@@ -838,7 +838,7 @@
     </table>
     </form>
     <div onclick="vxCloseOverlay();" class="button">@@@ABORT@@@</div>
-    <div onclick="system.vxEditTopic(${id}, true, $('js_tmp_form').headline.value, $('js_tmp_form').icon);" class="button">@@@SAVE@@@</div>
+    <div id="btnEditTopic" data-topic-id="${id}" class="button">@@@SAVE@@@</div>
     <div class="clear"></div>
   </div>
 {/macro}
@@ -846,7 +846,6 @@
 <!-- create Topic -->
 {macro szxCreateTopic(iThreadID, mTopic)}
     {var mUser = system.mxGetUser()}
-    {eval}debug(mTopic){/eval}
     <div class="innerwrapper">
       <div class="innerframe">
       <form onsubmit="return false;" method="POST" id="js_createtopic_form">
@@ -873,13 +872,13 @@
                 <label><input onclick="system.vxShowPollEditor(0);" type="radio" name="icon" id="js_tmp_icon${i}" value="${i}"><img src="/static/icons/${i}.gif"></label>
               {/if}
             {/for}
-            {if mTopic.perms.extendflags & dfbp_createpolls}
+            {if mTopic.perms.extendflags & flags.rights.board.extended.createPolls}
               <label><input type="radio" value="100" class="radio" name="icon" onclick="system.vxShowPollEditor(1);"><img src="/static/icons/100.gif"> @@@POLL_HEADLINE@@@</label>
             {/if}
           </tr>
 
 <!-- Umfrage Start -->
-          {if mTopic.perms.extendflags & dfbp_createpolls}
+          {if mTopic.perms.extendflags & flags.rights.board.extended.createPolls}
           <tr class="light" id="js_polleditor" style="display:none;">
             <td style="border-bottom:1px solid #888;">@@@POLL_EDITOR@@@</td>
             <td><table width=100% cellpadding=0 cellspacing=0 border=0>
@@ -936,7 +935,7 @@
                 <tr class="dark" id="js_postreply2">
                   <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(new Date(), true)}</div></td>
                   <td class="row2"><div class="headline">
-                        <div class="small-button" onclick="system.vxCreateTopic(${iThreadID}, $('js_createtopic_form'));">@@@CREATE@@@</div>
+                        <div class="small-button" onclick="system.vxCreateTopic(${iThreadID}, $('#js_createtopic_form').get(0));">@@@CREATE@@@</div>
                         <div class="small-button" onclick="history.back();">@@@ABORT@@@</div>
                         <div class="clear"></div>
                   </div></td>
@@ -953,60 +952,48 @@
 <!-- Adminpanel erstellen -->
 {macro szxBuildAdminBox(mThreads, mTopic)}
   {var mUser = system.mxGetUser()}
-{eval}debug([mUser, mTopic]){/eval}
-  {if mUser.flags&dfu_superadmin}
-  <div class="innerframe" style="margin:0 0 8px 0;">
-  <h1>AdminOptions</h1>
-  <div class="button" onclick="system.vxManageThreads(0);">Edit Threads</div>
-<!--
-  <div class="button" onclick="system.vxManageThreads();">Add Thread</div>
-  <div class="button" onclick="alert('noch nicht drin');">Gruppen</div>
-  <div class="button" onclick="alert('noch nicht drin');">Benutzer</div>
--->
-  </div>
-  {/if}
-
-  <div class="innerframe">
   {var modflags = mTopic?mTopic.perms.modflags:0}
-  <h1>ModOptions</h1>
-  {if mTopic && (modflags&dfmod_movethread||mUser.flags&dfu_superadmin)}
-    <div class="button" onclick="system.vxMoveTopic(${mTopic.topicid},0);">@@@MOVETOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@MOVETOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_deletethread||mUser.flags&dfu_superadmin)}
-    <div class="button" onclick="system.vxDeleteTopic(${mTopic.topicid},0);">@@@DELETETOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@DELETETOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) && !(mTopic.flags&(dft_closed|dft_mod_closed))}
-    <div class="button" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);">@@@CLOSETOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@CLOSETOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_closethread||mUser.flags&dfu_superadmin) &&  (mTopic.flags&(dft_closed|dft_mod_closed))}
-    <div class="button" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);">@@@OPENTOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@OPENTOPIC@@@</div>
-  {/if}
-  {if mTopic && (modflags&dfmod_editthread||mUser.flags&dfu_superadmin)}
-    <div class="button" onclick="system.vxEditTopic(${mTopic.topicid});">@@@EDITTOPIC@@@</div>
-  {else}
-    <div class="button inactive">@@@EDITTOPIC@@@</div>
-  {/if}
-  <!-- Kann ich Meldungen bearbeiten? -->
-  {if mThreads && mThreads[0].reports.length}
-    <div class="button" onclick="system.vxShowReports();">@@@SHOWREPORTS@@@ (${mThreads[0].reports.length})</div>
-  {else}
-    <div class="button inactive">@@@SHOWREPORTS@@@</div>
-  {/if}
-  <!-- Bans bearbeiten? -->
-  {if mThreads && mThreads[0].bManageBans}
-    <div class="button" onclick="system.vxEditBans();">@@@BANLIST@@@</div>
-  {else}
-    <div class="button inactive">@@@BANLIST@@@</div>
-  {/if}
+  <div class="innerframe withIconButtons">
+    <h1>@@@ADMIN_OPTIONS@@@</h1>
+    <div class="clickable" onclick="system.openPopupCreateBoard()" title="@@@CREATE_BOARD@@@"><i class="fa fa-plus"></i></div>
+    {if system.hasCurrentBoard()}
+      <div class="clickable" onclick="system.editCurrentBoard();" title="@@@EDIT_BOARD@@@"><i class="fa fa-edit"></i></div>
+      <div class="clickable" onclick="system.openPopupMoveBoard" title="@@@MOVE_BOARD@@@"><i class="fa fa-arrow-right"></i></div>
+      <div class="clickable" onclick="system.openPopupDeleteBoard" title="@@@DELETE_BOARD@@@"><i class="fa fa-trash"></i></div>
+    {/if}
   </div>
+  {if mTopic}
+  <div class="innerframe withIconButtons">
+      <h1>@@@TOPIC@@@</h1>
+      {if (modflags&flags.rights.topic.edit||mUser.flags&flags.user.superAdmin)}
+        <div class="clickable" onclick="system.vxEditTopic(${mTopic.topicid});" title="@@@EDITTOPIC@@@"><i class="fa fa-edit"></i></div>
+      {/if}
+      {if (modflags&flags.rights.topic.close||mUser.flags&flags.user.superAdmin) && !(mTopic.flags&(flags.topic.closed|flags.topic.modClosed))}
+        <div  class="clickable" onclick="system.vxCloseTopicMod(${mTopic.topicid},0);" title="@@@CLOSETOPIC@@@"><i class="fa fa-lock"></i></div>
+      {/if}
+      {if (modflags&flags.rights.topic.close||mUser.flags&flags.user.superAdmin) &&  (mTopic.flags&(flags.topic.closed|flags.topic.modClosed))}
+        <div class="clickable" onclick="system.vxOpenTopicMod(${mTopic.topicid},0);" title="@@@OPENTOPIC@@@"><i class="fa fa-unlock"></i></div>
+      {/if}
+      {if modflags&flags.rights.topic.move || mUser.flags&flags.user.superAdmin}
+        <div class="clickable" onclick="system.vxMoveTopic(${mTopic.topicid},0);" title="@@@MOVETOPIC@@@"><i class="fa fa-arrow-right"></i></div>
+      {/if}
+      {if modflags&flags.rights.topic.delete || mUser.flags&flags.user.superAdmin}
+        <div class="clickable" onclick="system.vxDeleteTopic(${mTopic.topicid},0);" title="@@@DELETETOPIC@@@"><i class="fa fa-trash"></i></div>
+      {/if}
+      </div>
+  {/if}
+  <div class="innerframe">
+      <h1>@@@MISC@@@</h1>
+      <!-- Kann ich Meldungen bearbeiten? -->
+      {if mThreads && mThreads[0].reports.length}
+        <div class="clickable" onclick="system.vxShowReports();">@@@SHOWREPORTS@@@ (${mThreads[0].reports.length})</div>
+      {/if}
+      <!-- Bans bearbeiten? -->
+      {if mThreads && mThreads[0].bManageBans}
+        <div class="clickable" onclick="system.vxEditBans();">@@@BANLIST@@@</div>
+      {/if}
+  </div>
+    </div>
 {/macro}
 
 <!-- Template: Postings -->
@@ -1055,7 +1042,7 @@
               <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(1000*p.postdate, true)}</div></td>
               <td class="row2">
                 <div class="headline" id="postID${p.postid}_buttons">
-                  {if (p.postflags&dfpost_reported) && (perms.modflags&dfmod_closereports || mUser.flags&dfu_superadmin)}<div class="small-button" onclick="system.vxReportUndo(${p.topicid}, ${p.postid},system.vxShowReports);">@@@UNREPORT@@@</div>{/if}
+                  {if (p.postflags&flags.post.reported) && (perms.modflags&flags.rights.post.closeReports || mUser.flags&flags.user.superAdmin)}<div class="small-button" onclick="system.vxReportUndo(${p.topicid}, ${p.postid},system.vxShowReports);">@@@UNREPORT@@@</div>{/if}
                   <div class="clear"></div>
                 </div>
               </td>
@@ -1127,7 +1114,7 @@
         <td class="row1"><div class="headline" style="font-size:1em;">${szxToLocaleDate(1000*mPost.postdate, true)}</div></td>
         <td class="row2">
           <div class="headline">
-            <div class="small-button" onclick="system.vxBanUser(${mPost.postid}, $('js_tmp_form'))">@@@BANUSER@@@</div>
+            <div class="small-button btnBanUser" data-post-id="${mPost.postid}">@@@BANUSER@@@</div>
             <div class="clear"></div>
           </div>
         </td>
@@ -1226,7 +1213,7 @@
     </table>
   </div>
   <div class="headline" id="js_msg_${iRefID}_buttons" style="position:absolute;left:0;width:100%;bottom:0;">
-    <div class="small-button" onclick="$('js_msg_textarea_${iRefID}').style.display='block';$('js_msg_${iRefID}_buttons').style.display='none';$('js_msg_content_${iRefID}').style.bottom='100px';">@@@REPLY@@@</div>
+    <div class="small-button btnReply" data-ref-id="${iRefID}">@@@REPLY@@@</div>
     <div class="small-button" onclick="system.vxDeleteMessages([${iRefID}])">@@@DELETE@@@</div>
     <div class="clear"></div>
   </div>
@@ -1238,8 +1225,8 @@
       <textarea name="message" style="width:100%;height:80px;bottom:20px;position:absolute;"></textarea>
     </form>
     <div style="position:absolute;bottom:0;right:0;">
-      <div class="small-button" onclick="system.vxSendMessage($('js_msg_form_${iRefID}'),function(){system.oldHash=null;location.hash='!showMessages';system.loadFromHash()})">@@@SEND@@@</div>
-      <div class="small-button" onclick="$('js_msg_textarea_${iRefID}').style.display='none';$('js_msg_${iRefID}_buttons').style.display='block';$('js_msg_content_${iRefID}').style.bottom='20px';">@@@ABORT@@@</div>
+      <div id="btnSendReply" data-ref-id="${iRefID}" class="small-button">@@@SEND@@@</div>
+      <div id="btnCancelReply" data-ref-id="${iRefID}" class="small-button" onclick="">@@@ABORT@@@</div>
     </div>
   </div>
 </div>
@@ -1305,11 +1292,6 @@
 
 <!-- LoginBox -->
 {macro szxProfileBox(mUser)}
-<!--
-dfu_unapproved  =   1<<27L      ##  User muss noch freigegeben werden.
-dfu_invalid     =   1<<28L      ##  EMail-Adresse des Users noch nicht geprüft!
-dfu_ownavatar   =   1<<29L      ##  eigener avatar hochgeladen
--->
   <div class="profilebox">
     <h3>@@@BOX_PROFILE@@@</h3>
     <form onsubmit="system.vxSaveProfile(this);return false;">
@@ -1333,14 +1315,14 @@ dfu_ownavatar   =   1<<29L      ##  eigener avatar hochgeladen
           <!-- Flags -->
           <dl><dt>@@@CONFIG@@@</dt></dl>
           <div class="clear"></div>
-          <label><input type="checkbox" value="1" name="dfu_no_pn"      {if mUser.flags&dfu_no_pn}checked="checked"{/if}>@@@U_NOPM@@@</label>
-          <label><input type="checkbox" value="1" name="dfu_no_sigs"    {if mUser.flags&dfu_no_sigs}checked="checked"{/if}>@@@U_NOSIGS@@@</label>
-          <label><input type="checkbox" value="1" name="dfu_membermail" {if mUser.flags&dfu_membermail}checked="checked"{/if}>@@@U_GETMAIL@@@</label>
-          <label><input type="checkbox" value="1" name="dfu_openpm"     {if mUser.flags&dfu_openpm}checked="checked"{/if}>@@@U_OPENPM@@@</label>
-          {if mUser.flags&dfu_superadmin}
+          <label><input type="checkbox" value="1" name="dfu_no_pn"      {if mUser.flags&flags.user.noPn}checked="checked"{/if}>@@@U_NOPM@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_no_sigs"    {if mUser.flags&flags.user.noSigs}checked="checked"{/if}>@@@U_NOSIGS@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_membermail" {if mUser.flags&flags.user.allowUserMail}checked="checked"{/if}>@@@U_GETMAIL@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_openpm"     {if mUser.flags&flags.user.automaticallyOpenPM}checked="checked"{/if}>@@@U_OPENPM@@@</label>
+          {if mUser.flags&flags.user.superAdmin}
           <font color="red">
-          <label><input type="checkbox" value="1" name="dfu_superadmin" {if mUser.flags&dfu_superadmin}checked="checked"{/if}>@@@U_SUPERADMIN@@@</label>
-          <label><input type="checkbox" value="1" name="dfu_ownavatar"  {if mUser.flags&dfu_ownavatar}checked="checked"{/if}>@@@U_OWNAVATAR@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_superadmin" {if mUser.flags&flags.user.superAdmin}checked="checked"{/if}>@@@U_SUPERADMIN@@@</label>
+          <label><input type="checkbox" value="1" name="dfu_ownavatar"  {if mUser.flags&flags.user.hasAvatar}checked="checked"{/if}>@@@U_OWNAVATAR@@@</label>
           </font>
           {/if}
         </td>
@@ -1350,15 +1332,15 @@ dfu_ownavatar   =   1<<29L      ##  eigener avatar hochgeladen
         <td colspan="2">
           <dl>
             <dt>@@@NICK@@@</dt>
-            <dd>{if mUser.flags&dfu_superadmin}<input type="text" name="nick" value="${mUser.nick|escape}">{else}${mUser.nick|escape}{/if}</dd>
+            <dd>{if mUser.flags&flags.user.superAdmin}<input type="text" name="nick" value="${mUser.nick|escape}">{else}${mUser.nick|escape}{/if}</dd>
           </dl>
           <dl>
             <dt>@@@TITEL@@@</dt>
-            <dd>{if mUser.flags&dfu_superadmin}<input type="text" name="titel" value="${mUser.titel|escape}">{else}${mUser.titel|escape}{/if}</dd>
+            <dd>{if mUser.flags&flags.user.superAdmin}<input type="text" name="titel" value="${mUser.titel|escape}">{else}${mUser.titel|escape}{/if}</dd>
           </dl>
           <dl>
             <dt>@@@EMAIL@@@</dt>
-            <dd>{if mUser.flags&dfu_superadmin}<input type="text" name="email" value="${mUser.email|escape}">{else}${mUser.email|escape}{/if}</dd>
+            <dd>{if mUser.flags&flags.user.superAdmin}<input type="text" name="email" value="${mUser.email|escape}">{else}${mUser.email|escape}{/if}</dd>
           </dl>
           <dl>
             <dt>@@@REGISTRATION@@@</dt>
@@ -1404,6 +1386,48 @@ dfu_ownavatar   =   1<<29L      ##  eigener avatar hochgeladen
 </html>
 {/macro}
 
+
+{macro createBoardTemplate(allBoardsSorted)}
+    <div id="createBoard">
+        <h1>@@@CREATE_BOARD@@@</h1>
+        
+        <form class="defaultForm">
+            <fieldset>
+                <legend>@@@GENERAL@@@</legend>
+                <p>
+                    <label for="cb_parentboardid">@@@BOARD_POSITION@@@</label>
+                    <select id="cb_parentboardid" name="parentboardid">
+                        {for thread in allBoardsSorted}
+                            <option value="${thread.id}">${thread.path}</option>
+                        {/for}
+                    </select>
+                </p>
+                <p><label for="cb_headline">@@@HEADLINE@@@</label><input id="cb_headline" type="text" name="headline"/></p>
+                <p><label for="cb_sortid">@@@SORTID@@@</label><input id="cb_sortid" type="text" name="sortid" /></p>
+                <p><label for="cb_description">@@@DESCRIPTION@@@</label><textarea id="cb_description" cols="150" rows="7" name="description"></textarea></p>
+                <p><label for="cb_boardrule">@@@BOARDRULE@@@</label><textarea id="cb_boardrule" cols="150" rows="7" name="boardrule"></textarea></p>
+            </fieldset>
+            <fieldset>
+                <legend>@@@GENERAL_CONFIG@@@</legend>
+                {for flag in flags.board.general}
+                    <div class="flagOption">
+                        <input id="option${flag_index}" type="checkbox" name="${flag_index}" value="${flag_index}"><label for="option${flag_index}">${system.lang("board_" + flag_index)}</label>
+                    </div>
+                {/for}
+            </fieldset>
+            <fieldset>
+                <legend>@@@MISC@@@</legend>
+                {for flag in flags.board.config}
+                <div class="flagOption">
+                    <input id="option${flag_index}" type="checkbox" name="${flag_index}" value="${flag_index}"><label for="option${flag_index}">${system.lang("board_" + flag_index)}</label>
+                </div>
+                {/for}
+            </fieldset>
+        </form>
+    </div>
+{/macro}
+
+
 <!-- Funktionen im Framework registrieren -->
 {eval}
 system.szxBuildThreads  = szxBuildThreads;
@@ -1429,5 +1453,8 @@ system.szxBuildAdminBox             = szxBuildAdminBox;
 system.szxBuildReports              = szxBuildReports;
 system.szxBuildMessagelist          = szxBuildMessagelist;
 system.szxManageThreadsBox          = szxManageThreadsBox;
+
+system.createBoardTemplate = createBoardTemplate;
+
 system.bTemplates = true; // Templates geladen
 {/eval}

@@ -3,17 +3,32 @@
   "version": "0.70.0",
   "private": true,
   "scripts": {
-    "start": "node board"
+    "test": "node_modules/mocha/bin/mocha unit_tests/all.js"
   },
   "dependencies": {
     "async": "*",
-    "mysql": ">= 2.8.0",
+    "mysql": "~2.8",
     "express": "~4.13",
     "nodemailer": "~1.4",
+    "nodemailer-smtp-transport": "~1.0",
     "body-parser": "~1.13",
     "cookie-parser": "~1.3",
     "morgan": "~1.6",
-    "config": "~1.14",
-    "db-migrate": "~0.9"
+    "db-migrate": "~0.9",
+    "node-sass": "~3.2",
+    "forever": "~0.15",
+    "squiggle": "~1.0",
+    "htmlspecialchars": "~1.0",
+    "bunyan": "~1.4"
+  },
+  "devDependencies": {
+    "mocha": "~2.2",
+    "chai": "~3.2",
+    "supertest": "~1.0",
+    "grunt": "~0.4.5",
+    "grunt-bower-concat": "~0.6.0",
+    "load-grunt-tasks": "~3.3.0",
+    "bower": "~1.6",
+    "grunt-cli": "~0.1.13"
   }
 }

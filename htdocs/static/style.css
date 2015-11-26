@@ -106,7 +106,7 @@ body div.header .content-header {
     height: 100%;
     line-height:20px;
     color:white;
-    background: url(./gfx/header-gfx.jpg) top center no-repeat;
+    background: url(gfx/header-gfx.jpg) top center no-repeat;
 }
 body div.header .content-header .logo {
     margin-left: -110px;
@@ -604,6 +604,10 @@ div.messages dl.light dd span {
     display:block;
 }
 
+div.messages .subject {
+    cursor: pointer;
+}
+
 /* Thread Columns */
 div.thread dl.dark dd.board {left:0;  right:40%;}
 div.thread dl.dark dd.topic {left:60%;right:30%;border-left: 1px solid #ddd;}
@@ -847,15 +851,15 @@ table.posts tr.light td div.posting {
 
 ul.bblist {
   padding-left: 30px;
-  &.bblistcircle li {
-      list-style: circle;
-  }
-  &.bblista li {
-    list-style: lower-latin;
-  }
-  &.bblist1 li {
-    list-style: decimal;
-  }
+}
+ul.bblist.bblistcircle li {
+    list-style: circle;
+}
+ul.bblist.bblista li {
+  list-style: lower-latin;
+}
+ul.bblist.bblist1 li {
+  list-style: decimal;
 }
 
 div.bb_code,
@@ -1036,7 +1040,23 @@ div.signature {
     font-weight:bold;
     color:white;
     font-size:12px;
-    text-align:center;
+    text-align: left;
+    margin: 0 0 8px 0;
+}
+#js_adminbox .innerframe.withIconButtons>div {
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    text-align: center;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 17px;
+    background-color: #254050;
+}
+#js_adminbox .innerframe.withIconButtons i {
+    vertical-align: middle;
 }
 #js_adminbox .button {
     font-size:11px;
@@ -1166,4 +1186,38 @@ div.searchmod .search dd input {
 }
 #js_searchresult table.general tr.light {
     height:auto;
+}
+
+
+
+.clickable {
+    cursor: pointer;
+}
+
+
+
+
+
+.defaultForm fieldset {
+    margin: 10px 0;
+}
+
+.defaultForm label {
+    vertical-align: top;
+    min-width: 150px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.defaultForm p {
+    margin: 5px 0;
+}
+
+.defaultForm input, .defaultForm textarea {
+    vertical-align: middle;
+}
+
+.flagOption {
+    display: inline-block;
+    width: 250px;
 }

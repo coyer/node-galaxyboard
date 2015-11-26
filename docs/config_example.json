@@ -1,0 +1,27 @@
+{
+  "port": 8080,
+  "host": "0.0.0.0",
+  "connectApi": {
+    "port": 8081,
+    "host": "0.0.0.0"
+  },
+  "db": {
+    "host": "localhost",
+    "database": "galaxyboard",
+    "user": "root",
+    "password": "devpassword",
+    "connectionLimit": 10,
+    "connectApiConnectionLimit": 4
+  },
+  "error": {
+    "mail": {
+      "host": "localhost",
+      "port": 25,
+      "message": {
+        "sender": "board@galaxytrek.com",
+        "to": "dbogatz@web.de",
+        "subject": "Board Exception"
+      }
+    }
+  }
+}
